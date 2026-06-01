@@ -1,0 +1,1153 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Talk Arrangements</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f4;
+      --panel: #ffffff;
+      --panel-2: #eef3f0;
+      --text: #17201c;
+      --muted: #637067;
+      --line: #d8ded9;
+      --accent: #0e7c66;
+      --accent-2: #0b5d80;
+      --warn: #ab6116;
+      --danger: #b3261e;
+      --ok: #237247;
+      --shadow: 0 12px 30px rgba(20, 33, 28, .09);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #121715;
+      --panel: #1b2220;
+      --panel-2: #232c29;
+      --text: #eaf0ec;
+      --muted: #a8b5ad;
+      --line: #34413c;
+      --accent: #54c2a8;
+      --accent-2: #74b9dc;
+      --warn: #e0a85b;
+      --danger: #ff8a80;
+      --ok: #78d7a0;
+      --shadow: 0 16px 38px rgba(0, 0, 0, .25);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      [data-theme="system"] {
+        color-scheme: dark;
+        --bg: #121715;
+        --panel: #1b2220;
+        --panel-2: #232c29;
+        --text: #eaf0ec;
+        --muted: #a8b5ad;
+        --line: #34413c;
+        --accent: #54c2a8;
+        --accent-2: #74b9dc;
+        --warn: #e0a85b;
+        --danger: #ff8a80;
+        --ok: #78d7a0;
+        --shadow: 0 16px 38px rgba(0, 0, 0, .25);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button, select, input, textarea {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--text);
+    }
+
+    button {
+      cursor: pointer;
+      min-height: 36px;
+      padding: 7px 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button:hover, select:hover {
+      border-color: color-mix(in srgb, var(--accent), var(--line) 35%);
+    }
+
+    .icon-btn {
+      width: 36px;
+      padding: 0;
+      font-size: 17px;
+    }
+
+    .primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .primary,
+    [data-theme="system"] .primary {
+      color: #08231d;
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .app-shell {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 40px);
+      line-height: 1.05;
+    }
+
+    .subhead {
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .segmented button {
+      border: 0;
+      background: transparent;
+      min-height: 30px;
+      padding: 5px 10px;
+    }
+
+    .segmented button.active {
+      background: var(--panel);
+      box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+
+    nav button {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      min-width: 128px;
+      padding: 13px 14px;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+
+    nav button.active {
+      color: var(--text);
+      border-color: var(--accent);
+      font-weight: 800;
+    }
+
+    section[hidden] { display: none; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 21px;
+      margin: 0 0 4px;
+    }
+
+    .section-head p, .muted {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .dashboard-layout {
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-title {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .panel-title strong {
+      font-size: 15px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      background: color-mix(in srgb, var(--panel-2), transparent 20%);
+    }
+
+    tbody tr.current {
+      background: color-mix(in srgb, var(--accent), transparent 86%);
+      box-shadow: inset 4px 0 0 var(--accent);
+    }
+
+    tbody tr:hover {
+      background: color-mix(in srgb, var(--panel-2), transparent 38%);
+    }
+
+    td select, td input, td textarea {
+      width: 100%;
+      min-width: 130px;
+      padding: 7px 8px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 38px;
+    }
+
+    .contact-card {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .contact-name {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .contact-meta {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .kpi {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 82px;
+    }
+
+    .kpi b {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 7px;
+    }
+
+    .kpi span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .planning-year {
+      margin-bottom: 16px;
+    }
+
+    .planning-year table {
+      min-width: 760px;
+    }
+
+    .list-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search {
+      min-width: min(360px, 100%);
+      padding: 9px 10px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: var(--text);
+      color: var(--bg);
+      padding: 10px 12px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: .18s ease;
+      z-index: 20;
+      max-width: min(420px, calc(100vw - 36px));
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .empty {
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: color-mix(in srgb, var(--accent), transparent 86%);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 920px) {
+      header, .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+      .toolbar {
+        justify-content: start;
+      }
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+      table {
+        min-width: 680px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="system">
+  <div class="app-shell">
+    <header>
+      <div>
+        <h1 data-i18n="appTitle">Talk Arrangements</h1>
+        <div class="subhead" id="subtitle"></div>
+      </div>
+      <div class="toolbar">
+        <div class="segmented" aria-label="Language">
+          <button data-lang="en">EN</button>
+          <button data-lang="es">ES</button>
+        </div>
+        <div class="segmented" aria-label="Theme">
+          <button data-theme-pick="light" title="Light">â˜¼</button>
+          <button data-theme-pick="dark" title="Dark">â˜¾</button>
+          <button data-theme-pick="system" title="System">â—</button>
+        </div>
+        <button id="exportBtn" title="Export backup">â‡© <span data-i18n="backup">Backup</span></button>
+        <button id="importBtn" title="Import backup">â‡§ <span data-i18n="import">Import</span></button>
+        <button id="resetBtn" title="Restore starter data" class="danger">â†º <span data-i18n="reset">Reset</span></button>
+        <input id="importFile" class="file-input" type="file" accept="application/json,.json">
+      </div>
+    </header>
+
+    <nav aria-label="Main tabs">
+      <button class="active" data-tab="dashboard" data-i18n="dashboard">Dashboard</button>
+      <button data-tab="planning" data-i18n="planning">Planning</button>
+      <button data-tab="congregations" data-i18n="congregations">Congregations</button>
+    </nav>
+
+    <main>
+      <section id="dashboard">
+        <div class="section-head">
+          <div>
+            <h2 id="dashboardTitle"></h2>
+            <p data-i18n="dashHint">Current year at a glance with this month highlighted.</p>
+          </div>
+          <button class="primary" id="addCurrentYear" title="Add a month row">ï¼‹ <span data-i18n="addMonth">Add Month</span></button>
+        </div>
+        <div class="grid dashboard-layout">
+          <div class="panel">
+            <div class="panel-title">
+              <strong data-i18n="yearSchedule">Year schedule</strong>
+              <span class="pill" id="currentMonthPill"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="month">Month</th>
+                    <th data-i18n="congregation">Congregation</th>
+                    <th data-i18n="messageSent">Message sent</th>
+                    <th data-i18n="confirmed">Confirmed</th>
+                    <th data-i18n="note">Note</th>
+                    <th data-i18n="actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboardRows"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <aside class="panel">
+            <div class="panel-title">
+              <strong data-i18n="speakerContact">Speaker contact</strong>
+              <span id="selectedMonthLabel" class="muted"></span>
+            </div>
+            <div id="contactCard" class="contact-card"></div>
+            <div class="kpis" id="kpiBox"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="planning" hidden>
+        <div class="section-head">
+          <div>
+            <h2 data-i18n="planningTitle">Planning for the next 3 years</h2>
+            <p data-i18n="planningHint">Use this for future arrangements and fixed recurring notes.</p>
+          </div>
+          <button class="primary" id="addPlanningYear">ï¼‹ <span data-i18n="addYear">Add Year</span></button>
+        </div>
+        <div id="planningTables"></div>
+      </section>
+
+      <section id="congregations" hidden>
+        <div class="section-head">
+          <div>
+            <h2 data-i18n="congTitle">Congregation list</h2>
+            <p data-i18n="congHint">Edit contact information here; dashboard lookups update immediately.</p>
+          </div>
+          <div class="list-tools">
+            <input id="searchBox" class="search" type="search" data-i18n-placeholder="search" placeholder="Search">
+            <button class="primary" id="addCongregation">ï¼‹ <span data-i18n="addCong">Add</span></button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="congregation">Congregation</th>
+                  <th data-i18n="coordinator">Coordinator</th>
+                  <th data-i18n="phone">Phone</th>
+                  <th data-i18n="email">Email</th>
+                  <th data-i18n="note">Note</th>
+                  <th data-i18n="actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="congregationRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const APP_KEY = "jw-talk-arrangements-v1";
+    const monthsEs = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const thisYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+
+    const t = {
+      en: {
+        appTitle: "Talk Arrangements",
+        subtitle: "Congregation public talk arrangements",
+        dashboard: "Dashboard",
+        planning: "Planning",
+        congregations: "Congregations",
+        backup: "Backup",
+        import: "Import",
+        reset: "Reset",
+        dashHint: "Current year at a glance with this month highlighted.",
+        addMonth: "Add Month",
+        yearSchedule: "Year schedule",
+        month: "Month",
+        congregation: "Congregation",
+        messageSent: "Message sent",
+        confirmed: "Confirmed",
+        note: "Note",
+        actions: "Actions",
+        speakerContact: "Speaker contact",
+        planningTitle: "Planning for the next 3 years",
+        planningHint: "Use this for future arrangements and fixed recurring notes.",
+        addYear: "Add Year",
+        congTitle: "Congregation list",
+        congHint: "Edit contact information here; dashboard lookups update immediately.",
+        search: "Search congregations or contacts",
+        addCong: "Add",
+        coordinator: "Coordinator",
+        phone: "Phone",
+        email: "Email",
+        currentMonth: "Current month",
+        copied: "Copied",
+        noContact: "Choose a congregation to see contact options.",
+        call: "Call",
+        text: "Text",
+        mail: "Email",
+        copy: "Copy",
+        total: "Total",
+        sent: "Sent",
+        confirmedCount: "Confirmed",
+        conWho: "With whom",
+        contact: "Contact",
+        unavailable: "Unavailable",
+        deleteConfirm: "Delete this row?",
+        restored: "Starter data restored.",
+        imported: "Backup imported.",
+        saved: "Saved.",
+        exported: "Backup downloaded.",
+        invalidBackup: "This backup file could not be read.",
+        noProgram: "Do not schedule"
+      },
+      es: {
+        appTitle: "Arreglos de Discursos",
+        subtitle: "Arreglos de discursos pÃºblicos de la congregaciÃ³n",
+        dashboard: "Tablero",
+        planning: "PlanificaciÃ³n",
+        congregations: "Congregaciones",
+        backup: "Respaldo",
+        import: "Importar",
+        reset: "Restaurar",
+        dashHint: "El aÃ±o actual con el mes presente resaltado.",
+        addMonth: "AÃ±adir mes",
+        yearSchedule: "Programa del aÃ±o",
+        month: "Mes",
+        congregation: "CongregaciÃ³n",
+        messageSent: "Mensaje enviado",
+        confirmed: "Confirmado",
+        note: "Nota",
+        actions: "Acciones",
+        speakerContact: "Contacto del discursante",
+        planningTitle: "PlanificaciÃ³n de los prÃ³ximos 3 aÃ±os",
+        planningHint: "Use esta secciÃ³n para arreglos futuros y notas fijas.",
+        addYear: "AÃ±adir aÃ±o",
+        congTitle: "Lista de congregaciones",
+        congHint: "Edite los contactos aquÃ­; el tablero se actualiza al instante.",
+        search: "Buscar congregaciones o contactos",
+        addCong: "AÃ±adir",
+        coordinator: "Coordinador",
+        phone: "TelÃ©fono",
+        email: "Correo",
+        currentMonth: "Mes actual",
+        copied: "Copiado",
+        noContact: "Escoja una congregaciÃ³n para ver las opciones de contacto.",
+        call: "Llamar",
+        text: "Texto",
+        mail: "Correo",
+        copy: "Copiar",
+        total: "Total",
+        sent: "Enviados",
+        confirmedCount: "Confirmados",
+        conWho: "Con quien",
+        contact: "Contacto",
+        unavailable: "No disponible",
+        deleteConfirm: "Â¿Eliminar esta fila?",
+        restored: "Datos iniciales restaurados.",
+        imported: "Respaldo importado.",
+        saved: "Guardado.",
+        exported: "Respaldo descargado.",
+        invalidBackup: "No se pudo leer este respaldo.",
+        noProgram: "No programar"
+      }
+    };
+
+    const starter = {
+      version: 1,
+      language: "es",
+      theme: "system",
+      selectedMonth: currentMonth,
+      currentYear: thisYear,
+      schedule: [
+        ["Enero", "Cedar Spanish Branford", false, false, ""],
+        ["Febrero", "West Danbury Spanish", false, false, ""],
+        ["Marzo", "Woodin Hill Spanish - Hamden CT", false, false, ""],
+        ["Abril", "South Springfield Spanish", false, false, "Arreglo fijo"],
+        ["Mayo", "Lakewood Spanish Waterbury", false, false, ""],
+        ["Junio", "Torringford Spanish", false, false, "Arreglo fijo"],
+        ["Julio", "Shelton", false, false, ""],
+        ["Agosto", "New London Spanish", false, false, "Arreglo fijo"],
+        ["Septiembre", "South Spanish New Britain", false, false, ""],
+        ["Octubre", "Meriden Spanish", false, false, "Arreglo fijo, hasta 2029"],
+        ["Noviembre", "Bristol Spanish", false, false, ""],
+        ["Diciembre", "Bridgeport West Spanish", false, false, ""]
+      ].map((r, i) => ({ id: crypto.randomUUID(), month: i, congregation: r[1], messageSent: r[2], confirmed: r[3], note: r[4] })),
+      planning: [
+        {
+          year: 2027,
+          rows: [
+            ["Enero", "Highland Spanish Waterbury", "", "", ""],
+            ["Febrero", "Parker Spanish - Massachusetts", "", "", ""],
+            ["Marzo", "Shelton", "", "", ""],
+            ["Abril", "South Springfield Spanish", "", "", "Arreglo fijo"],
+            ["Mayo", "East Danbury Spanish", "", "", ""],
+            ["Junio", "Torringford Spanish", "", "", "Arreglo fijo"],
+            ["Julio", "Cedar Spanish Branford", "", "", ""],
+            ["Agosto", "NewLondon Spanish", "", "", "Arreglo fijo"],
+            ["Septiembre", "North Spanish New Britain", "", "", "Arreglo fijo"],
+            ["Octubre", "Meriden Spanish", "", "", "Arreglo fijo, hasta 2029"],
+            ["Noviembre", "Lakewood Spanish Waterbury", "", "", ""],
+            ["Diciembre", "Bristol Spanish", "", "", ""]
+          ]
+        },
+        {
+          year: 2028,
+          rows: [
+            ["Enero", "Highland Spanish Waterbury", "", "", ""],
+            ["Febrero", "West Danbury Spanish", "", "", ""],
+            ["Marzo", "Cedar Spanish Branford", "", "", ""],
+            ["Abril", "South Springfield Spanish", "", "", "Arreglo fijo"],
+            ["Mayo", "East Danbury Spanish", "", "", ""],
+            ["Junio", "Torringford Spanish", "", "", "Arreglo fijo"],
+            ["Julio", "Bridgeport West Spanish", "", "", ""],
+            ["Agosto", "NewLondon Spanish", "", "", "Arreglo fijo"],
+            ["Septiembre", "North Spanish New Britain", "", "", "Arreglo fijo"],
+            ["Octubre", "Meriden Spanish", "", "", "Arreglo fijo, hasta 2029"],
+            ["Noviembre", "Feeding Hills", "", "", ""],
+            ["Diciembre", "South Spanish Hartford", "", "", ""]
+          ]
+        },
+        {
+          year: 2029,
+          rows: monthsEs.map(m => [m, "", "", "", ""])
+        }
+      ].map(y => ({ ...y, rows: y.rows.map((r, i) => ({ id: crypto.randomUUID(), month: i, congregation: r[1], contact: r[2], confirmed: Boolean(r[3]), note: r[4] })) })),
+      congregations: [
+        ["Bridgeport West Spanish", "", "", "", ""],
+        ["Bristol Spanish", "", "", "", ""],
+        ["Cedar Spanish Branford", "", "", "", ""],
+        ["Central Spanish New Haven", "", "", "", ""],
+        ["East Danbury Spanish", "", "", "", ""],
+        ["East Hartford", "", "", "", ""],
+        ["East Spanish Bridgeport", "", "", "", ""],
+        ["East Spanish Hartford", "", "", "", ""],
+        ["East Spanish Norwalk", "", "", "", ""],
+        ["Feeding Hills", "", "", "", ""],
+        ["Hartford Norte", "", "", "", ""],
+        ["Highland Spanish Waterbury", "", "", "", ""],
+        ["Lakewood Spanish Waterbury", "", "", "", ""],
+        ["Leominster MA", "", "", "", ""],
+        ["Meriden Spanish", "", "", "", ""],
+        ["New London Spanish", "", "", "", ""],
+        ["North Spanish Hartford", "", "", "", ""],
+        ["North Spanish New Britain", "", "", "", ""],
+        ["Parker Spanish - Massachusetts", "", "", "", ""],
+        ["Shelton", "", "", "", ""],
+        ["South Spanish Danbury", "", "", "", ""],
+        ["South Spanish Hartford", "", "", "", ""],
+        ["South Spanish Holyoke", "", "", "", ""],
+        ["South Spanish New Britain", "", "", "", ""],
+        ["South Springfield Spanish", "", "", "", ""],
+        ["Stamford", "", "", "", ""],
+        ["Torringford Spanish", "", "", "", ""],
+        ["West Danbury Spanish", "", "", "", ""],
+        ["Woodin Hill Spanish - Hamden CT", "", "", "", ""],
+        ["Local", "", "", "", ""]
+      ].map(r => ({ id: crypto.randomUUID(), name: r[0], coordinator: r[1], phone: r[2], email: r[3], note: r[4] }))
+    };
+
+    let state = loadState();
+
+    function cloneStarter() {
+      return JSON.parse(JSON.stringify(starter));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem(APP_KEY);
+      if (!saved) return cloneStarter();
+      try {
+        const parsed = JSON.parse(saved);
+        return { ...cloneStarter(), ...parsed };
+      } catch {
+        return cloneStarter();
+      }
+    }
+
+    function saveState(show = false) {
+      state.updatedAt = new Date().toISOString();
+      localStorage.setItem(APP_KEY, JSON.stringify(state));
+      if (show) toast(tt("saved"));
+    }
+
+    function tt(key) {
+      return (t[state.language] || t.en)[key] || t.en[key] || key;
+    }
+
+    function months() {
+      return state.language === "es" ? monthsEs : monthsEn;
+    }
+
+    function normalizeName(value) {
+      return String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
+    }
+
+    function findCongregation(name) {
+      const key = normalizeName(name).replace("newlondon", "new london");
+      return state.congregations.find(c => {
+        const n = normalizeName(c.name).replace("newlondon", "new london");
+        return n === key;
+      });
+    }
+
+    function congregationOptions(selected = "") {
+      const names = [...new Set(state.congregations.map(c => c.name).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      if (selected && !names.includes(selected)) names.unshift(selected);
+      return `<option value=""></option>${names.map(name => `<option ${name === selected ? "selected" : ""}>${escapeHtml(name)}</option>`).join("")}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    }
+
+    function telHref(phone) {
+      const clean = String(phone || "").replace(/[^\d+]/g, "");
+      return clean && clean.toUpperCase() !== "N/A" ? `tel:${clean}` : "";
+    }
+
+    function smsHref(phone) {
+      const clean = String(phone || "").replace(/[^\d+]/g, "");
+      return clean && clean.toUpperCase() !== "N/A" ? `sms:${clean}` : "";
+    }
+
+    function mailHref(email, congregation) {
+      if (!email || String(email).toUpperCase() === "N/A") return "";
+      const subject = encodeURIComponent(state.language === "es" ? "Arreglo de discurso pÃºblico" : "Public talk arrangement");
+      const body = encodeURIComponent(state.language === "es"
+        ? `Hola,\n\nQuerÃ­a comunicarme sobre el arreglo con ${congregation || "su congregaciÃ³n"}.\n\nGracias.`
+        : `Hello,\n\nI wanted to reach out about the arrangement with ${congregation || "your congregation"}.\n\nThank you.`);
+      return `mailto:${email}?subject=${subject}&body=${body}`;
+    }
+
+    function renderAll() {
+      applyTheme();
+      applyLanguage();
+      renderDashboard();
+      renderPlanning();
+      renderCongregations();
+      bindActiveSegments();
+    }
+
+    function applyTheme() {
+      document.body.dataset.theme = state.theme || "system";
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = state.language;
+      document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = tt(el.dataset.i18n));
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => el.placeholder = tt(el.dataset.i18nPlaceholder));
+      document.getElementById("subtitle").textContent = tt("subtitle");
+      document.getElementById("dashboardTitle").textContent = state.language === "es"
+        ? `Arreglos de discursos ${state.currentYear}`
+        : `Talk arrangements ${state.currentYear}`;
+      document.getElementById("currentMonthPill").textContent = `${tt("currentMonth")}: ${months()[currentMonth]}`;
+    }
+
+    function bindActiveSegments() {
+      document.querySelectorAll("[data-lang]").forEach(btn => btn.classList.toggle("active", btn.dataset.lang === state.language));
+      document.querySelectorAll("[data-theme-pick]").forEach(btn => btn.classList.toggle("active", btn.dataset.themePick === state.theme));
+    }
+
+    function renderDashboard() {
+      const tbody = document.getElementById("dashboardRows");
+      tbody.innerHTML = state.schedule.map(row => {
+        const contact = findCongregation(row.congregation);
+        const monthName = months()[row.month] || row.month;
+        return `
+          <tr class="${Number(row.month) === currentMonth ? "current" : ""}" data-id="${row.id}">
+            <td><select data-field="month">${months().map((m, i) => `<option value="${i}" ${Number(row.month) === i ? "selected" : ""}>${m}</option>`).join("")}</select></td>
+            <td><select data-field="congregation">${congregationOptions(row.congregation)}</select></td>
+            <td><input data-field="messageSent" type="checkbox" ${row.messageSent ? "checked" : ""}></td>
+            <td><input data-field="confirmed" type="checkbox" ${row.confirmed ? "checked" : ""}></td>
+            <td><input data-field="note" value="${escapeHtml(row.note)}"></td>
+            <td>
+              <button class="icon-btn" data-action="select" title="${tt("speakerContact")}">â—Ž</button>
+              <button class="icon-btn danger" data-action="delete" title="${tt("deleteConfirm")}">Ã—</button>
+              ${contact ? "" : `<span class="muted">?</span>`}
+            </td>
+          </tr>`;
+      }).join("");
+
+      const selected = state.schedule.find(r => Number(r.month) === Number(state.selectedMonth)) || state.schedule[currentMonth] || state.schedule[0];
+      renderContact(selected);
+      renderKpis();
+    }
+
+    function renderContact(row) {
+      const card = document.getElementById("contactCard");
+      document.getElementById("selectedMonthLabel").textContent = row ? months()[row.month] : "";
+      if (!row) {
+        card.innerHTML = `<div class="empty">${tt("noContact")}</div>`;
+        return;
+      }
+      const c = findCongregation(row.congregation);
+      if (!c) {
+        card.innerHTML = `<div class="empty">${tt("noContact")}</div>`;
+        return;
+      }
+      const call = telHref(c.phone);
+      const text = smsHref(c.phone);
+      const mail = mailHref(c.email, c.name);
+      card.innerHTML = `
+        <div>
+          <div class="contact-name">${escapeHtml(c.name)}</div>
+          <div class="muted">${escapeHtml(c.coordinator || "")}</div>
+        </div>
+        <div class="contact-meta">
+          <div>${tt("phone")}: ${escapeHtml(c.phone || "")}</div>
+          <div>${tt("email")}: ${escapeHtml(c.email || "")}</div>
+          ${c.note ? `<div>${tt("note")}: ${escapeHtml(c.note)}</div>` : ""}
+        </div>
+        <div class="action-row">
+          <button ${call ? `onclick="location.href='${call}'"` : "disabled"}>â˜Ž ${tt("call")}</button>
+          <button ${text ? `onclick="location.href='${text}'"` : "disabled"}>ðŸ’¬ ${tt("text")}</button>
+          <button ${mail ? `onclick="location.href='${mail}'"` : "disabled"}>âœ‰ ${tt("mail")}</button>
+          <button data-copy="${escapeHtml(c.phone || "")}">â§‰ ${tt("phone")}</button>
+          <button data-copy="${escapeHtml(c.email || "")}">â§‰ ${tt("email")}</button>
+        </div>
+      `;
+    }
+
+    function renderKpis() {
+      const total = state.schedule.length;
+      const sent = state.schedule.filter(r => r.messageSent).length;
+      const confirmed = state.schedule.filter(r => r.confirmed).length;
+      document.getElementById("kpiBox").innerHTML = [
+        [total, tt("total")],
+        [sent, tt("sent")],
+        [confirmed, tt("confirmedCount")]
+      ].map(([v, label]) => `<div class="kpi"><b>${v}</b><span>${label}</span></div>`).join("");
+    }
+
+    function renderPlanning() {
+      const host = document.getElementById("planningTables");
+      host.innerHTML = state.planning.map(year => `
+        <div class="panel planning-year" data-year="${year.year}">
+          <div class="panel-title">
+            <strong>${state.language === "es" ? "Arreglos para" : "Arrangements for"} ${year.year}</strong>
+            <button class="icon-btn danger" data-action="delete-year" title="${tt("deleteConfirm")}">Ã—</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>${tt("month")}</th>
+                  <th>${tt("conWho")}</th>
+                  <th>${tt("contact")}</th>
+                  <th>${tt("confirmed")}</th>
+                  <th>${tt("note")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${year.rows.map(row => `
+                  <tr data-id="${row.id}">
+                    <td><select data-field="month">${months().map((m, i) => `<option value="${i}" ${Number(row.month) === i ? "selected" : ""}>${m}</option>`).join("")}</select></td>
+                    <td><select data-field="congregation">${congregationOptions(row.congregation)}</select></td>
+                    <td><input data-field="contact" value="${escapeHtml(row.contact || lookupContactName(row.congregation))}"></td>
+                    <td><input data-field="confirmed" type="checkbox" ${row.confirmed ? "checked" : ""}></td>
+                    <td><input data-field="note" value="${escapeHtml(row.note || "")}"></td>
+                  </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function lookupContactName(name) {
+      const c = findCongregation(name);
+      return c ? c.coordinator : "";
+    }
+
+    function renderCongregations() {
+      const filter = normalizeName(document.getElementById("searchBox").value);
+      const rows = state.congregations
+        .filter(c => !filter || [c.name, c.coordinator, c.phone, c.email, c.note].some(v => normalizeName(v).includes(filter)))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      document.getElementById("congregationRows").innerHTML = rows.map(c => `
+        <tr data-id="${c.id}">
+          <td><input data-field="name" value="${escapeHtml(c.name)}"></td>
+          <td><input data-field="coordinator" value="${escapeHtml(c.coordinator)}"></td>
+          <td><input data-field="phone" value="${escapeHtml(c.phone)}"></td>
+          <td><input data-field="email" value="${escapeHtml(c.email)}"></td>
+          <td><input data-field="note" value="${escapeHtml(c.note)}"></td>
+          <td>
+            <button class="icon-btn" data-copy="${escapeHtml(c.phone)}" title="${tt("copy")}">â§‰</button>
+            <button class="icon-btn danger" data-action="delete" title="${tt("deleteConfirm")}">Ã—</button>
+          </td>
+        </tr>`).join("") || `<tr><td colspan="6"><div class="empty">${tt("noContact")}</div></td></tr>`;
+    }
+
+    function toast(message) {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => el.classList.remove("show"), 1800);
+    }
+
+    function downloadBackup() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `talk-arrangements-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast(tt("exported"));
+    }
+
+    function wireEvents() {
+      document.querySelectorAll("[data-tab]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("[data-tab]").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.querySelectorAll("main > section").forEach(s => s.hidden = s.id !== btn.dataset.tab);
+        });
+      });
+
+      document.querySelectorAll("[data-lang]").forEach(btn => btn.addEventListener("click", () => {
+        state.language = btn.dataset.lang;
+        saveState();
+        renderAll();
+      }));
+
+      document.querySelectorAll("[data-theme-pick]").forEach(btn => btn.addEventListener("click", () => {
+        state.theme = btn.dataset.themePick;
+        saveState();
+        renderAll();
+      }));
+
+      document.getElementById("dashboardRows").addEventListener("input", event => {
+        const tr = event.target.closest("tr");
+        if (!tr) return;
+        const row = state.schedule.find(r => r.id === tr.dataset.id);
+        if (!row) return;
+        const field = event.target.dataset.field;
+        row[field] = event.target.type === "checkbox" ? event.target.checked : field === "month" ? Number(event.target.value) : event.target.value;
+        if (field === "month") state.selectedMonth = row.month;
+        saveState();
+        renderDashboard();
+      });
+
+      document.getElementById("dashboardRows").addEventListener("click", event => {
+        const tr = event.target.closest("tr");
+        if (!tr) return;
+        const row = state.schedule.find(r => r.id === tr.dataset.id);
+        if (event.target.dataset.action === "select" && row) {
+          state.selectedMonth = row.month;
+          saveState();
+          renderDashboard();
+        }
+        if (event.target.dataset.action === "delete" && confirm(tt("deleteConfirm"))) {
+          state.schedule = state.schedule.filter(r => r.id !== tr.dataset.id);
+          saveState();
+          renderDashboard();
+        }
+      });
+
+      document.getElementById("planningTables").addEventListener("input", event => {
+        const panel = event.target.closest("[data-year]");
+        const tr = event.target.closest("tr");
+        if (!panel || !tr) return;
+        const year = state.planning.find(y => String(y.year) === panel.dataset.year);
+        const row = year?.rows.find(r => r.id === tr.dataset.id);
+        if (!row) return;
+        const field = event.target.dataset.field;
+        row[field] = event.target.type === "checkbox" ? event.target.checked : field === "month" ? Number(event.target.value) : event.target.value;
+        if (field === "congregation" && !row.contact) row.contact = lookupContactName(row.congregation);
+        saveState();
+      });
+
+      document.getElementById("planningTables").addEventListener("click", event => {
+        const panel = event.target.closest("[data-year]");
+        if (event.target.dataset.action === "delete-year" && panel && confirm(tt("deleteConfirm"))) {
+          state.planning = state.planning.filter(y => String(y.year) !== panel.dataset.year);
+          saveState();
+          renderPlanning();
+        }
+      });
+
+      document.getElementById("congregationRows").addEventListener("input", event => {
+        const tr = event.target.closest("tr");
+        const c = state.congregations.find(item => item.id === tr?.dataset.id);
+        if (!c) return;
+        c[event.target.dataset.field] = event.target.value;
+        saveState();
+        renderDashboard();
+      });
+
+      document.getElementById("congregationRows").addEventListener("click", event => {
+        const tr = event.target.closest("tr");
+        if (event.target.dataset.action === "delete" && tr && confirm(tt("deleteConfirm"))) {
+          state.congregations = state.congregations.filter(c => c.id !== tr.dataset.id);
+          saveState();
+          renderCongregations();
+          renderDashboard();
+        }
+      });
+
+      document.body.addEventListener("click", event => {
+        const text = event.target.dataset.copy;
+        if (text !== undefined) {
+          navigator.clipboard.writeText(text).then(() => toast(`${tt("copied")}: ${text}`));
+        }
+      });
+
+      document.getElementById("searchBox").addEventListener("input", renderCongregations);
+      document.getElementById("exportBtn").addEventListener("click", downloadBackup);
+      document.getElementById("importBtn").addEventListener("click", () => document.getElementById("importFile").click());
+      document.getElementById("importFile").addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const imported = JSON.parse(reader.result);
+            if (!Array.isArray(imported.congregations) || !Array.isArray(imported.schedule)) throw new Error("Invalid");
+            state = { ...cloneStarter(), ...imported };
+            saveState();
+            renderAll();
+            toast(tt("imported"));
+          } catch {
+            toast(tt("invalidBackup"));
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (!confirm(tt("deleteConfirm"))) return;
+        state = cloneStarter();
+        saveState();
+        renderAll();
+        toast(tt("restored"));
+      });
+
+      document.getElementById("addCurrentYear").addEventListener("click", () => {
+        state.schedule.push({ id: crypto.randomUUID(), month: currentMonth, congregation: "", messageSent: false, confirmed: false, note: "" });
+        saveState();
+        renderDashboard();
+      });
+
+      document.getElementById("addPlanningYear").addEventListener("click", () => {
+        const next = Math.max(...state.planning.map(y => Number(y.year)), state.currentYear) + 1;
+        state.planning.push({ year: next, rows: monthsEs.map((m, i) => ({ id: crypto.randomUUID(), month: i, congregation: "", contact: "", confirmed: false, note: "" })) });
+        saveState();
+        renderPlanning();
+      });
+
+      document.getElementById("addCongregation").addEventListener("click", () => {
+        state.congregations.push({ id: crypto.randomUUID(), name: "", coordinator: "", phone: "", email: "", note: "" });
+        saveState();
+        renderCongregations();
+      });
+    }
+
+    wireEvents();
+    renderAll();
+  </script>
+</body>
+</html>
+
