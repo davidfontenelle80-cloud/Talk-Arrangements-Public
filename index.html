@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -439,13 +439,13 @@
           <button data-lang="es">ES</button>
         </div>
         <div class="segmented" aria-label="Theme">
-          <button data-theme-pick="light" title="Light">â˜¼</button>
-          <button data-theme-pick="dark" title="Dark">â˜¾</button>
-          <button data-theme-pick="system" title="System">â—</button>
+          <button data-theme-pick="light" title="Light">☼</button>
+          <button data-theme-pick="dark" title="Dark">☾</button>
+          <button data-theme-pick="system" title="System">◐</button>
         </div>
-        <button id="exportBtn" title="Export backup">â‡© <span data-i18n="backup">Backup</span></button>
-        <button id="importBtn" title="Import backup">â‡§ <span data-i18n="import">Import</span></button>
-        <button id="resetBtn" title="Restore starter data" class="danger">â†º <span data-i18n="reset">Reset</span></button>
+        <button id="exportBtn" title="Export backup">⇩ <span data-i18n="backup">Backup</span></button>
+        <button id="importBtn" title="Import backup">⇧ <span data-i18n="import">Import</span></button>
+        <button id="resetBtn" title="Restore starter data" class="danger">↺ <span data-i18n="reset">Reset</span></button>
         <input id="importFile" class="file-input" type="file" accept="application/json,.json">
       </div>
     </header>
@@ -463,7 +463,7 @@
             <h2 id="dashboardTitle"></h2>
             <p data-i18n="dashHint">Current year at a glance with this month highlighted.</p>
           </div>
-          <button class="primary" id="addCurrentYear" title="Add a month row">ï¼‹ <span data-i18n="addMonth">Add Month</span></button>
+          <button class="primary" id="addCurrentYear" title="Add a month row">＋ <span data-i18n="addMonth">Add Month</span></button>
         </div>
         <div class="grid dashboard-layout">
           <div class="panel">
@@ -505,7 +505,7 @@
             <h2 data-i18n="planningTitle">Planning for the next 3 years</h2>
             <p data-i18n="planningHint">Use this for future arrangements and fixed recurring notes.</p>
           </div>
-          <button class="primary" id="addPlanningYear">ï¼‹ <span data-i18n="addYear">Add Year</span></button>
+          <button class="primary" id="addPlanningYear">＋ <span data-i18n="addYear">Add Year</span></button>
         </div>
         <div id="planningTables"></div>
       </section>
@@ -518,7 +518,7 @@
           </div>
           <div class="list-tools">
             <input id="searchBox" class="search" type="search" data-i18n-placeholder="search" placeholder="Search">
-            <button class="primary" id="addCongregation">ï¼‹ <span data-i18n="addCong">Add</span></button>
+            <button class="primary" id="addCongregation">＋ <span data-i18n="addCong">Add</span></button>
           </div>
         </div>
         <div class="panel">
@@ -604,36 +604,36 @@
       },
       es: {
         appTitle: "Arreglos de Discursos",
-        subtitle: "Arreglos de discursos pÃºblicos de la congregaciÃ³n",
+        subtitle: "Arreglos de discursos públicos de la congregación",
         dashboard: "Tablero",
-        planning: "PlanificaciÃ³n",
+        planning: "Planificación",
         congregations: "Congregaciones",
         backup: "Respaldo",
         import: "Importar",
         reset: "Restaurar",
-        dashHint: "El aÃ±o actual con el mes presente resaltado.",
-        addMonth: "AÃ±adir mes",
-        yearSchedule: "Programa del aÃ±o",
+        dashHint: "El año actual con el mes presente resaltado.",
+        addMonth: "Añadir mes",
+        yearSchedule: "Programa del año",
         month: "Mes",
-        congregation: "CongregaciÃ³n",
+        congregation: "Congregación",
         messageSent: "Mensaje enviado",
         confirmed: "Confirmado",
         note: "Nota",
         actions: "Acciones",
         speakerContact: "Contacto del discursante",
-        planningTitle: "PlanificaciÃ³n de los prÃ³ximos 3 aÃ±os",
-        planningHint: "Use esta secciÃ³n para arreglos futuros y notas fijas.",
-        addYear: "AÃ±adir aÃ±o",
+        planningTitle: "Planificación de los próximos 3 años",
+        planningHint: "Use esta sección para arreglos futuros y notas fijas.",
+        addYear: "Añadir año",
         congTitle: "Lista de congregaciones",
-        congHint: "Edite los contactos aquÃ­; el tablero se actualiza al instante.",
+        congHint: "Edite los contactos aquí; el tablero se actualiza al instante.",
         search: "Buscar congregaciones o contactos",
-        addCong: "AÃ±adir",
+        addCong: "Añadir",
         coordinator: "Coordinador",
-        phone: "TelÃ©fono",
+        phone: "Teléfono",
         email: "Correo",
         currentMonth: "Mes actual",
         copied: "Copiado",
-        noContact: "Escoja una congregaciÃ³n para ver las opciones de contacto.",
+        noContact: "Escoja una congregación para ver las opciones de contacto.",
         call: "Llamar",
         text: "Texto",
         mail: "Correo",
@@ -644,7 +644,7 @@
         conWho: "Con quien",
         contact: "Contacto",
         unavailable: "No disponible",
-        deleteConfirm: "Â¿Eliminar esta fila?",
+        deleteConfirm: "¿Eliminar esta fila?",
         restored: "Datos iniciales restaurados.",
         imported: "Respaldo importado.",
         saved: "Guardado.",
@@ -813,9 +813,9 @@
 
     function mailHref(email, congregation) {
       if (!email || String(email).toUpperCase() === "N/A") return "";
-      const subject = encodeURIComponent(state.language === "es" ? "Arreglo de discurso pÃºblico" : "Public talk arrangement");
+      const subject = encodeURIComponent(state.language === "es" ? "Arreglo de discurso público" : "Public talk arrangement");
       const body = encodeURIComponent(state.language === "es"
-        ? `Hola,\n\nQuerÃ­a comunicarme sobre el arreglo con ${congregation || "su congregaciÃ³n"}.\n\nGracias.`
+        ? `Hola,\n\nQuería comunicarme sobre el arreglo con ${congregation || "su congregación"}.\n\nGracias.`
         : `Hello,\n\nI wanted to reach out about the arrangement with ${congregation || "your congregation"}.\n\nThank you.`);
       return `mailto:${email}?subject=${subject}&body=${body}`;
     }
@@ -862,8 +862,8 @@
             <td><input data-field="confirmed" type="checkbox" ${row.confirmed ? "checked" : ""}></td>
             <td><input data-field="note" value="${escapeHtml(row.note)}"></td>
             <td>
-              <button class="icon-btn" data-action="select" title="${tt("speakerContact")}">â—Ž</button>
-              <button class="icon-btn danger" data-action="delete" title="${tt("deleteConfirm")}">Ã—</button>
+              <button class="icon-btn" data-action="select" title="${tt("speakerContact")}">◎</button>
+              <button class="icon-btn danger" data-action="delete" title="${tt("deleteConfirm")}">×</button>
               ${contact ? "" : `<span class="muted">?</span>`}
             </td>
           </tr>`;
@@ -900,11 +900,11 @@
           ${c.note ? `<div>${tt("note")}: ${escapeHtml(c.note)}</div>` : ""}
         </div>
         <div class="action-row">
-          <button ${call ? `onclick="location.href='${call}'"` : "disabled"}>â˜Ž ${tt("call")}</button>
-          <button ${text ? `onclick="location.href='${text}'"` : "disabled"}>ðŸ’¬ ${tt("text")}</button>
-          <button ${mail ? `onclick="location.href='${mail}'"` : "disabled"}>âœ‰ ${tt("mail")}</button>
-          <button data-copy="${escapeHtml(c.phone || "")}">â§‰ ${tt("phone")}</button>
-          <button data-copy="${escapeHtml(c.email || "")}">â§‰ ${tt("email")}</button>
+          <button ${call ? `onclick="location.href='${call}'"` : "disabled"}>☎ ${tt("call")}</button>
+          <button ${text ? `onclick="location.href='${text}'"` : "disabled"}>💬 ${tt("text")}</button>
+          <button ${mail ? `onclick="location.href='${mail}'"` : "disabled"}>✉ ${tt("mail")}</button>
+          <button data-copy="${escapeHtml(c.phone || "")}">⧉ ${tt("phone")}</button>
+          <button data-copy="${escapeHtml(c.email || "")}">⧉ ${tt("email")}</button>
         </div>
       `;
     }
@@ -926,7 +926,7 @@
         <div class="panel planning-year" data-year="${year.year}">
           <div class="panel-title">
             <strong>${state.language === "es" ? "Arreglos para" : "Arrangements for"} ${year.year}</strong>
-            <button class="icon-btn danger" data-action="delete-year" title="${tt("deleteConfirm")}">Ã—</button>
+            <button class="icon-btn danger" data-action="delete-year" title="${tt("deleteConfirm")}">×</button>
           </div>
           <div class="table-wrap">
             <table>
@@ -973,8 +973,8 @@
           <td><input data-field="email" value="${escapeHtml(c.email)}"></td>
           <td><input data-field="note" value="${escapeHtml(c.note)}"></td>
           <td>
-            <button class="icon-btn" data-copy="${escapeHtml(c.phone)}" title="${tt("copy")}">â§‰</button>
-            <button class="icon-btn danger" data-action="delete" title="${tt("deleteConfirm")}">Ã—</button>
+            <button class="icon-btn" data-copy="${escapeHtml(c.phone)}" title="${tt("copy")}">⧉</button>
+            <button class="icon-btn danger" data-action="delete" title="${tt("deleteConfirm")}">×</button>
           </td>
         </tr>`).join("") || `<tr><td colspan="6"><div class="empty">${tt("noContact")}</div></td></tr>`;
     }
@@ -1150,4 +1150,3 @@
   </script>
 </body>
 </html>
-
