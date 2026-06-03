@@ -1,0 +1,16 @@
+{
+  "name": "Talk Arrangements",
+  "short_name": "Talks",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0e1b2e",
+  "theme_color": "#0e7c66",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
