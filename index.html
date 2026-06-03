@@ -361,7 +361,7 @@
       var p=state.profile||{};
       if(state.language==="es"){
         var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregacion "+p.congregation:"")+"." :"";
-        return "Saludos hermano/a, "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+congName+". Por favor confirme su disponibilidad. Gracias."+(p.name?"\n\n"+p.name:"");
+        return "Saludos hermano, "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+congName+". Por favor confirme su disponibilidad. Gracias."+(p.name?"\n\n"+p.name:"");
       }
       var from2=p.name?"I am "+p.name+(p.congregation?" from the "+p.congregation+" Congregation":"")+".":" ";
       return "Hello, "+from2+" I am reaching out to confirm the public talk arrangement for "+m+" with the "+congName+" congregation. Please confirm your availability. Thank you."+(p.name?"\n\n"+p.name:"");
