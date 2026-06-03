@@ -462,7 +462,7 @@
       card.innerHTML=
         '<div><div class="contact-name">'+esc(c.name)+fixedTag+'</div><div class="muted">'+esc(c.coordinator||"")+'</div></div>'+
         '<div class="contact-meta"><div>'+tt("phone")+': <strong>'+esc(c.phone||"—")+'</strong></div><div>'+tt("email")+': <strong>'+esc(c.email||"—")+'</strong></div>'+(c.note?'<div>'+tt("note")+': '+esc(c.note)+'</div>':'')+'</div>'+
-        '<div class="action-row no-print">'+lbtn("&#9742; "+tt("call"),call,!call)+lbtn("&#128172; "+tt("text"),sms,!sms)+lbtn("&#9993; "+tt("mail"),mailBase,!mailBase)+'<button data-copy="'+esc(c.phone||"")+'">&#10697; '+tt("phone")+'</button><button data-copy="'+esc(c.email||"")+'">&#10697; '+tt("email")+'</button>'+wbtn("&#129302; "+tt("shareContact"),waH(c.phone,info))+'</div>'+
+        '<div class="action-row no-print">'+lbtn("&#9742; "+tt("call"),call,!call)+lbtn("&#128172; "+tt("text"),sms,!sms)+lbtn("&#9993; "+tt("mail"),mailBase,!mailBase)+'<button data-copy="'+esc(c.phone||"")+'">&#10697; '+tt("phone")+'</button><button data-copy="'+esc(c.email||"")+'">&#10697; '+tt("email")+'</button>'+'<button data-share-info="'+esc(info)+'">&#129302; '+tt("shareContact")+'</button>'+'</div>'+
         '<div class="no-print"><div class="template-label">'+tt("templates")+'</div><div class="template-box">'+esc(msg)+'</div>'+
         '<div class="action-row" style="margin-top:8px">'+(smsBody?lbtn("&#128241; "+tt("openSms"),smsBody,false):"")+
         (mailFull?lbtn("&#9993; "+tt("openEmail"),mailFull,false):"")+
@@ -673,8 +673,9 @@
       });
       // Delegated link / WA / copy
       document.body.addEventListener("click",function(e){
-        if(e.target.dataset.href){location.href=e.target.dataset.href;return;}
+        if(e.target.dataset.href){var _h=e.target.dataset.href;if(_h.startsWith("mailto:")){var _a=document.createElement("a");_a.href=_h;_a.target="_blank";document.body.appendChild(_a);_a.click();document.body.removeChild(_a);}else{location.href=_h;}return;}
         if(e.target.dataset.waHref){window.open(e.target.dataset.waHref,"_blank");return;}
+        if(e.target.dataset.shareInfo){var _si=e.target.dataset.shareInfo;if(navigator.share){navigator.share({title:"Contact",text:_si}).catch(function(){});}else{navigator.clipboard.writeText(_si).then(function(){toast(tt("copied"));});}return;}
         var txt=e.target.dataset.copy;
         if(txt===undefined)return;
         if(txt===""){toast(tt("nothingToCopy"));return;}
