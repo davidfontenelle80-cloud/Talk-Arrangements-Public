@@ -454,7 +454,7 @@
       if(!c){card.innerHTML='<div class="empty">'+tt("noContact")+'</div>';return;}
       var call=telH(c.phone),sms=smsH(c.phone),msg=buildTmpl(row,c.name);
       var mailBase=mailH(c.email,c.name,""),mailFull=mailH(c.email,c.name,msg);
-      var smsBody=sms?sms+"?body="+encodeURIComponent(msg):"";
+      var smsBody=sms?sms+"&body="+encodeURIComponent(msg):"";
       var info=[c.name,c.coordinator?"Coord: "+c.coordinator:"",c.phone||"",c.email||""].filter(Boolean).join("\n");
       function lbtn(lbl,href,off){return off||!href?'<button disabled>'+lbl+'</button>':'<button data-href="'+esc(href)+'">'+lbl+'</button>';}
       function wbtn(lbl,href){return'<button data-wa-href="'+esc(href)+'">'+lbl+'</button>';}
