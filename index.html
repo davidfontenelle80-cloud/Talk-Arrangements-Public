@@ -672,7 +672,7 @@
       });
       // Delegated link / WA / copy
       document.body.addEventListener("click",function(e){
-        if(e.target.dataset.href){window.location.href=e.target.dataset.href;return;}
+        if(e.target.dataset.href){var _h=e.target.dataset.href;if(_h.startsWith("http")){window.open(_h,"_blank");}else{window.location.href=_h;}return;}
         if(e.target.dataset.waHref){window.open(e.target.dataset.waHref,"_blank");return;}
         if(e.target.dataset.shareInfo){var _si=e.target.dataset.shareInfo;if(navigator.share){navigator.share({title:"Contact",text:_si}).catch(function(){});}else{navigator.clipboard.writeText(_si).then(function(){toast(tt("copied"));});}return;}
         var txt=e.target.dataset.copy;
