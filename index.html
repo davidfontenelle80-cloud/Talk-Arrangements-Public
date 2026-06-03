@@ -17,7 +17,8 @@
     *{box-sizing:border-box;}
     body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-size:15px;}
     button,input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);}
-    button{cursor:pointer;min-height:36px;padding:7px 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    button,.btn{cursor:pointer;min-height:36px;padding:7px 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn{text-decoration:none;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:inherit;font-family:inherit;}
     button:hover,select:hover{border-color:color-mix(in srgb,var(--accent),var(--line) 35%);}
     .icon-btn{width:36px;padding:0;font-size:17px;}
     .primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
@@ -128,7 +129,7 @@
       .section-head{flex-direction:column;align-items:start;}
       .section-head-actions{width:100%;}
       td select,td input,td textarea{font-size:13px;padding:5px 6px;}
-      button{min-height:44px;}.icon-btn,.copy-field-btn{min-height:34px;}
+      button,.btn{min-height:44px;}.icon-btn,.copy-field-btn{min-height:34px;}
       table{min-width:560px;}
     }
   </style>
@@ -456,7 +457,7 @@
       var mailBase=mailH(c.email,c.name,""),mailFull=mailH(c.email,c.name,msg);
       var smsBody=sms?sms+"&body="+encodeURIComponent(msg):"";
       var info=[c.name,c.coordinator?"Coord: "+c.coordinator:"",c.phone||"",c.email||""].filter(Boolean).join("\n");
-      function lbtn(lbl,href,off){return off||!href?'<button disabled>'+lbl+'</button>':'<button data-href="'+esc(href)+'">'+lbl+'</button>';}
+      function lbtn(lbl,href,off){return off||!href?'<button disabled>'+lbl+'</button>':'<a class="btn" href="'+esc(href)+'" target="_blank">'+lbl+'</a>';}
       function wbtn(lbl,href){return'<button data-wa-href="'+esc(href)+'">'+lbl+'</button>';}
       var fixedTag=c.isFixed?'<span class="fixed-badge">FIJO</span>':"";
       card.innerHTML=
