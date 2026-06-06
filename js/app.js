@@ -472,3 +472,13 @@ var APP_KEY="jw-talk-arrangements-v1";
         showConfirm(tf("yearChangePrompt",{year:thisYear}),function(){rolloverYear();});
       },600);
     }
+
+window.addEventListener('error',function(e){
+  console.error('[TalkArrangements] Uncaught:',e.error||e.message);
+  var eb=document.getElementById('error-boundary');
+  var em=document.getElementById('error-message');
+  if(eb&&em){em.textContent=e.message||'An unexpected error occurred.';eb.hidden=false;}
+});
+window.addEventListener('unhandledrejection',function(e){
+  console.error('[TalkArrangements] Rejection:',e.reason);
+});

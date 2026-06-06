@@ -4,8 +4,8 @@
   "description": "Public talk schedule manager for JW congregation",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f7f4",
-  "theme_color": "#0e7c66",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
   "orientation": "portrait-primary",
   "icons": [
     {
