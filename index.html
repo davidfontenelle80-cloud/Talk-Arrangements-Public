@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="Talk Arrangements — public talk schedule manager for Spanish-speaking JW congregation." />
-  <meta name="theme-color" content="#0e7c66" />
+  <meta name="theme-color" content="#050607" />
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
@@ -16,10 +16,7 @@
   <meta name="apple-mobile-web-app-title" content="Talks" />
 
   <!-- CSS — KHub standard layers -->
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/dark-mode.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="stylesheet" href="css/dark-mode.css" />`n  <link rel="stylesheet" href="css/components.css" />`n  <link rel="stylesheet" href="css/responsive.css" />`n  <link rel="stylesheet" href="css/main.css" />
 
   <title>Talk Arrangements</title>
 </head>
@@ -204,4 +201,23 @@
   <script src="js/firebase/cloud-backup.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/theme.js"></script>
-  <scrip
+    <script src="js/error-boundary.js"></script>
+  <script src="js/a11y.js"></script>
+  <script src="js/components/button.js"></script>
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/card.js"></script>
+  <script src="js/components/input.js"></script>
+  <script src="js/perf.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (err) {
+          console.warn('[KHub SW] Registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
