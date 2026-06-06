@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v7-cloud-latest-device-doc';
+const CACHE_VERSION = 'talk-arrangements-v8-cloud-local-newer-guard';
 
 /**
  * All URLs that make up the app shell.
