@@ -60,7 +60,14 @@ var APP_KEY="jw-talk-arrangements-v1";
     function tt(k){return(T[state.language]||T.en)[k]||T.en[k]||k;}
     function tf(k,v){var s=tt(k);if(v)Object.keys(v).forEach(function(i){s=s.replace("{"+i+"}",v[i]);});return s;}
     function months(){return state.language==="es"?MEs:MEn;}
-    function statusLabel(s){return tt({"not-contacted":"notContacted","message-sent":"messageSentStatus","confirmed":"confirmedStatus","needs-follow-up":"needsFollowUp"}[s]||"notContacted");}`r`n    function resolvePaintTheme(){`r`n      var mode=state.theme||"dark";`r`n      if(mode==="system"){`r`n        try{return window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}catch(e){return "dark";}`r`n      }`r`n      return mode==="light"?"light":"dark";`r`n    }
+    function statusLabel(s){return tt({"not-contacted":"notContacted","message-sent":"messageSentStatus","confirmed":"confirmedStatus","needs-follow-up":"needsFollowUp"}[s]||"notContacted");}
+    function resolvePaintTheme(){
+      var mode=state.theme||"dark";
+      if(mode==="system"){
+        try{return window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}catch(e){return "dark";}
+      }
+      return mode==="light"?"light":"dark";
+    }
 
     // ── Utilities ────────────────────────────────────────────────────────────────
     function norm(v){return String(v||"").toLowerCase().replace(/\s+/g," ").trim();}
@@ -248,7 +255,8 @@ var APP_KEY="jw-talk-arrangements-v1";
 
     // ── renderAll ──────────────────────────────────────────────────────────────────
     function renderAll(){
-      document.documentElement.dataset.theme=resolvePaintTheme();`r`n      document.body.dataset.theme=resolvePaintTheme();
+      document.documentElement.dataset.theme=resolvePaintTheme();
+      document.body.dataset.theme=resolvePaintTheme();
       document.documentElement.lang=state.language;
       document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=tt(el.dataset.i18n);});
       document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el){el.placeholder=tt(el.dataset.i18nPlaceholder);});
