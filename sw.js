@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy so the cache key changes.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v1';
+const CACHE_VERSION = 'talk-arrangements-v2';
 
 /**
  * All URLs that make up the app shell.

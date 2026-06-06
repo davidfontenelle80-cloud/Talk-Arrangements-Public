@@ -435,12 +435,52 @@ var APP_KEY="jw-talk-arrangements-v1";
         reader.readAsText(file);
       });
       document.getElementById("resetBtn").addEventListener("click",function(){showConfirm(tt("deleteConfirm"),function(){state=cloneStarter();state.schedule=state.schedule.map(migrateRow);saveState();renderAll();toast(tt("restored"));});});
+
+      // ── Cloud backup ────────────────────────────────────────────────────
+      (function(){
+        var APP_ID="talk-arrangements";
+        var KEYS=["jw-talk-arrangements-v1"];
+        // Add cloud backup buttons next to export/import in header
+        var importBtn=document.getElementById("importBtn");
+        if(importBtn&&window.KHub&&KHub.Firebase&&KHub.Firebase.db){
+          var cloudSaveBtn=document.createElement("button");
+          cloudSaveBtn.id="cloudSaveBtn";
+          cloudSaveBtn.title="Save to Cloud";
+          cloudSaveBtn.innerHTML='&#9729; <span data-i18n="backup">Cloud Save</span>';
+          cloudSaveBtn.addEventListener("click",function(){
+            cloudSaveBtn.disabled=true;
+            KHub.CloudBackup.save(APP_ID,KEYS)
+              .then(function(){toast("Saved to cloud ☁");})
+              .catch(function(e){toast("Cloud save failed");console.error(e);})
+              .finally(function(){cloudSaveBtn.disabled=false;});
+          });
+          importBtn.parentNode.insertBefore(cloudSaveBtn,importBtn.nextSibling);
+
+          var cloudRestoreBtn=document.createElement("button");
+          cloudRestoreBtn.id="cloudRestoreBtn";
+          cloudRestoreBtn.title="Restore from Cloud";
+          cloudRestoreBtn.innerHTML='&#9729; <span>Cloud Restore</span>';
+          cloudRestoreBtn.addEventListener("click",function(){
+            showConfirm(tt("deleteConfirm"),function(){
+              cloudRestoreBtn.disabled=true;
+              KHub.CloudBackup.restore(APP_ID,KEYS,null,function(){
+                toast("Restored from cloud ☁");setTimeout(function(){location.reload();},800);
+              }).catch(function(e){
+                var msg=e.message==="no-backup"?"No cloud backup found for this device":"Cloud restore failed";
+                toast(msg);cloudRestoreBtn.disabled=false;console.error(e);
+              });
+            });
+          });
+          importBtn.parentNode.insertBefore(cloudRestoreBtn,cloudSaveBtn.nextSibling);
+        }
+      })();
+      // ────────────────────────────────────────────────────────────────────
+
       // Add month
       document.getElementById("addCurrentYear").addEventListener("click",function(){state.schedule.push({id:crypto.randomUUID(),month:currentMonth,congregation:"",status:"not-contacted",followUpDate:"",note:""});saveState();renderDashboard();});
       // Add planning year
       document.getElementById("addPlanningYear").addEventListener("click",function(){
         var next=Math.max.apply(null,state.planning.map(function(y){return+y.year;}).concat([state.currentYear]))+1;
-        state.planning.push({year:next,rows:Array.from({length:12},function(_,i){return{id:crypto.randomUUID(),month:i,congregation:"",contact:"",confirmed:false,note:""};})});
         saveState();renderPlanning();
         toast(next+" "+(state.language==="es"?"anadido \u2713":"added \u2713"));
         setTimeout(function(){var el=document.querySelector('[data-year="'+next+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},80);
@@ -473,12 +513,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       },600);
     }
 
-window.addEventListener('error',function(e){
-  console.error('[TalkArrangements] Uncaught:',e.error||e.message);
-  var eb=document.getElementById('error-boundary');
-  var em=document.getElementById('error-message');
-  if(eb&&em){em.textContent=e.message||'An unexpected error occurred.';eb.hidden=false;}
-});
-window.addEventListener('unhandledrejection',function(e){
-  console.error('[TalkArrangements] Rejection:',e.reason);
-});
+    // Auto-save to cloud silently on close / hide
+    if (window.KHub && KHub.CloudBackup) {
+      KHub.CloudBackup.autoSave('talk-arrangements', ['jw-talk-arrangements-v1']);
+    }
