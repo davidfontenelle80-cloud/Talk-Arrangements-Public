@@ -32,11 +32,9 @@
   }
 
   function apply(theme) {
-    if (theme === 'dark') {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
+    theme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    if (document.body) document.body.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
     updateMetaColor(theme);
 
@@ -84,6 +82,7 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
+    apply(localStorage.getItem(STORAGE_KEY) || getInitialTheme());
     document.getElementById('theme-toggle')?.addEventListener('click', toggle);
   });
 })();
