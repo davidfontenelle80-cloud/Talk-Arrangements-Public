@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v14-cloud-signin-buttons';
+const CACHE_VERSION = 'talk-arrangements-v15-readable-cloud-dialog';
 
 /**
  * All URLs that make up the app shell.
