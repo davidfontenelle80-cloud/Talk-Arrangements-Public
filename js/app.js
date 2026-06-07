@@ -480,10 +480,10 @@ var APP_KEY="jw-talk-arrangements-v1";
           function refreshCloudUi(){
             var user=cloudUser();
             accountBtn.innerHTML=user?'&#9989; <span>'+esc(user.email||'Cloud account')+'</span>':'&#128274; <span>Sign in</span>';
-            cloudSaveBtn.disabled=!user;
-            cloudRestoreBtn.disabled=!user;
-            if(settingsCloudSaveBtn)settingsCloudSaveBtn.disabled=!user;
-            if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.disabled=!user;
+            cloudSaveBtn.disabled=false;
+            cloudRestoreBtn.disabled=false;
+            if(settingsCloudSaveBtn)settingsCloudSaveBtn.disabled=false;
+            if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.disabled=false;
           }
           function openCloudAccount(){
             var user=cloudUser();
