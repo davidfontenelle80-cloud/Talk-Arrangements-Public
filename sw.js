@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v19-google-cloud-auth';
+const CACHE_VERSION = 'talk-arrangements-v20-mobile-google-redirect';
 
 /**
  * All URLs that make up the app shell.
