@@ -1,4 +1,4 @@
-/**
+﻿/**
  * app.js — Talk Arrangements
  * Public talk schedule manager for Spanish-speaking JW congregation.
  */
@@ -91,6 +91,30 @@ var APP_KEY="jw-talk-arrangements-v1";
     }
     function fuClass(d){if(!d)return"";var diff=(new Date(d+"T00:00:00")-today)/86400000;return diff<0?"fu-overdue":diff<=7?"fu-soon":"";}
     function fuCell(d){var c=fuClass(d);return c==="fu-overdue"?"followup-overdue":c==="fu-soon"?"followup-soon":"";}
+    function planningYearAudit(year){
+      var rows=Array.isArray(year.rows)?year.rows:[];
+      var present={},missingMonths=[],blankCongs=[],duplicateMonths=[];
+      rows.forEach(function(row){
+        var m=+row.month;
+        if(!isNaN(m)&&m>=0&&m<12){
+          if(present[m])duplicateMonths.push(m);
+          present[m]=(present[m]||0)+1;
+          if(!String(row.congregation||"").trim())blankCongs.push(m);
+        }
+      });
+      for(var i=0;i<12;i++){if(!present[i])missingMonths.push(i);}
+      return {complete:!missingMonths.length&&!blankCongs.length&&!duplicateMonths.length,missingMonths:missingMonths,blankCongs:blankCongs,duplicateMonths:Array.from(new Set(duplicateMonths))};
+    }
+    function monthList(list){return list.map(function(i){return months()[+i];}).join(", ");}
+    function planningAuditHtml(year){
+      var a=planningYearAudit(year);
+      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"Ano completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregacion.":"All 12 months have congregations.")+'</span></div>';
+      var items=[];
+      if(a.missingMonths.length)items.push((state.language==="es"?"Faltan meses: ":"Missing months: ")+monthList(a.missingMonths));
+      if(a.blankCongs.length)items.push((state.language==="es"?"Falta congregacion: ":"Missing congregation: ")+monthList(a.blankCongs));
+      if(a.duplicateMonths.length)items.push((state.language==="es"?"Mes duplicado: ":"Duplicate month: ")+monthList(a.duplicateMonths));
+      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar ano":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
+    }
 
     // ── Message template ─────────────────────────────────────────────────────────
     function buildTmpl(row,congName){
@@ -217,7 +241,8 @@ var APP_KEY="jw-talk-arrangements-v1";
       host.innerHTML=state.planning.map(function(year){
         var rows=year.rows.map(function(row){
           var mOpts=months().map(function(m,i){return'<option value="'+i+'"'+(+row.month===i?' selected':'')+'>'+m+'</option>';}).join("");
-          return'<tr data-id="'+row.id+'">'+
+          var incomplete=!String(row.congregation||"").trim();
+          return'<tr class="'+(incomplete?'planning-incomplete':'')+'" data-id="'+row.id+'">'+
             '<td><select data-field="month">'+mOpts+'</select></td>'+
             '<td><select data-field="congregation">'+congOpts(row.congregation)+'</select></td>'+
             '<td><input data-field="contact" value="'+esc(row.contact||lookupCoord(row.congregation))+'"></td>'+
@@ -226,7 +251,7 @@ var APP_KEY="jw-talk-arrangements-v1";
           '</tr>';
         }).join("");
         return'<div class="panel planning-year" data-year="'+year.year+'">'+
-          '<div class="panel-title"><strong>'+(state.language==="es"?"Arreglos para":"Arrangements for")+' '+year.year+'</strong><button class="icon-btn danger" data-action="delete-year">&#215;</button></div>'+
+          '<div class="panel-title planning-title"><strong>'+(state.language==="es"?"Arreglos para":"Arrangements for")+' '+year.year+'</strong>'+planningAuditHtml(year)+'<button class="icon-btn danger" data-action="delete-year">&#215;</button></div>'+
           '<div class="table-wrap"><table>'+
             '<thead><tr><th>'+tt("month")+'</th><th>'+tt("conWho")+'</th><th>'+tt("contact")+'</th><th>'+tt("confirmedStatus")+'</th><th>'+tt("note")+'</th></tr></thead>'+
             '<tbody>'+rows+'</tbody></table></div></div>';
@@ -391,6 +416,7 @@ var APP_KEY="jw-talk-arrangements-v1";
         row[field]=e.target.type==="checkbox"?e.target.checked:field==="month"?+e.target.value:e.target.value;
         if(field==="congregation"&&!row.contact)row.contact=lookupCoord(row.congregation);
         saveState();
+        if(field==="month"||field==="congregation")renderPlanning();
       });
       document.getElementById("planningTables").addEventListener("click",function(e){
         var panel=e.target.closest("[data-year]");
@@ -535,6 +561,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       // Add planning year
       document.getElementById("addPlanningYear").addEventListener("click",function(){
         var next=Math.max.apply(null,state.planning.map(function(y){return+y.year;}).concat([state.currentYear]))+1;
+        state.planning.push({year:next,rows:Array.from({length:12},function(_,i){return{id:crypto.randomUUID(),month:i,congregation:"",contact:"",confirmed:false,note:""};})});
         saveState();renderPlanning();
         toast(next+" "+(state.language==="es"?"anadido \u2713":"added \u2713"));
         setTimeout(function(){var el=document.querySelector('[data-year="'+next+'"]');if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},80);
@@ -582,3 +609,5 @@ var APP_KEY="jw-talk-arrangements-v1";
         });
       });
     }
+
+

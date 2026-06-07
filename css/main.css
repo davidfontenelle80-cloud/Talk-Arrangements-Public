@@ -150,6 +150,14 @@
     .kpi b{display:block;font-size:26px;line-height:1;margin-bottom:6px;}
     .kpi span{color:var(--muted);font-size:12px;}
     .planning-year{margin-bottom:16px;}
+    .planning-title{align-items:flex-start;}
+    .year-check{display:grid;gap:3px;min-width:min(360px,100%);max-width:520px;border:1px solid;border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;line-height:1.35;}
+    .year-check strong{font-size:12px;text-transform:uppercase;letter-spacing:.04em;}
+    .year-check span{display:block;}
+    .year-complete{border-color:var(--ok);background:color-mix(in srgb,var(--ok),transparent 86%);color:var(--ok);}
+    .year-incomplete{border-color:var(--warn);background:color-mix(in srgb,var(--warn),transparent 84%);color:var(--warn);}
+    tbody tr.planning-incomplete{background:color-mix(in srgb,var(--warn),transparent 78%);box-shadow:inset 5px 0 0 var(--warn);}
+    tbody tr.planning-incomplete:hover{background:color-mix(in srgb,var(--warn),transparent 70%);}
     .planning-year table{min-width:660px;}
     .list-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
     .search{min-width:min(280px,100%);padding:9px 10px;}
