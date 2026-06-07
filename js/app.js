@@ -448,41 +448,72 @@ var APP_KEY="jw-talk-arrangements-v1";
       (function(){
         var APP_ID="talk-arrangements";
         var KEYS=["jw-talk-arrangements-v1"];
-        // Add cloud backup buttons next to export/import in header
         var importBtn=document.getElementById("importBtn");
-        if(importBtn&&window.KHub&&KHub.Firebase&&KHub.Firebase.db){
+        if(importBtn&&window.KHub&&KHub.Firebase&&KHub.Firebase.db&&KHub.Firebase.auth&&KHub.CloudAuth){
+          var accountBtn=document.createElement("button");
+          accountBtn.id="cloudAccountBtn";
+          accountBtn.title="Cloud Account";
+          accountBtn.innerHTML='&#128274; <span>Cloud Account</span>';
+          importBtn.parentNode.insertBefore(accountBtn,importBtn.nextSibling);
+
           var cloudSaveBtn=document.createElement("button");
           cloudSaveBtn.id="cloudSaveBtn";
           cloudSaveBtn.title="Save to Cloud";
-          cloudSaveBtn.innerHTML='&#9729; <span data-i18n="backup">Cloud Save</span>';
-          cloudSaveBtn.addEventListener("click",function(){
-            cloudSaveBtn.disabled=true;
-            KHub.CloudBackup.save(APP_ID,KEYS)
-              .then(function(){toast("Saved to cloud ☁");})
-              .catch(function(e){toast("Cloud save failed");console.error(e);})
-              .finally(function(){cloudSaveBtn.disabled=false;});
-          });
-          importBtn.parentNode.insertBefore(cloudSaveBtn,importBtn.nextSibling);
+          cloudSaveBtn.innerHTML='&#9729; <span>Cloud Save</span>';
+          importBtn.parentNode.insertBefore(cloudSaveBtn,accountBtn.nextSibling);
 
           var cloudRestoreBtn=document.createElement("button");
           cloudRestoreBtn.id="cloudRestoreBtn";
           cloudRestoreBtn.title="Restore from Cloud";
           cloudRestoreBtn.innerHTML='&#9729; <span>Cloud Restore</span>';
+          importBtn.parentNode.insertBefore(cloudRestoreBtn,cloudSaveBtn.nextSibling);
+
+          function cloudUser(){return KHub.CloudAuth.currentUser();}
+          function signedIn(){return !!cloudUser();}
+          function cloudErr(e){if(e&&e.code==="auth-required")return "Sign in to your cloud account first";return e&&e.message==="no-backup"?"No cloud backup found":"Cloud backup failed";}
+          function refreshCloudUi(){
+            var user=cloudUser();
+            accountBtn.innerHTML=user?'&#9989; <span>'+esc(user.email||'Cloud account')+'</span>':'&#128274; <span>Sign in</span>';
+            cloudSaveBtn.disabled=!user;
+            cloudRestoreBtn.disabled=!user;
+          }
+          function openCloudAccount(){
+            var user=cloudUser();
+            if(user){
+              showConfirm("Sign out of cloud backup?",function(){KHub.CloudAuth.signOut().then(function(){toast("Signed out");refreshCloudUi();});});
+              return;
+            }
+            KHub.CloudAuth.openDialog().then(function(result){
+              if(result==="reset-sent")toast("Password reset email sent");
+              else if(result)toast("Signed in");
+              refreshCloudUi();
+            }).catch(function(){});
+          }
+          accountBtn.addEventListener("click",openCloudAccount);
+          cloudSaveBtn.addEventListener("click",function(){
+            if(!signedIn()){openCloudAccount();return;}
+            cloudSaveBtn.disabled=true;
+            KHub.CloudBackup.save(APP_ID,KEYS)
+              .then(function(){toast("Saved to cloud");})
+              .catch(function(e){toast(cloudErr(e));console.error(e);})
+              .finally(function(){cloudSaveBtn.disabled=!signedIn();});
+          });
           cloudRestoreBtn.addEventListener("click",function(){
-            showConfirm(tt("deleteConfirm"),function(){
+            if(!signedIn()){openCloudAccount();return;}
+            showConfirm("Replace your current data with your signed-in cloud backup?",function(){
               cloudRestoreBtn.disabled=true;
               KHub.CloudBackup.restore(APP_ID,KEYS,null,function(){
-                toast("Restored from cloud ☁");setTimeout(function(){location.reload();},800);
+                toast("Restored from cloud");setTimeout(function(){location.reload();},800);
               }).catch(function(e){
-                var msg=e.message==="no-backup"?"No cloud backup found":"Cloud restore failed";
-                toast(msg);cloudRestoreBtn.disabled=false;console.error(e);
+                toast(cloudErr(e));cloudRestoreBtn.disabled=!signedIn();console.error(e);
               });
             });
           });
-          importBtn.parentNode.insertBefore(cloudRestoreBtn,cloudSaveBtn.nextSibling);
+          refreshCloudUi();
+          KHub.CloudAuth.onChange(refreshCloudUi);
         }
-      })();
-      // ────────────────────────────────────────────────────────────────────
+      })();      // ──────────────────────────────────────────────────────────────
+
 
       // Add month
       document.getElementById("addCurrentYear").addEventListener("click",function(){state.schedule.push({id:crypto.randomUUID(),month:currentMonth,congregation:"",status:"not-contacted",followUpDate:"",note:""});saveState();renderDashboard();});
@@ -521,11 +552,18 @@ var APP_KEY="jw-talk-arrangements-v1";
       },600);
     }
 
-    // Restore the newest cloud state first, then keep saving on close / hide.
-    if (window.KHub && KHub.CloudBackup) {
-      KHub.CloudBackup.restoreLatestIfNewer('talk-arrangements', ['jw-talk-arrangements-v1'], null, function(){
-        location.reload();
-      }).finally(function(){
-        KHub.CloudBackup.autoSave('talk-arrangements', ['jw-talk-arrangements-v1']);
+    // Auto-restore only after Firebase Auth identifies the signed-in user.
+    if (window.KHub && KHub.CloudAuth && KHub.CloudBackup) {
+      var talkAutoSaveStarted=false;
+      KHub.CloudAuth.onChange(function(user){
+        if(!user)return;
+        KHub.CloudBackup.restoreLatestIfNewer("talk-arrangements", ["jw-talk-arrangements-v1"], null, function(){
+          location.reload();
+        }).finally(function(){
+          if(!talkAutoSaveStarted){
+            talkAutoSaveStarted=true;
+            KHub.CloudBackup.autoSave("talk-arrangements", ["jw-talk-arrangements-v1"]);
+          }
+        });
       });
     }
