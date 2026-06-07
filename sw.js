@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v10-cloud-device-save-theme-fix';
+const CACHE_VERSION = 'talk-arrangements-v11-auth-cloud-profiles';
 
 /**
  * All URLs that make up the app shell.
