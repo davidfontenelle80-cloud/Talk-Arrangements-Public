@@ -185,6 +185,15 @@
       <label><span data-i18n="profileName">Your name</span><input id="profileNameInput" type="text" autocomplete="off"></label>
       <label><span data-i18n="profileCong">Your congregation</span><input id="profileCongInput" type="text" autocomplete="off"></label>
       <label><span data-i18n="profilePhone">Your phone (optional)</span><input id="profilePhoneInput" type="tel" autocomplete="off"></label>
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-title"><strong>Backup & restore</strong></div>
+        <div class="modal-actions" style="justify-content:stretch;flex-wrap:wrap">
+          <button id="settingsExportBtn" type="button">&#8681; Export JSON</button>
+          <button id="settingsImportBtn" type="button">&#8679; Import file</button>
+          <button id="settingsCloudSaveBtn" type="button">&#9729; Cloud Save</button>
+          <button id="settingsCloudRestoreBtn" type="button">&#9729; Cloud Restore</button>
+        </div>
+      </div>
       <div class="privacy-note">&#128274; <span data-i18n="privacyNote">Your data stays on this device only. Nothing is sent to any server.</span></div>
       <div class="modal-actions">
         <button class="primary" id="saveSettingsBtn" data-i18n="save">Save</button>
