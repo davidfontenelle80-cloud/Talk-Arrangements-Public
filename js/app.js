@@ -424,6 +424,10 @@ var APP_KEY="jw-talk-arrangements-v1";
       // Export / Import / Reset
       document.getElementById("exportBtn").addEventListener("click",downloadBackup);
       document.getElementById("importBtn").addEventListener("click",function(){document.getElementById("importFile").click();});
+      var settingsExportBtn=document.getElementById("settingsExportBtn");
+      var settingsImportBtn=document.getElementById("settingsImportBtn");
+      if(settingsExportBtn)settingsExportBtn.addEventListener("click",downloadBackup);
+      if(settingsImportBtn)settingsImportBtn.addEventListener("click",function(){document.getElementById("importFile").click();});
       document.getElementById("importFile").addEventListener("change",function(e){
         var file=e.target.files[0];if(!file)return;
         var reader=new FileReader();
@@ -449,6 +453,8 @@ var APP_KEY="jw-talk-arrangements-v1";
         var APP_ID="talk-arrangements";
         var KEYS=["jw-talk-arrangements-v1"];
         var importBtn=document.getElementById("importBtn");
+        var settingsCloudSaveBtn=document.getElementById("settingsCloudSaveBtn");
+        var settingsCloudRestoreBtn=document.getElementById("settingsCloudRestoreBtn");
         if(importBtn&&window.KHub&&KHub.Firebase&&KHub.Firebase.db&&KHub.Firebase.auth&&KHub.CloudAuth){
           var accountBtn=document.createElement("button");
           accountBtn.id="cloudAccountBtn";
@@ -476,6 +482,8 @@ var APP_KEY="jw-talk-arrangements-v1";
             accountBtn.innerHTML=user?'&#9989; <span>'+esc(user.email||'Cloud account')+'</span>':'&#128274; <span>Sign in</span>';
             cloudSaveBtn.disabled=!user;
             cloudRestoreBtn.disabled=!user;
+            if(settingsCloudSaveBtn)settingsCloudSaveBtn.disabled=!user;
+            if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.disabled=!user;
           }
           function openCloudAccount(){
             var user=cloudUser();
@@ -490,27 +498,34 @@ var APP_KEY="jw-talk-arrangements-v1";
             }).catch(function(){});
           }
           accountBtn.addEventListener("click",openCloudAccount);
-          cloudSaveBtn.addEventListener("click",function(){
+          function runCloudSave(btn){
             if(!signedIn()){openCloudAccount();return;}
-            cloudSaveBtn.disabled=true;
+            if(btn)btn.disabled=true;
             KHub.CloudBackup.save(APP_ID,KEYS)
               .then(function(){toast("Saved to cloud");})
               .catch(function(e){toast(cloudErr(e));console.error(e);})
-              .finally(function(){cloudSaveBtn.disabled=!signedIn();});
-          });
-          cloudRestoreBtn.addEventListener("click",function(){
+              .finally(function(){refreshCloudUi();});
+          }
+          function runCloudRestore(btn){
             if(!signedIn()){openCloudAccount();return;}
             showConfirm("Replace your current data with your signed-in cloud backup?",function(){
-              cloudRestoreBtn.disabled=true;
+              if(btn)btn.disabled=true;
               KHub.CloudBackup.restore(APP_ID,KEYS,null,function(){
                 toast("Restored from cloud");setTimeout(function(){location.reload();},800);
               }).catch(function(e){
-                toast(cloudErr(e));cloudRestoreBtn.disabled=!signedIn();console.error(e);
+                toast(cloudErr(e));refreshCloudUi();console.error(e);
               });
             });
-          });
+          }
+          cloudSaveBtn.addEventListener("click",function(){runCloudSave(cloudSaveBtn);});
+          cloudRestoreBtn.addEventListener("click",function(){runCloudRestore(cloudRestoreBtn);});
+          if(settingsCloudSaveBtn)settingsCloudSaveBtn.addEventListener("click",function(){runCloudSave(settingsCloudSaveBtn);});
+          if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.addEventListener("click",function(){runCloudRestore(settingsCloudRestoreBtn);});
           refreshCloudUi();
           KHub.CloudAuth.onChange(refreshCloudUi);
+        }else{
+          if(settingsCloudSaveBtn)settingsCloudSaveBtn.disabled=true;
+          if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.disabled=true;
         }
       })();      // ──────────────────────────────────────────────────────────────
 
