@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v21-ministry-cloud-helper';
+const CACHE_VERSION = 'talk-arrangements-v22-email-auth-autosync';
 
 /**
  * All URLs that make up the app shell.

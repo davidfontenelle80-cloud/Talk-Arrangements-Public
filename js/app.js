@@ -1,4 +1,4 @@
-﻿/**
+/**
  * app.js — Talk Arrangements
  * Public talk schedule manager for Spanish-speaking JW congregation.
  */
@@ -13,7 +13,7 @@ var APP_KEY="jw-talk-arrangements-v1";
 
     var T={
       en:{appTitle:"Talk Arrangements",subtitle:"Congregation public talk arrangements",dashboard:"Dashboard",planning:"Planning",congregations:"Congregations",backup:"Backup",import:"Import",reset:"Reset",dashHint:"Current year at a glance — current month highlighted.",addMonth:"Add Month",yearSchedule:"Year schedule",month:"Month",congregation:"Congregation",statusCol:"Status",fixedCol:"Fixed",notContacted:"Not contacted",messageSentStatus:"Message sent",confirmedStatus:"Confirmed",needsFollowUp:"Needs follow-up",followUpDate:"Follow up by",note:"Note",actions:"Actions",speakerContact:"Speaker contact",planningTitle:"Planning for the next 3 years",planningHint:"Use this for future arrangements and fixed recurring notes.",addYear:"Add Year",congTitle:"Congregation list",congHint:"Edit contact information here; dashboard lookups update immediately.",search:"Search congregations or contacts",addCong:"Add",coordinator:"Coordinator",phone:"Phone",email:"Email",currentMonth:"Current month",copied:"Copied",noContact:"Select a congregation row (◎) to see contact options.",call:"Call",text:"Text",mail:"Email",copy:"Copy",total:"Total",sent:"Sent",confirmedCount:"Confirmed",conWho:"With whom",contact:"Contact",deleteConfirm:"Are you sure you want to delete this?",restored:"Starter data restored.",imported:"Backup imported.",saved:"Saved.",exported:"Backup downloaded.",invalidBackup:"This backup file could not be read.",print:"Print",createNextYear:"Next Year",confirmCreateYear:"Archive {year} and create template for {next}?",yearCreated:"{year} schedule created + {prev} archived",templates:"Message template",openSms:"Send SMS",openEmail:"Send Email",copyMsg:"Copy message",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Print list",shareContact:"Share contact",privateData:"Contacts loaded",publicData:"Public version — no contacts",conflictWarnings:"{n} issue(s)",duplicateCong:"{c} scheduled twice within 6 months ({m1} & {m2})",missingFixed:"Fixed congregation not scheduled: {c}",dupMonth:"Month {m} appears more than once",nothingToCopy:"Nothing to copy",settingsTitle:"Settings & Profile",profileName:"Your name",profileCong:"Your congregation",profilePhone:"Your phone (for messages)",privacyNote:"Your data is saved on this device and can sync through cloud backup when enabled.",save:"Save",cancel:"Cancel",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",yearChangePrompt:"It is now {year}. Roll over the schedule?",archiveNote:"Previous schedule archived to Planning.",emailSubject:"Congregation list",listCopied:"List copied — paste into your email"},
-      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos publicos de la congregacion",dashboard:"Tablero",planning:"Planificacion",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El ano actual con el mes presente resaltado.",addMonth:"Anadir mes",yearSchedule:"Programa del ano",month:"Mes",congregation:"Congregacion",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"Planificacion de los proximos 3 anos",planningHint:"Use esta seccion para arreglos futuros y notas fijas.",addYear:"Anadir ano",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aqui; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"Anadir",coordinator:"Coordinador",phone:"Telefono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (◎) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"¿Desea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"Proximo Ano",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Version publica — sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"Congregacion fija sin programar: {c}",dupMonth:"El mes {m} aparece mas de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuracion y Perfil",profileName:"Tu nombre",profileCong:"Tu congregacion",profilePhone:"Tu telefono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando esta activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dias",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. Cambiar el programa al nuevo ano?",archiveNote:"Programa anterior archivado en Planificacion.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada — pégala en tu correo"}
+      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos publicos de la congregacion",dashboard:"Tablero",planning:"Planificacion",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El año actual con el mes presente resaltado.",addMonth:"Anadir mes",yearSchedule:"Programa del año",month:"Mes",congregation:"Congregacion",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"Planificación de los próximos 3 años",planningHint:"Use esta seccion para arreglos futuros y notas fijas.",addYear:"Anadir ano",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aqui; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"Anadir",coordinator:"Coordinador",phone:"Telefono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (◎) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"¿Desea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"Próximo Año",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Version publica — sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"Congregacion fija sin programar: {c}",dupMonth:"El mes {m} aparece mas de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuracion y Perfil",profileName:"Tu nombre",profileCong:"Tu congregacion",profilePhone:"Tu telefono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando esta activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dias",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. ¿Cambiar el programa al nuevo año?",archiveNote:"Programa anterior archivado en Planificacion.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada — pégala en tu correo"}
     };
 
     var starter={
@@ -108,12 +108,12 @@ var APP_KEY="jw-talk-arrangements-v1";
     function monthList(list){return list.map(function(i){return months()[+i];}).join(", ");}
     function planningAuditHtml(year){
       var a=planningYearAudit(year);
-      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"Ano completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregacion.":"All 12 months have congregations.")+'</span></div>';
+      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"Año completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregacion.":"All 12 months have congregations.")+'</span></div>';
       var items=[];
       if(a.missingMonths.length)items.push((state.language==="es"?"Faltan meses: ":"Missing months: ")+monthList(a.missingMonths));
       if(a.blankCongs.length)items.push((state.language==="es"?"Falta congregacion: ":"Missing congregation: ")+monthList(a.blankCongs));
       if(a.duplicateMonths.length)items.push((state.language==="es"?"Mes duplicado: ":"Duplicate month: ")+monthList(a.duplicateMonths));
-      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar ano":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
+      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar año":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
     }
 
     // ── Message template ─────────────────────────────────────────────────────────
@@ -594,17 +594,55 @@ var APP_KEY="jw-talk-arrangements-v1";
       },600);
     }
 
-    // Auto-restore only after Firebase Auth identifies the signed-in user.
+    // Cloud sync: once signed in, pull newer cloud data on open/resume and push local changes shortly after edits.
     if (window.KHub && KHub.CloudAuth && KHub.CloudBackup) {
-      var talkAutoSaveStarted=false;
+      var TALK_CLOUD_APP = "talk-arrangements";
+      var TALK_CLOUD_KEYS = ["jw-talk-arrangements-v1"];
+      var talkAutoSaveStarted = false;
+      var talkCloudSaveTimer = null;
+      var talkCloudChecking = false;
+      var talkCloudSaving = false;
+
+      function talkCloudUser(){ return KHub.CloudAuth.currentUser(); }
+      function checkTalkCloudLatest(){
+        if(!talkCloudUser() || talkCloudChecking) return Promise.resolve();
+        talkCloudChecking = true;
+        return KHub.CloudBackup.restoreLatestIfNewer(TALK_CLOUD_APP, TALK_CLOUD_KEYS, null, function(){
+          location.reload();
+        }).catch(function(e){
+          console.warn("[TalkCloud] restore check failed", e);
+        }).finally(function(){ talkCloudChecking = false; });
+      }
+      function saveTalkCloudSoon(){
+        if(!talkCloudUser()) return;
+        clearTimeout(talkCloudSaveTimer);
+        talkCloudSaveTimer = setTimeout(function(){
+          if(talkCloudSaving || !talkCloudUser()) return;
+          talkCloudSaving = true;
+          KHub.CloudBackup.save(TALK_CLOUD_APP, TALK_CLOUD_KEYS)
+            .catch(function(e){ console.warn("[TalkCloud] auto save failed", e); })
+            .finally(function(){ talkCloudSaving = false; });
+        }, 1800);
+      }
+
       KHub.CloudAuth.onChange(function(user){
         if(!user)return;
-        KHub.CloudBackup.restoreLatestIfNewer("talk-arrangements", ["jw-talk-arrangements-v1"], null, function(){
-          location.reload();
-        }).finally(function(){
+        checkTalkCloudLatest().finally(function(){
           if(!talkAutoSaveStarted){
             talkAutoSaveStarted=true;
-            KHub.CloudBackup.autoSave("talk-arrangements", ["jw-talk-arrangements-v1"]);
+            KHub.CloudBackup.autoSave(TALK_CLOUD_APP, TALK_CLOUD_KEYS);
+            document.addEventListener("visibilitychange", function(){
+              if(document.visibilityState === "visible") checkTalkCloudLatest();
+              else saveTalkCloudSoon();
+            });
+            window.addEventListener("focus", checkTalkCloudLatest);
+            window.addEventListener("online", checkTalkCloudLatest);
+            window.addEventListener("storage", function(e){ if(e && e.key === APP_KEY) saveTalkCloudSoon(); });
+            document.addEventListener("input", saveTalkCloudSoon, true);
+            document.addEventListener("change", saveTalkCloudSoon, true);
+            document.addEventListener("click", function(e){
+              if(e && e.target && e.target.closest("button,[data-action],input,select,textarea")) saveTalkCloudSoon();
+            }, true);
           }
         });
       });
