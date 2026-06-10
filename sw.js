@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v24-specific-error-labels';
+const CACHE_VERSION = 'talk-arrangements-v25-house-finish-tokens';
 
 /**
  * All URLs that make up the app shell.

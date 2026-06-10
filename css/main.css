@@ -45,6 +45,8 @@
   --ok:        #78d7a0;
   --shadow:    0 16px 38px rgba(0,0,0,.25);
   --radius:    var(--radius-sm);
+  --border:    var(--line);
+  --card:      var(--panel);
   font-family: var(--font-base);
   color-scheme: dark;
 }
