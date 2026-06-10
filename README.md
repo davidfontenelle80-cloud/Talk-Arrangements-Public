@@ -1,5 +1,6 @@
 # Talk Arrangements
 
+
 Public-facing talk arrangement manager for a Spanish-speaking JW congregation. Tracks scheduled public talks (speaker, topic, date, congregation), status workflow (Not Contacted → Message Sent → Confirmed), and scheduling conflicts. EN/ES bilingual. Public demo — no contact details stored.
 
 ## Deploy
