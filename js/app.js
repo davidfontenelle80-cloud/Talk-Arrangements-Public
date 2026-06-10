@@ -280,8 +280,13 @@ var APP_KEY="jw-talk-arrangements-v1";
 
     // ── renderAll ──────────────────────────────────────────────────────────────────
     function renderAll(){
-      document.documentElement.dataset.theme=resolvePaintTheme();
-      document.body.dataset.theme=resolvePaintTheme();
+      var paintTheme=resolvePaintTheme();
+      document.documentElement.dataset.theme=paintTheme;
+      document.body.dataset.theme=paintTheme;
+      // Keep KHub theme.js storage in sync so it cannot override the app's choice on next load
+      try{localStorage.setItem("khub_theme",paintTheme);localStorage.setItem("khub_theme_override","true");}catch(e){}
+      var themeMeta=document.querySelector('meta[name="theme-color"]');
+      if(themeMeta)themeMeta.content=paintTheme==="light"?"#eef1f5":"#0b0d12";
       document.documentElement.lang=state.language;
       document.querySelectorAll("[data-i18n]").forEach(function(el){el.textContent=tt(el.dataset.i18n);});
       document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el){el.placeholder=tt(el.dataset.i18nPlaceholder);});
