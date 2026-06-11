@@ -152,6 +152,20 @@ var APP_KEY="jw-talk-arrangements-v1";
             w.push(tf("duplicateCong",{c:sched[i].congregation,m1:months()[sched[i].month],m2:months()[sched[j].month]}));
         }
       }
+      // Duplicate congregation across the year boundary (adjacent Planning years)
+      function crossYearDups(py,offset){
+        if(!py||!Array.isArray(py.rows))return;
+        sched.forEach(function(r){
+          if(!r.congregation)return;
+          py.rows.forEach(function(p){
+            if(!p.congregation||norm(p.congregation)!==norm(r.congregation))return;
+            if(Math.abs((+p.month+offset)-(+r.month))<=6)
+              w.push(tf("duplicateCong",{c:r.congregation,m1:months()[r.month]+" "+state.currentYear,m2:months()[p.month]+" "+py.year}));
+          });
+        });
+      }
+      crossYearDups(state.planning.find(function(y){return+y.year===state.currentYear+1;}),12);
+      crossYearDups(state.planning.find(function(y){return+y.year===state.currentYear-1;}),-12);
       // Duplicate months
       var mCounts={};
       sched.forEach(function(r){var m=+r.month;mCounts[m]=(mCounts[m]||0)+1;});
@@ -277,6 +291,21 @@ var APP_KEY="jw-talk-arrangements-v1";
 
     // ── Toast ──────────────────────────────────────────────────────────────────────
     function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(function(){el.classList.remove("show");},2600);}
+    function safeCopy(txt){
+      function ok(){toast(tt("copied")+(txt?": "+String(txt).slice(0,60):""));}
+      function fail(){toast(state.language==="es"?"No se pudo copiar":"Copy failed");}
+      function legacy(){
+        try{
+          var ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+          document.body.appendChild(ta);ta.select();
+          var done=document.execCommand("copy");
+          document.body.removeChild(ta);
+          if(done)ok();else fail();
+        }catch(e){fail();}
+      }
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(legacy);}
+      else legacy();
+    }
 
     // ── renderAll ──────────────────────────────────────────────────────────────────
     function renderAll(){
@@ -301,25 +330,43 @@ var APP_KEY="jw-talk-arrangements-v1";
     }
 
     // ── Rollover ──────────────────────────────────────────────────────────────────
-    function rolloverYear(){
-      var next=state.currentYear+1;
+    // Advances the schedule exactly one year. Archives the outgoing year to Planning,
+    // copies the matching Planning year fully into the dashboard (congregation, note,
+    // confirmed -> status), fills blank months from fixed congregations, falls back
+    // to fixed-only when no Planning year exists. Consumed Planning year is removed.
+    function performRollover(){
       var prev=state.currentYear;
-      showConfirm(tf("confirmCreateYear",{year:prev,next:next}),function(){
-      // Archive current schedule to planning
+      var next=prev+1;
       if(!state.planning.some(function(y){return+y.year===+prev;})){
         state.planning.unshift({year:prev,rows:state.schedule.slice().sort(function(a,b){return+a.month-+b.month;}).map(function(row){return{id:crypto.randomUUID(),month:row.month,congregation:row.congregation,contact:lookupCoord(row.congregation),confirmed:row.status==="confirmed",note:row.note};})});
       }
-      // Build new schedule from isFixed congregations
       var fm={};
       state.schedule.forEach(function(row){
         var fc2=findCong(row.congregation);
         if(fc2&&fc2.isFixed)fm[+row.month]=row.congregation;
       });
-      state.schedule=Array.from({length:12},function(_,i){return{id:crypto.randomUUID(),month:i,congregation:fm[i]||"",status:"not-contacted",followUpDate:"",note:fm[i]?(state.language==="es"?"Arreglo fijo":"Fixed arrangement"):""};});
+      var plan=state.planning.find(function(y){return+y.year===+next&&Array.isArray(y.rows)&&y.rows.length>0;});
+      var pm={};
+      if(plan)plan.rows.forEach(function(r){var m=+r.month;if(!isNaN(m)&&m>=0&&m<12&&!pm[m])pm[m]=r;});
+      state.schedule=Array.from({length:12},function(_,i){
+        var pr=pm[i];
+        if(pr&&String(pr.congregation||"").trim()){
+          return{id:crypto.randomUUID(),month:i,congregation:pr.congregation,status:pr.confirmed?"confirmed":"not-contacted",followUpDate:"",note:pr.note||""};
+        }
+        return{id:crypto.randomUUID(),month:i,congregation:fm[i]||"",status:"not-contacted",followUpDate:"",note:fm[i]?(state.language==="es"?"Arreglo fijo":"Fixed arrangement"):""};
+      });
+      if(plan)state.planning=state.planning.filter(function(y){return+y.year!==+next;});
       state.currentYear=next;state.selectedMonth=currentMonth;
       bannerDismissed=false;
-      saveState();renderAll();
-      toast(tf("yearCreated",{year:next,prev:prev})+" \u2713");
+      return{prev:prev,next:next};
+    }
+    function rolloverYear(){
+      var next=state.currentYear+1;
+      var prev=state.currentYear;
+      showConfirm(tf("confirmCreateYear",{year:prev,next:next}),function(){
+        performRollover();
+        saveState();renderAll();
+        toast(tf("yearCreated",{year:next,prev:prev})+" ✓");
       });
     }
 
@@ -444,11 +491,11 @@ var APP_KEY="jw-talk-arrangements-v1";
       document.body.addEventListener("click",function(e){
         if(e.target.dataset.href){location.href=e.target.dataset.href;return;}
         if(e.target.dataset.waHref){window.open(e.target.dataset.waHref,"_blank");return;}
-        if(e.target.dataset.shareInfo){if(navigator.share){navigator.share({title:e.target.closest("[class*=contact]")?e.target.closest("[class*=contact]")&&document.getElementById("selectedMonthLabel").textContent:"Contact",text:e.target.dataset.shareInfo}).catch(function(){});}else{navigator.clipboard&&navigator.clipboard.writeText(e.target.dataset.shareInfo).then(function(){toast(tt("copied"));});}return;}
+        if(e.target.dataset.shareInfo){if(navigator.share){navigator.share({title:e.target.closest("[class*=contact]")?e.target.closest("[class*=contact]")&&document.getElementById("selectedMonthLabel").textContent:"Contact",text:e.target.dataset.shareInfo}).catch(function(){});}else{safeCopy(e.target.dataset.shareInfo);}return;}
         var txt=e.target.dataset.copy;
         if(txt===undefined)return;
         if(txt===""){toast(tt("nothingToCopy"));return;}
-        navigator.clipboard.writeText(txt).then(function(){toast(tt("copied")+": "+txt.slice(0,60));});
+        safeCopy(txt);
       });
       // Search
       document.getElementById("searchBox").addEventListener("input",renderCongregations);
@@ -594,9 +641,11 @@ var APP_KEY="jw-talk-arrangements-v1";
 
     // ── Auto-detect new year on load ───────────────────────────────────────────────
     if(thisYear>state.currentYear){
-      setTimeout(function(){
-        showConfirm(tf("yearChangePrompt",{year:thisYear}),function(){rolloverYear();});
-      },600);
+      var _rolledFrom=state.currentYear;
+      var _guard=0;
+      while(state.currentYear<thisYear&&_guard<50){performRollover();_guard++;}
+      saveState();renderAll();
+      setTimeout(function(){toast(tf("yearCreated",{year:state.currentYear,prev:_rolledFrom})+" ✓ "+tt("archiveNote"));},600);
     }
 
     // Cloud sync: once signed in, pull newer cloud data on open/resume and push local changes shortly after edits.
@@ -652,5 +701,3 @@ var APP_KEY="jw-talk-arrangements-v1";
         });
       });
     }
-
-

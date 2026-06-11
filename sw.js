@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v27-app-icons';
+const CACHE_VERSION = 'talk-arrangements-v28-rollover';
 
 /**
  * All URLs that make up the app shell.
