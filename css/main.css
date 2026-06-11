@@ -220,3 +220,11 @@ button,.link-btn{transition:background var(--transition),border-color var(--tran
   font-family:var(--font-mono);
   font-variant-numeric:tabular-nums;
 }
+
+/* ── iOS input zoom fix (KHub house rule): inputs under 16px make
+   Safari zoom on focus and stay zoomed. 16px under 680px. ── */
+@media(max-width:680px){
+  input,select,textarea,
+  td input,td select,td textarea,
+  .modal label input{font-size:16px;}
+}
