@@ -19,6 +19,7 @@ var APP_KEY="jw-talk-arrangements-v1";
     var starter={
       version:1,language:"es",theme:"dark",selectedMonth:currentMonth,currentYear:thisYear,
       profile:{name:"",congregation:"",phone:""},
+      contactPickerYear:null,contactPickerMonth:null,contactPickerIdx:0,treatmentMap:{},
       schedule:[[0,"Cedar Spanish Branford",""],[1,"West Danbury Spanish",""],[2,"Woodin Hill Spanish - Hamden CT",""],[3,"South Springfield Spanish","Arreglo fijo"],[4,"Lakewood Spanish Waterbury",""],[5,"Torringford Spanish","Arreglo fijo"],[6,"Shelton",""],[7,"New London Spanish","Arreglo fijo"],[8,"South Spanish New Britain",""],[9,"Meriden Spanish","Arreglo fijo, hasta 2029"],[10,"Bristol Spanish",""],[11,"Bridgeport West Spanish",""]].map(function(r){return{id:crypto.randomUUID(),month:r[0],congregation:r[1],status:"not-contacted",followUpDate:"",note:r[2]};}),
       planning:[
         {year:2027,rows:[[0,"Highland Spanish Waterbury",""],[1,"Parker Spanish - Massachusetts",""],[2,"Shelton",""],[3,"South Springfield Spanish","Arreglo fijo"],[4,"East Danbury Spanish",""],[5,"Torringford Spanish","Arreglo fijo"],[6,"Cedar Spanish Branford",""],[7,"New London Spanish","Arreglo fijo"],[8,"North Spanish New Britain","Arreglo fijo"],[9,"Meriden Spanish","Arreglo fijo, hasta 2029"],[10,"Lakewood Spanish Waterbury",""],[11,"Bristol Spanish",""]]},
@@ -38,6 +39,82 @@ var APP_KEY="jw-talk-arrangements-v1";
       return row;
     }
     function migrateCong(c){if(c.isFixed===undefined)c.isFixed=false;return c;}
+    // ── Contact picker helpers ─────────────────────────────────────────────────
+    function getAvailableYears(planningData){
+      var years=[];
+      (planningData||[]).forEach(function(y){if(y.rows&&y.rows.some(function(r){return String(r.congregation||"").trim();}))years.push(+y.year);});
+      years.sort(function(a,b){return a-b;});
+      return years;
+    }
+    function getAvailableMonthsForYear(planningData,year){
+      var py=(planningData||[]).find(function(y){return+y.year===+year;});
+      if(!py||!py.rows)return [];
+      var ms=[];
+      py.rows.forEach(function(r){if(String(r.congregation||"").trim()&&ms.indexOf(+r.month)===-1)ms.push(+r.month);});
+      ms.sort(function(a,b){return a-b;});
+      return ms;
+    }
+    function getArrangementsForMonth(planningData,year,month){
+      var py=(planningData||[]).find(function(y){return+y.year===+year;});
+      if(!py||!py.rows)return [];
+      return py.rows.filter(function(r){return+r.month===+month&&String(r.congregation||"").trim();});
+    }
+    function getLastName(fullName){
+      var parts=String(fullName||"").trim().split(/\s+/);
+      return parts.length>1?parts[parts.length-1]:"";
+    }
+    function buildGreeting(treatment,fullName){
+      // treatment: "hermano" | "hermana" | "hermanos" | "neutral"
+      var t=treatment||"hermano";
+      if(t==="hermanos")return "Saludos hermanos";
+      if(t==="neutral")return "Saludos";
+      var ln=getLastName(fullName);
+      if(t==="hermana")return ln?"Saludos hermana "+ln:"Saludos hermana";
+      // default hermano
+      return ln?"Saludos hermano "+ln:"Saludos hermano";
+    }
+    function getTreatmentForRow(rowId){
+      return (state.treatmentMap&&state.treatmentMap[rowId])||"hermano";
+    }
+    function buildContactMessage(row,congName){
+      var p=state.profile||{};
+      var ms=months();
+      var m=ms[+row.month]||"";
+      var cname=congName||row.congregation||"";
+      if(state.language==="es"){
+        var treatment=getTreatmentForRow(row.id);
+        var contactName=row.contact||"";
+        var greeting=buildGreeting(treatment,contactName);
+        var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregacion "+p.congregation:"")+".":" ";
+        return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
+      }
+      var from2=p.name?"I am "+p.name+(p.congregation?" from the "+p.congregation+" Congregation":"")+".":"";
+      return "Hello, "+from2+" I am reaching out to confirm the public talk arrangement for "+m+" with the "+cname+" congregation. Please confirm your availability. Thank you."+(p.name?"\n\n"+p.name:"");
+    }
+    // Resolve which planning row to show in the contact picker
+    function resolveContactPickerRow(){
+      var year=state.contactPickerYear;
+      var month=state.contactPickerMonth;
+      // Determine year
+      if(year===null||year===undefined){
+        var now=new Date();
+        var ny=now.getFullYear(),nm=now.getMonth();
+        var years=getAvailableYears(state.planning);
+        if(years.indexOf(ny)!==-1&&getAvailableMonthsForYear(state.planning,ny).indexOf(nm)!==-1){year=ny;month=nm;}
+        else if(years.length){year=years[0];month=null;}
+        else return null;
+      }
+      // Determine month
+      var availMonths=getAvailableMonthsForYear(state.planning,year);
+      if(month===null||month===undefined||availMonths.indexOf(+month)===-1){
+        if(!availMonths.length)return null;
+        month=availMonths[0];
+      }
+      var arrangements=getArrangementsForMonth(state.planning,year,month);
+      if(!arrangements.length)return null;
+      var idx=Math.min(+(state.contactPickerIdx||0),arrangements.length-1);
+      return {year:+year,month:+month,idx:idx,arrangement:arrangements[idx],arrangements:arrangements,availMonths:availMonths,availYears:getAvailableYears(state.planning)};
+    }
 
     function cloneStarter(){return JSON.parse(JSON.stringify(starter));}
     function loadState(){
@@ -50,6 +127,10 @@ var APP_KEY="jw-talk-arrangements-v1";
         merged.schedule=merged.schedule.map(migrateRow);
         merged.congregations=merged.congregations.map(migrateCong);
         if(Array.isArray(merged.planning))merged.planning.forEach(function(y){if(Array.isArray(y.rows))y.rows.forEach(function(r){if(r.contact===undefined)r.contact="";if(r.confirmed===undefined)r.confirmed=false;});});
+        if(!merged.treatmentMap)merged.treatmentMap={};
+        if(merged.contactPickerYear===undefined)merged.contactPickerYear=null;
+        if(merged.contactPickerMonth===undefined)merged.contactPickerMonth=null;
+        if(merged.contactPickerIdx===undefined)merged.contactPickerIdx=0;
         return merged;
       }catch(e){var s2=cloneStarter();s2.schedule=s2.schedule.map(migrateRow);return s2;}
     }
@@ -220,7 +301,165 @@ var APP_KEY="jw-talk-arrangements-v1";
       renderContact(sel);renderKpis();renderConflicts();renderDataBadge();
     }
 
-    // ── Contact card ──────────────────────────────────────────────────────────────
+    // ── Planning contact picker ────────────────────────────────────────────────────
+    function renderContactPicker(){
+      var panel=document.getElementById("contactPanel");
+      var existing=document.getElementById("planningContactPicker");
+      if(existing)existing.remove();
+
+      var resolved=resolveContactPickerRow();
+      // Build picker HTML
+      var isEs=state.language==="es";
+      var picked=resolved||{availYears:[],availMonths:[],year:null,month:null,idx:0,arrangements:[],arrangement:null};
+
+      // Year options
+      var yearOpts=picked.availYears.map(function(y){
+        return'<option value="'+y+'"'+(y===picked.year?' selected':'')+'>'+y+'</option>';
+      }).join("");
+      if(!picked.availYears.length)yearOpts='<option value="">—</option>';
+
+      // Month options
+      var monthOpts=picked.availMonths.map(function(m){
+        return'<option value="'+m+'"'+(m===picked.month?' selected':'')+'>'+months()[m]+'</option>';
+      }).join("");
+      if(!picked.availMonths.length)monthOpts='<option value="">—</option>';
+
+      // Arrangement options (when multiple in same month)
+      var arrOpts="";
+      if(picked.arrangements.length>1){
+        arrOpts=picked.arrangements.map(function(a,i){
+          var lbl=(a.congregation||"")+(a.contact?" — "+a.contact:"");
+          return'<option value="'+i+'"'+(i===picked.idx?' selected':'')+'>'+esc(lbl)+'</option>';
+        }).join("");
+      }
+
+      // Treatment options (saved per arrangement id)
+      var arr=picked.arrangement;
+      var tid=arr?arr.id:"";
+      var currentTreatment=tid?getTreatmentForRow(tid):"hermano";
+      var treatments=[["hermano",isEs?"Hermano":"Brother"],["hermana",isEs?"Hermana":"Sister"],["hermanos",isEs?"Hermanos":"Brothers"],["neutral",isEs?"Neutral":"Neutral"]];
+      var treatOpts=treatments.map(function(t){
+        return'<option value="'+t[0]+'"'+(t[0]===currentTreatment?' selected':'')+'>'+t[1]+'</option>';
+      }).join("");
+
+      var div=document.createElement("div");
+      div.id="planningContactPicker";
+      div.style.cssText="padding:8px 0 4px 0;border-bottom:1px solid var(--border);margin-bottom:8px;";
+      div.innerHTML=
+        '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:0.85em;">'
+        +'<label style="color:var(--muted)">'+(isEs?"Año":"Year")+': <select id="pickerYear" style="max-width:80px;padding:2px 4px;">'+yearOpts+'</select></label>'
+        +'<label style="color:var(--muted)">'+(isEs?"Mes":"Month")+': <select id="pickerMonth" style="max-width:120px;padding:2px 4px;">'+monthOpts+'</select></label>'
+        +(picked.arrangements.length>1?'<label style="color:var(--muted)">'+(isEs?"Contacto":"Contact")+': <select id="pickerArr" style="max-width:200px;padding:2px 4px;">'+arrOpts+'</select></label>':"")
+        +'<label style="color:var(--muted)">'+(isEs?"Trato":"Greeting")+': <select id="pickerTreatment" style="max-width:110px;padding:2px 4px;">'+treatOpts+'</select></label>'
+        +'</div>';
+
+      // Insert before the contact card div
+      var cardDiv=document.getElementById("contactCard");
+      cardDiv.parentNode.insertBefore(div,cardDiv);
+
+      // Wire picker events
+      var yearSel=document.getElementById("pickerYear");
+      var monthSel=document.getElementById("pickerMonth");
+      var arrSel=document.getElementById("pickerArr");
+      var treatSel=document.getElementById("pickerTreatment");
+
+      yearSel.addEventListener("change",function(){
+        state.contactPickerYear=+this.value;
+        state.contactPickerMonth=null;
+        state.contactPickerIdx=0;
+        saveState();renderContactPicker();renderPlanningContact();
+      });
+      monthSel.addEventListener("change",function(){
+        state.contactPickerMonth=+this.value;
+        state.contactPickerIdx=0;
+        saveState();renderContactPicker();renderPlanningContact();
+      });
+      if(arrSel){
+        arrSel.addEventListener("change",function(){
+          state.contactPickerIdx=+this.value;
+          saveState();renderContactPicker();renderPlanningContact();
+        });
+      }
+      treatSel.addEventListener("change",function(){
+        var newTreatment=this.value;
+        if(tid){
+          if(!state.treatmentMap)state.treatmentMap={};
+          state.treatmentMap[tid]=newTreatment;
+          saveState();
+        }
+        renderPlanningContact();
+      });
+    }
+
+    function renderPlanningContact(){
+      var card=document.getElementById("planningContactCard");
+      if(!card)return;
+      var resolved=resolveContactPickerRow();
+      var isEs=state.language==="es";
+      if(!resolved||!resolved.arrangement){
+        var noData=resolved===null
+          ?'<div class="empty">'+(isEs?"No hay arreglos para este año.":"No arrangements for this year.")+'</div>'
+          :'<div class="empty">'+(isEs?"No hay arreglos para este mes.":"No arrangements for this month.")+'</div>';
+        card.innerHTML=noData;
+        return;
+      }
+      var arr=resolved.arrangement;
+      var c=findCong(arr.congregation);
+      var cname=arr.congregation||"";
+      var cphone=c?c.phone:"";
+      var cemail=c?c.email:"";
+      var coord=arr.contact||(c?c.coordinator:"");
+      var msg=buildContactMessage(arr,cname);
+      var call=telH(cphone),sms=smsH(cphone);
+      var smsBody=sms?sms+"&body="+encodeURIComponent(msg):"";
+      var mailFull=cemail?mailH(cemail,cname,msg):"";
+      var mailBase=cemail?mailH(cemail,cname,""):"";
+      // Status for this arrangement
+      var statusKey="planning-status-"+arr.id;
+      var currentStatus=(state.treatmentMap&&state.treatmentMap[statusKey])||"not-contacted";
+      var statusOpts=STATUS.map(function(s){return'<option value="'+s+'"'+(s===currentStatus?' selected':'')+'>'+statusLabel(s)+'</option>';}).join("");
+
+      function lbtn(lbl,href,disabled){return disabled||!href?'<button disabled>'+lbl+'</button>':'<a href="'+esc(href)+'" class="link-btn" target="_blank" rel="noopener">'+lbl+'</a>';}
+      function wbtn(lbl,href){return'<button data-wa-href="'+esc(href)+'">'+lbl+'</button>';}
+      var fixedTag=c&&c.isFixed?'<span class="fixed-badge">FIJO</span>':"";
+      card.innerHTML=
+        '<div><div class="contact-name">'+esc(cname)+fixedTag+'</div>'
+        +(coord?'<div class="muted">'+esc(coord)+'</div>':'')
+        +'</div>'
+        +'<div class="contact-meta">'
+        +'<div>'+tt("phone")+': <strong>'+(cphone?esc(cphone):"—")+'</strong></div>'
+        +'<div>'+tt("email")+': <strong>'+(cemail?esc(cemail):"—")+'</strong></div>'
+        +'</div>'
+        +'<div style="margin:6px 0 4px;font-size:0.82em;color:var(--muted)">'+(isEs?"Estado":"Status")+':</div>'
+        +'<select id="planningStatusSel" class="status-select s-'+currentStatus+'" style="margin-bottom:8px;">'+statusOpts+'</select>'
+        +'<div class="action-row no-print">'
+        +lbtn("&#9742; "+tt("call"),call,!call)
+        +lbtn("&#128172; "+tt("text"),sms,!sms)
+        +lbtn("&#9993; "+tt("mail"),mailBase,!mailBase)
+        +'</div>'
+        +'<div class="no-print"><div class="template-label">'+tt("templates")+'</div>'
+        +'<div class="template-box" id="planningMsgBox">'+esc(msg)+'</div>'
+        +'<div class="action-row" style="margin-top:8px">'
+        +(smsBody?lbtn("&#128241; "+tt("openSms"),smsBody,false):"")
+        +(mailFull?lbtn("&#9993; "+tt("openEmail"),mailFull,false):"")
+        +'<button data-copy="'+esc(msg)+'">&#10697; '+tt("copyMsg")+'</button>'
+        +wbtn("&#129302; "+tt("whatsapp"),waH(cphone,msg))
+        +'</div></div>';
+
+      // Wire status change
+      var sel=document.getElementById("planningStatusSel");
+      if(sel){
+        sel.addEventListener("change",function(){
+          var key="planning-status-"+arr.id;
+          if(!state.treatmentMap)state.treatmentMap={};
+          state.treatmentMap[key]=this.value;
+          this.className="status-select s-"+this.value;
+          saveState();
+        });
+      }
+    }
+
+        // ── Contact card ──────────────────────────────────────────────────────────────
     function renderContact(row){
       var card=document.getElementById("contactCard");
       document.getElementById("selectedMonthLabel").textContent=row?months()[row.month]:"";
@@ -326,7 +565,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       document.getElementById("printDate").textContent=new Date().toLocaleDateString();
       document.querySelectorAll("[data-lang]").forEach(function(b){b.classList.toggle("active",b.dataset.lang===state.language);});
       document.querySelectorAll("[data-theme-pick]").forEach(function(b){b.classList.toggle("active",b.dataset.themePick===state.theme);});
-      renderGreeting();renderDashboard();renderPlanning();renderCongregations();
+      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderPlanningContact();
     }
 
     // ── Rollover ──────────────────────────────────────────────────────────────────
