@@ -95,6 +95,7 @@ var APP_KEY="jw-talk-arrangements-v1";
         var treatment=getTreatmentForRow(row.id);
         var nameFormat=state.contactNameFormat||"none";
         var contactName=row.contact||"";
+        if(!contactName){var cObj=findCong(cname);if(cObj)contactName=cObj.coordinator||"";}
         var greeting=buildGreeting(treatment,contactName,nameFormat);
         var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregacion "+p.congregation:"")+".":" ";
         return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
@@ -401,7 +402,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       var cphone=c?c.phone:"";
       var cemail=c?c.email:"";
       var coord=arr.contact||(c?c.coordinator:"");
-      var msg=buildContactMessage(Object.assign({},arr,{contact:coord}),cname);
+      var msg=buildContactMessage(arr,cname);
       var call=telH(cphone),sms=smsH(cphone);
       var smsBody=sms?sms+"&body="+encodeURIComponent(msg):"";
       var mailFull=cemail?mailH(cemail,cname,msg):"";
