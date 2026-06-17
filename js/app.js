@@ -401,7 +401,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       var cphone=c?c.phone:"";
       var cemail=c?c.email:"";
       var coord=arr.contact||(c?c.coordinator:"");
-      var msg=buildContactMessage(arr,cname);
+      var msg=buildContactMessage(Object.assign({},arr,{contact:coord}),cname);
       var call=telH(cphone),sms=smsH(cphone);
       var smsBody=sms?sms+"&body="+encodeURIComponent(msg):"";
       var mailFull=cemail?mailH(cemail,cname,msg):"";
