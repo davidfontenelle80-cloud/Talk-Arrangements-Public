@@ -100,8 +100,21 @@ var APP_KEY="jw-talk-arrangements-v1";
         var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregacion "+p.congregation:"")+".":" ";
         return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
       }
+      var enTreatment=getTreatmentForRow(row.id);
+      var enFmt=state.contactNameFormat||"none";
+      var enContact=row.contact||"";
+      if(!enContact){var cObj2=findCong(cname);if(cObj2)enContact=cObj2.coordinator||"";}
+      var en=splitName(enContact);
+      var enName="";
+      if(enFmt==="first"&&en.first)enName=en.first;
+      else if(enFmt==="last"&&en.last)enName=en.last;
+      else if(enFmt==="full"&&en.full)enName=en.full;
+      var enGreet;
+      if(enTreatment==="hermanos"){enGreet="Hello Brothers";}
+      else if(enTreatment==="neutral"){enGreet=enName?"Hello "+enName:"Hello";}
+      else{var enPfx=enTreatment==="hermana"?"Hello Sister":"Hello Brother";enGreet=enName?enPfx+" "+enName:enPfx;}
       var from2=p.name?"I am "+p.name+(p.congregation?" from the "+p.congregation+" Congregation":"")+".":"";
-      return "Hello, "+from2+" I am reaching out to confirm the public talk arrangement for "+m+" with the "+cname+" congregation. Please confirm your availability. Thank you."+(p.name?"\n\n"+p.name:"");
+      return enGreet+", "+from2+" I am reaching out to confirm the public talk arrangement for "+m+" with the "+cname+" congregation. Please confirm your availability. Thank you."+(p.name?"\n\n"+p.name:"");
     }
     // Resolve which planning row to show in the contact picker
     function resolveContactPickerRow(){
