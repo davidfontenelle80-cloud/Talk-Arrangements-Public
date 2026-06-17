@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v29-ios-zoom-fix';
+const CACHE_VERSION = 'talk-arrangements-v30-message-picker-fix';
 
 /**
  * All URLs that make up the app shell.

@@ -128,9 +128,12 @@ var APP_KEY="jw-talk-arrangements-v1";
         merged.congregations=merged.congregations.map(migrateCong);
         if(Array.isArray(merged.planning))merged.planning.forEach(function(y){if(Array.isArray(y.rows))y.rows.forEach(function(r){if(r.contact===undefined)r.contact="";if(r.confirmed===undefined)r.confirmed=false;});});
         if(!merged.treatmentMap)merged.treatmentMap={};
-        if(merged.contactPickerYear===undefined)merged.contactPickerYear=null;
-        if(merged.contactPickerMonth===undefined)merged.contactPickerMonth=null;
-        if(merged.contactPickerIdx===undefined)merged.contactPickerIdx=0;
+        // Always reset navigation state on load so the app opens on the current month,
+        // not wherever the user was when they last closed it.
+        merged.selectedMonth=currentMonth;
+        merged.contactPickerYear=null;
+        merged.contactPickerMonth=null;
+        merged.contactPickerIdx=0;
         return merged;
       }catch(e){var s2=cloneStarter();s2.schedule=s2.schedule.map(migrateRow);return s2;}
     }
@@ -198,15 +201,10 @@ var APP_KEY="jw-talk-arrangements-v1";
     }
 
     // ── Message template ─────────────────────────────────────────────────────────
+    // Single source of truth: delegates to buildContactMessage so both the dashboard
+    // card and the planning picker always produce identical formatted messages.
     function buildTmpl(row,congName){
-      var m=months()[row.month]||"";
-      var p=state.profile||{};
-      if(state.language==="es"){
-        var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregacion "+p.congregation:"")+"." :"";
-        return "Saludos hermano/a, "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+congName+". Por favor confirme su disponibilidad. Gracias."+(p.name?"\n\n"+p.name:"");
-      }
-      var from2=p.name?"I am "+p.name+(p.congregation?" from the "+p.congregation+" Congregation":"")+".":" ";
-      return "Hello, "+from2+" I am reaching out to confirm the public talk arrangement for "+m+" with the "+congName+" congregation. Please confirm your availability. Thank you."+(p.name?"\n\n"+p.name:"");
+      return buildContactMessage(row,congName);
     }
 
     // ── Greeting ──────────────────────────────────────────────────────────────────
@@ -319,17 +317,24 @@ var APP_KEY="jw-talk-arrangements-v1";
       var availYears=getAvailableYears(state.planning);
 
       if(year===null||year===undefined||availYears.indexOf(+year)===-1){
-        var now=new Date();
-        var ny=now.getFullYear(),nm=now.getMonth();
-        if(availYears.indexOf(ny)!==-1&&getAvailableMonthsForYear(state.planning,ny).indexOf(nm)!==-1){
-          year=ny;month=nm;
-        } else if(availYears.length){
-          year=availYears[0];month=null;
-        } else {
-          card.innerHTML='<div class="empty">'+(isEs?"No hay arreglos disponibles.":"No arrangements available.")+'</div>';
-          return;
+        // Search for the current month in the nearest upcoming planning year so the
+        // picker opens on a contextually relevant arrangement rather than January.
+        var nm=new Date().getMonth();
+        var found=false;
+        for(var i=0;i<availYears.length;i++){
+          if(getAvailableMonthsForYear(state.planning,availYears[i]).indexOf(nm)!==-1){
+            year=availYears[i];month=nm;found=true;break;
+          }
+        }
+        if(!found){
+          if(availYears.length){year=availYears[0];month=null;}
+          else{
+            card.innerHTML='<div class="empty">'+(isEs?"No hay arreglos disponibles.":"No arrangements available.")+'</div>';
+            return;
+          }
         }
         state.contactPickerYear=year;
+        if(month!==null&&month!==undefined)state.contactPickerMonth=month;
       }
 
       var availMonths=getAvailableMonthsForYear(state.planning,year);
@@ -348,7 +353,9 @@ var APP_KEY="jw-talk-arrangements-v1";
           });
           return;
         }
-        month=availMonths[0];
+        // Prefer the current month; fall back to first available.
+        var nm2=new Date().getMonth();
+        month=availMonths.indexOf(nm2)!==-1?nm2:availMonths[0];
         state.contactPickerMonth=month;
       }
       state.contactPickerMonth=month;
@@ -550,7 +557,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       document.getElementById("printDate").textContent=new Date().toLocaleDateString();
       document.querySelectorAll("[data-lang]").forEach(function(b){b.classList.toggle("active",b.dataset.lang===state.language);});
       document.querySelectorAll("[data-theme-pick]").forEach(function(b){b.classList.toggle("active",b.dataset.themePick===state.theme);});
-      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderPlanningContact();
+      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();
     }
 
     // ── Rollover ──────────────────────────────────────────────────────────────────
@@ -742,6 +749,9 @@ var APP_KEY="jw-talk-arrangements-v1";
             state.schedule=state.schedule.map(migrateRow);
             state.congregations=state.congregations.map(migrateCong);
             if(Array.isArray(state.planning))state.planning.forEach(function(y){if(Array.isArray(y.rows))y.rows.forEach(function(r){if(r.contact===undefined)r.contact="";if(r.confirmed===undefined)r.confirmed=false;});});
+            // Reset navigation so import opens on the current month, not a stale one from the backup.
+            state.selectedMonth=currentMonth;
+            state.contactPickerYear=null;state.contactPickerMonth=null;state.contactPickerIdx=0;
             saveState();renderAll();toast(tt("imported"));
           }catch(err){toast(tt("invalidBackup"));}
           e.target.value="";
