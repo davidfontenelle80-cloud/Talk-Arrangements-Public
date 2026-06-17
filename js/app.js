@@ -19,7 +19,7 @@ var APP_KEY="jw-talk-arrangements-v1";
     var starter={
       version:1,language:"es",theme:"dark",selectedMonth:currentMonth,currentYear:thisYear,
       profile:{name:"",congregation:"",phone:""},
-      contactPickerYear:null,contactPickerMonth:null,contactPickerIdx:0,treatmentMap:{},
+      contactPickerYear:null,contactPickerMonth:null,contactPickerIdx:0,treatmentMap:{},contactNameFormat:"none",
       schedule:[[0,"Cedar Spanish Branford",""],[1,"West Danbury Spanish",""],[2,"Woodin Hill Spanish - Hamden CT",""],[3,"South Springfield Spanish","Arreglo fijo"],[4,"Lakewood Spanish Waterbury",""],[5,"Torringford Spanish","Arreglo fijo"],[6,"Shelton",""],[7,"New London Spanish","Arreglo fijo"],[8,"South Spanish New Britain",""],[9,"Meriden Spanish","Arreglo fijo, hasta 2029"],[10,"Bristol Spanish",""],[11,"Bridgeport West Spanish",""]].map(function(r){return{id:crypto.randomUUID(),month:r[0],congregation:r[1],status:"not-contacted",followUpDate:"",note:r[2]};}),
       planning:[
         {year:2027,rows:[[0,"Highland Spanish Waterbury",""],[1,"Parker Spanish - Massachusetts",""],[2,"Shelton",""],[3,"South Springfield Spanish","Arreglo fijo"],[4,"East Danbury Spanish",""],[5,"Torringford Spanish","Arreglo fijo"],[6,"Cedar Spanish Branford",""],[7,"New London Spanish","Arreglo fijo"],[8,"North Spanish New Britain","Arreglo fijo"],[9,"Meriden Spanish","Arreglo fijo, hasta 2029"],[10,"Lakewood Spanish Waterbury",""],[11,"Bristol Spanish",""]]},
@@ -63,15 +63,25 @@ var APP_KEY="jw-talk-arrangements-v1";
       var parts=String(fullName||"").trim().split(/\s+/);
       return parts.length>1?parts[parts.length-1]:"";
     }
-    function buildGreeting(treatment,fullName){
+    function splitName(fullName){
+      var parts=String(fullName||"").trim().split(/\s+/).filter(Boolean);
+      if(!parts.length)return{first:"",last:"",full:""};
+      return{first:parts[0],last:parts[parts.length-1],full:parts.join(" ")};
+    }
+    function buildGreeting(treatment,fullName,nameFormat){
       // treatment: "hermano" | "hermana" | "hermanos" | "neutral"
+      // nameFormat: "none" | "first" | "last" | "full"
       var t=treatment||"hermano";
+      var fmt=nameFormat||"none";
       if(t==="hermanos")return "Saludos hermanos";
-      if(t==="neutral")return "Saludos";
-      var ln=getLastName(fullName);
-      if(t==="hermana")return ln?"Saludos hermana "+ln:"Saludos hermana";
-      // default hermano
-      return ln?"Saludos hermano "+ln:"Saludos hermano";
+      var n=splitName(fullName);
+      var namePart="";
+      if(fmt==="first"&&n.first)namePart=n.first;
+      else if(fmt==="last"&&n.last)namePart=n.last;
+      else if(fmt==="full"&&n.full)namePart=n.full;
+      if(t==="neutral")return namePart?"Hola "+namePart:"Saludos";
+      var prefix=t==="hermana"?"Saludos hermana":"Saludos hermano";
+      return namePart?prefix+" "+namePart:prefix;
     }
     function getTreatmentForRow(rowId){
       return (state.treatmentMap&&state.treatmentMap[rowId])||"hermano";
@@ -83,8 +93,9 @@ var APP_KEY="jw-talk-arrangements-v1";
       var cname=congName||row.congregation||"";
       if(state.language==="es"){
         var treatment=getTreatmentForRow(row.id);
+        var nameFormat=state.contactNameFormat||"none";
         var contactName=row.contact||"";
-        var greeting=buildGreeting(treatment,contactName);
+        var greeting=buildGreeting(treatment,contactName,nameFormat);
         var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregacion "+p.congregation:"")+".":" ";
         return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregacion "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
       }
@@ -128,6 +139,7 @@ var APP_KEY="jw-talk-arrangements-v1";
         merged.congregations=merged.congregations.map(migrateCong);
         if(Array.isArray(merged.planning))merged.planning.forEach(function(y){if(Array.isArray(y.rows))y.rows.forEach(function(r){if(r.contact===undefined)r.contact="";if(r.confirmed===undefined)r.confirmed=false;});});
         if(!merged.treatmentMap)merged.treatmentMap={};
+        if(!merged.contactNameFormat)merged.contactNameFormat="none";
         // Always reset navigation state on load so the app opens on the current month,
         // not wherever the user was when they last closed it.
         merged.selectedMonth=currentMonth;
@@ -379,6 +391,9 @@ var APP_KEY="jw-talk-arrangements-v1";
       var currentTreatment=getTreatmentForRow(arr.id);
       var treatments=[["hermano",isEs?"Hermano":"Brother"],["hermana",isEs?"Hermana":"Sister"],["hermanos",isEs?"Hermanos":"Brothers"],["neutral",isEs?"Neutral":"Neutral"]];
       var treatOpts=treatments.map(function(t){return'<option value="'+t[0]+'"'+(t[0]===currentTreatment?' selected':'')+'>'+t[1]+'</option>';}).join("");
+      var currentNameFormat=state.contactNameFormat||"none";
+      var nameFormats=[["none",isEs?"Sin nombre":"No name"],["first",isEs?"Nombre":"First name"],["last",isEs?"Apellido":"Last name"],["full",isEs?"Nombre completo":"Full name"]];
+      var nameFmtOpts=nameFormats.map(function(f){return'<option value="'+f[0]+'"'+(f[0]===currentNameFormat?' selected':'')+'>'+f[1]+'</option>';}).join("");
 
       // ── Build contact data ────────────────────────────────────────────────────
       var c=findCong(arr.congregation);
@@ -406,6 +421,7 @@ var APP_KEY="jw-talk-arrangements-v1";
         '<label style="color:var(--muted)">'+(isEs?"Mes":"Month")+': <select class="picker-sel" id="pMonth">'+monthOpts+'</select></label>'+
         (arrangements.length>1?'<label style="color:var(--muted)">'+(isEs?"Contacto":"Contact")+': <select class="picker-sel" id="pArr">'+arrOpts+'</select></label>':"")+
         '<label style="color:var(--muted)">'+(isEs?"Trato":"Greeting")+': <select class="picker-sel" id="pTreat">'+treatOpts+'</select></label>'+
+        '<label style="color:var(--muted)">'+(isEs?"Nombre":"Name")+': <select class="picker-sel" id="pNameFmt">'+nameFmtOpts+'</select></label>'+
         '</div>'+
         // Contact info
         '<div><div class="contact-name">'+esc(cname)+fixedTag+'</div>'+(coord?'<div class="muted">'+esc(coord)+'</div>':'')+'</div>'+
@@ -441,6 +457,10 @@ var APP_KEY="jw-talk-arrangements-v1";
       document.getElementById("pTreat").addEventListener("change",function(){
         if(!state.treatmentMap)state.treatmentMap={};
         state.treatmentMap[arr.id]=this.value;
+        saveState();renderPlanningContact();
+      });
+      document.getElementById("pNameFmt").addEventListener("change",function(){
+        state.contactNameFormat=this.value;
         saveState();renderPlanningContact();
       });
       document.getElementById("pStatus").addEventListener("change",function(){
