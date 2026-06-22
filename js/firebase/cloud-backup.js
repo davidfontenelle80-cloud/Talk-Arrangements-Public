@@ -20,6 +20,10 @@
     return window.KHub && KHub.Firebase && KHub.Firebase.auth;
   }
 
+  function db() {
+    return window.KHub && KHub.Firebase && KHub.Firebase.db;
+  }
+
   function currentUser() {
     var a = auth();
     return a ? a.currentUser : null;
@@ -42,7 +46,7 @@
   }
 
   function appRef(appId) {
-    return KHub.Firebase.db.collection('backups').doc(appId);
+    return db().collection('backups').doc(appId);
   }
 
   function userRef(appId) {
@@ -55,6 +59,10 @@
 
   function latestRef(appId) {
     return userRef(appId).collection('meta').doc('latest');
+  }
+
+  function backupBasePath(appId, uid) {
+    return 'backups/' + appId + '/users/' + (uid || '{uid}');
   }
 
   function markerKey(appId) {
@@ -112,6 +120,16 @@
     return false;
   }
 
+  function normalizeCloudError(e, appId) {
+    var code = e && (e.code || e.message) || '';
+    if (code.indexOf('permission-denied') !== -1 || code.indexOf('Missing or insufficient permissions') !== -1) {
+      var err = new Error('Cloud backup is blocked by Firestore rules. Allow ' + backupBasePath(appId, '{yourUserId}') + '/{document=**}.');
+      err.code = 'permission-denied';
+      err.originalError = e;
+      return err;
+    }
+    return e;
+  }
 
   function getLatestSnapshot(appId) {
     return latestRef(appId).get().catch(function (e) {
@@ -119,6 +137,7 @@
       return null;
     });
   }
+
   function authMessage(e) {
     var code = e && (e.code || e.message) || '';
     if (code.indexOf('auth/user-not-found') !== -1) return 'No account found for that email.';
@@ -130,13 +149,14 @@
     if (code.indexOf('auth/network-request-failed') !== -1) return 'Cloud sign-in could not reach Firebase. Check your connection and try again.';
     if (code.indexOf('auth/too-many-requests') !== -1) return 'Firebase temporarily blocked sign-in attempts. Wait a few minutes, then try again.';
     if (code.indexOf('auth-timeout') !== -1) return 'Cloud sign-in is taking too long. Check your connection and tap Sign in again.';
-    if (code.indexOf('permission-denied') !== -1 || code.indexOf('Missing or insufficient permissions') !== -1) return 'Cloud backup is blocked by Firestore rules. Update rules to allow backups/{appId}/users/{yourUserId}.';
+    if (code.indexOf('permission-denied') !== -1 || code.indexOf('Missing or insufficient permissions') !== -1) return 'Cloud backup is blocked by Firestore rules. Update rules to allow backups/talk-arrangements/users/{yourUserId}/{document=**}.';
+    if (code.indexOf('no-backup') !== -1) return 'No cloud backup found.';
     return e && e.message ? e.message : 'Cloud account failed.';
   }
 
   function openAuthDialog(startMode) {
     startMode = startMode || 'signin';
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       var old = document.getElementById('khubCloudAuthDialog');
       if (old) old.remove();
 
@@ -204,7 +224,6 @@
         });
       };
       document.getElementById('khubCloudCancel').onclick = function () { close(); resolve(null); };
-
       document.getElementById('khubCloudSignIn').onclick = function () {
         run(function () { return window.KHub.CloudAuth.signIn(emailEl.value, passEl.value); }, 'signed-in', 'Signing in...');
       };
@@ -220,6 +239,50 @@
     });
   }
 
+  function cloudLog(action, appId, extra) {
+    var user = currentUser();
+    console.info('[CloudBackup]', action, Object.assign({
+      appId: appId,
+      uid: user ? user.uid : null,
+      email: user ? user.email : null,
+      basePath: backupBasePath(appId, user ? user.uid : '{uid}'),
+      devicePath: backupBasePath(appId, user ? user.uid : '{uid}') + '/devices/' + getDeviceId(),
+      latestPath: backupBasePath(appId, user ? user.uid : '{uid}') + '/meta/latest'
+    }, extra || {}));
+  }
+
+  function showCloudToast(message) {
+    var el = document.getElementById('toast');
+    if (!el) {
+      console.info('[CloudBackup]', message);
+      return;
+    }
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(showCloudToast._t);
+    showCloudToast._t = setTimeout(function () { el.classList.remove('show'); }, 4200);
+  }
+
+  function confirmCloudRestore(message, onOk) {
+    var old = document.getElementById('khubCloudConfirmDialog');
+    if (old) old.remove();
+    var overlay = document.createElement('div');
+    overlay.id = 'khubCloudConfirmDialog';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:18px;';
+    overlay.innerHTML =
+      '<div style="width:min(420px,100%);background:#fff;color:#111827;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.35);">' +
+        '<h3 style="margin:0 0 8px;font-size:18px;color:#111827;">Cloud Restore</h3>' +
+        '<p style="margin:0 0 14px;color:#4b5563;font-size:14px;line-height:1.4;">' + message + '</p>' +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+          '<button id="khubCloudConfirmCancel" type="button" style="padding:10px 12px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#111827;">Cancel</button>' +
+          '<button id="khubCloudConfirmOk" type="button" style="padding:10px 12px;border-radius:10px;border:0;background:#2563eb;color:white;font-weight:700;">Restore</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('khubCloudConfirmCancel').onclick = function () { overlay.remove(); };
+    document.getElementById('khubCloudConfirmOk').onclick = function () { overlay.remove(); onOk(); };
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+  }
 
   window.KHub.CloudAuth = {
     currentUser: currentUser,
@@ -268,11 +331,18 @@
         keys: collectKeys(exactKeys, scanPrefix)
       };
 
+      cloudLog('save:start', appId, { keyCount: Object.keys(payload.keys || {}).length });
       return deviceRef(appId).set(payload).then(function () {
+        cloudLog('save:device-written', appId);
         return latestRef(appId).set(payload);
       }).then(function () {
+        cloudLog('save:latest-written', appId);
         markSaved(appId, iso);
         return iso;
+      }).catch(function (e) {
+        var normalized = normalizeCloudError(e, appId);
+        cloudLog('save:failed', appId, { code: normalized && normalized.code, message: normalized && normalized.message });
+        throw normalized;
       });
     },
 
@@ -280,16 +350,23 @@
       var notReady = ensureReady(true);
       if (notReady) return notReady;
 
+      cloudLog('restore:start', appId);
       return getLatestSnapshot(appId).then(function (latestSnap) {
         if (latestSnap && latestSnap.exists) return latestSnap;
+        cloudLog('restore:latest-missing-trying-device', appId);
         return deviceRef(appId).get();
       }).then(function (snap) {
         if (!snap.exists) return Promise.reject(new Error('no-backup'));
         var data = snap.data() || {};
         writeKeys(data.keys);
         markSaved(appId, savedAtISO(data));
+        cloudLog('restore:success', appId, { savedAtISO: savedAtISO(data) });
         if (typeof onSuccess === 'function') onSuccess(data);
         return data;
+      }).catch(function (e) {
+        var normalized = normalizeCloudError(e, appId);
+        cloudLog('restore:failed', appId, { code: normalized && normalized.code, message: normalized && normalized.message });
+        throw normalized;
       });
     },
 
@@ -314,7 +391,7 @@
         if (typeof onSuccess === 'function') onSuccess(data);
         return true;
       }).catch(function (e) {
-        console.warn('[CloudBackup] restoreLatestIfNewer failed:', e);
+        console.warn('[CloudBackup] restoreLatestIfNewer failed:', normalizeCloudError(e, appId));
         return false;
       });
     },
@@ -325,6 +402,11 @@
 
     isSignedIn: function () {
       return !!currentUser();
+    },
+
+    backupPath: function (appId) {
+      var user = currentUser();
+      return backupBasePath(appId, user ? user.uid : '{uid}');
     },
 
     autoSave: function (appId, exactKeys, scanPrefix) {
@@ -344,4 +426,49 @@
       return doSave;
     }
   };
+
+  // Talk Arrangements manual Cloud Save/Restore safety layer.
+  // This captures the app's existing cloud buttons and replaces the generic
+  // "Cloud backup failed" toast with the specific Firebase/Auth/Rules error.
+  document.addEventListener('click', function (event) {
+    var target = event.target && event.target.closest && event.target.closest('#cloudSaveBtn,#settingsCloudSaveBtn,#cloudRestoreBtn,#settingsCloudRestoreBtn');
+    if (!target) return;
+    if (!/talk-arrangements/i.test(window.KHub && KHub.Config && KHub.Config.appName || document.title || '')) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+    var appId = 'talk-arrangements';
+    var keys = ['jw-talk-arrangements-v1'];
+    if (!currentUser()) {
+      openAuthDialog().then(function (result) {
+        if (result === 'reset-sent') showCloudToast('Password reset email sent');
+        else if (result) showCloudToast('Signed in');
+      });
+      return;
+    }
+
+    if (target.id === 'cloudSaveBtn' || target.id === 'settingsCloudSaveBtn') {
+      target.disabled = true;
+      showCloudToast('Saving to cloud...');
+      KHub.CloudBackup.save(appId, keys)
+        .then(function () { showCloudToast('Saved to cloud'); })
+        .catch(function (e) { showCloudToast(authMessage(e)); console.error('[CloudBackup] manual save failed:', e); })
+        .then(function () { target.disabled = false; }, function () { target.disabled = false; });
+      return;
+    }
+
+    confirmCloudRestore('Replace this device data with your signed-in cloud backup?', function () {
+      target.disabled = true;
+      showCloudToast('Restoring from cloud...');
+      KHub.CloudBackup.restore(appId, keys, null, function () {
+        showCloudToast('Restored from cloud');
+        setTimeout(function () { location.reload(); }, 800);
+      }).catch(function (e) {
+        showCloudToast(authMessage(e));
+        console.error('[CloudBackup] manual restore failed:', e);
+      }).then(function () { target.disabled = false; }, function () { target.disabled = false; });
+    });
+  }, true);
 })();
