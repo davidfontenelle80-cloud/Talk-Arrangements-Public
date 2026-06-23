@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v37-cleanup';
+const CACHE_VERSION = 'talk-arrangements-v38-fixed-data-model';
 
 /**
  * All URLs that make up the app shell.
