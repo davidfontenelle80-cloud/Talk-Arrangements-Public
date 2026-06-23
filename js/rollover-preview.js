@@ -1,7 +1,7 @@
 /**
- * Stage 4A — Rollover Preview
- * Batch 4: read-only preview polish and conflict clarity.
- * No save calls. No localStorage writes. No Firebase writes. No rollover apply behavior.
+ * Stage 4B — Safe Apply Rollover.
+ * Adds guarded write behavior to the existing preview modal.
+ * Safety: same-year blocked, conflicts blocked, explicit confirmation required.
  */
 (function () {
   'use strict';
@@ -15,6 +15,14 @@
   }
   function monthNames() {
     return typeof months === 'function' ? months() : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  }
+  function newId() {
+    return window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'row-' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+  function lookupContact(name) {
+    if (typeof lookupCoord === 'function') return lookupCoord(name);
+    const c = Array.isArray(window.state && state.congregations) ? state.congregations.find(function (item) { return item && item.name === name; }) : null;
+    return c ? (c.coordinator || '') : '';
   }
 
   function ensureStyles() {
@@ -34,6 +42,7 @@
       '.rollover-preview-stat{border:1px solid var(--line,var(--border));border-radius:var(--radius-sm);padding:9px;background:var(--panel-2,var(--panel));}',
       '.rollover-preview-stat b{display:block;font-size:22px;line-height:1;}',
       '.rollover-preview-alert{border:1px solid var(--danger);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--danger),var(--panel) 88%);padding:10px;margin:0 0 10px;}',
+      '.rollover-preview-ok{border:1px solid var(--ok);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--ok),var(--panel) 88%);padding:10px;margin:0 0 10px;}',
       '.rollover-preview-list{display:grid;gap:8px;}',
       '.rollover-preview-row{border:1px solid var(--line,var(--border));border-radius:var(--radius-sm);background:var(--panel-2,var(--panel));padding:10px;display:grid;gap:4px;}',
       '.rollover-preview-row strong{font-weight:800;}',
@@ -66,6 +75,17 @@
   function planningFor(year) {
     if (!Array.isArray(window.state && state.planning)) return null;
     return state.planning.find(function (plan) { return Number(plan.year) === Number(year); }) || null;
+  }
+  function ensurePlanningYear(year) {
+    if (!Array.isArray(state.planning)) state.planning = [];
+    let plan = planningFor(year);
+    if (!plan) {
+      plan = { year: Number(year), rows: [] };
+      state.planning.push(plan);
+      state.planning.sort(function (a, b) { return Number(a.year) - Number(b.year); });
+    }
+    if (!Array.isArray(plan.rows)) plan.rows = [];
+    return plan;
   }
   function rowMonth(row) { return Number(row && row.month !== undefined ? row.month : row && row[0]); }
   function rowCongregation(row) { return String((row && row.congregation !== undefined ? row.congregation : row && row[1]) || '').trim(); }
@@ -104,6 +124,8 @@
   function previewResults(sourceYear, targetYear) {
     const totals = { fixed: 0, yearSpecific: 0, copied: 0, overrideReview: 0, conflicts: 0, empty: 0 };
     const rows = [];
+    const sameYear = Number(sourceYear) === Number(targetYear);
+    const sourcePlan = planningFor(sourceYear);
 
     for (let month = 0; month < 12; month += 1) {
       const sourceRow = rowFor(sourceYear, month);
@@ -113,13 +135,15 @@
       const fixedRule = fixedRuleFor(targetYear, month);
       const fixedCong = fixedRule ? String(fixedRule.congregation || '').trim() : '';
       const sourceHadOverride = hasSourceOverride(sourceRow);
-      const proposedCong = fixedCong || sourceCong;
-      const base = { month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule };
+      const proposedCong = sourceHadOverride ? (fixedCong || '') : (fixedCong || sourceCong);
+      const base = { month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule, proposedCong: proposedCong };
 
-      if (targetCong && proposedCong && targetCong !== proposedCong) {
-        addRow(rows, totals, Object.assign(base, { category: 'CONFLICT', proposedCong: proposedCong, reasonKind: fixedRule ? 'fixed-target-diff' : 'copy-target-diff' }));
+      if (!sourcePlan) {
+        addRow(rows, totals, Object.assign(base, { category: 'EMPTY', proposedCong: '' }));
+      } else if (targetCong && proposedCong && targetCong !== proposedCong) {
+        addRow(rows, totals, Object.assign(base, { category: 'CONFLICT', reasonKind: fixedRule ? 'fixed-target-diff' : 'copy-target-diff' }));
       } else if (sourceHadOverride) {
-        addRow(rows, totals, Object.assign(base, { category: 'OVERRIDE_REVIEW', overrideCong: sourceOverrideText(sourceRow), proposedCong: proposedCong }));
+        addRow(rows, totals, Object.assign(base, { category: 'OVERRIDE_REVIEW', overrideCong: sourceOverrideText(sourceRow) }));
       } else if (fixedRule && fixedRule.mode === 'years') {
         addRow(rows, totals, Object.assign(base, { category: 'YEAR_SPECIFIC', proposedCong: fixedCong }));
       } else if (fixedRule) {
@@ -130,7 +154,7 @@
         addRow(rows, totals, Object.assign(base, { category: 'EMPTY', proposedCong: '' }));
       }
     }
-    return { totals: totals, rows: rows };
+    return { totals: totals, rows: rows, sameYear: sameYear, missingSource: !sourcePlan };
   }
 
   function categoryLabel(category) {
@@ -138,7 +162,7 @@
       FIXED_RULE: text('Fixed rule', 'Regla fija'),
       YEAR_SPECIFIC: text('Year-specific rule', 'Regla de año específico'),
       COPIED: text('Copied from source', 'Copiado del año origen'),
-      OVERRIDE_REVIEW: text('Override review', 'Revisar anulación'),
+      OVERRIDE_REVIEW: text('Override not carried forward', 'Anulación no se copia'),
       CONFLICT: text('Conflict — review required', 'Conflicto — requiere revisión'),
       EMPTY: text('Empty', 'Vacío')
     };
@@ -149,16 +173,23 @@
   }
   function rowDetail(item) {
     if (item.category === 'CONFLICT') {
-      if (item.reasonKind === 'copy-target-diff') return text('The target year already has a different congregation. This month must be reviewed before any rollover apply step.', 'El año destino ya tiene una congregación diferente. Este mes debe revisarse antes de aplicar cualquier cambio de año.');
+      if (item.reasonKind === 'copy-target-diff') return text('The target year already has a different congregation. This month must be reviewed before applying rollover.', 'El año destino ya tiene una congregación diferente. Este mes debe revisarse antes de aplicar el cambio de año.');
       return text('A fixed rule applies, but the target year already has a different congregation. Nothing will be overwritten.', 'Aplica una regla fija, pero el año destino ya tiene una congregación diferente. No se sobrescribirá nada.');
     }
     if (item.category === 'OVERRIDE_REVIEW') {
-      return item.fixedCong ? text('Source year had a one-year override. The target preview returns to the fixed rule unless reviewed in Stage 4B.', 'El año origen tenía una anulación de un solo año. La vista previa vuelve a la regla fija salvo que se revise en la Etapa 4B.') : text('Source year had a one-year override. It will not copy forward automatically.', 'El año origen tenía una anulación de un solo año. No se copiará automáticamente.');
+      return item.fixedCong ? text('Source year had a one-year override. The target year will use the fixed arrangement instead.', 'El año origen tenía una anulación de un solo año. El año destino usará el arreglo fijo.') : text('Source year had a one-year override. It will not copy forward automatically.', 'El año origen tenía una anulación de un solo año. No se copiará automáticamente.');
     }
     if (item.category === 'FIXED_RULE') return text('A continuous fixed arrangement applies to this target month.', 'Un arreglo fijo continuo aplica a este mes destino.');
     if (item.category === 'YEAR_SPECIFIC') return text('A selected-years fixed arrangement applies to this target month.', 'Un arreglo fijo de años seleccionados aplica a este mes destino.');
-    if (item.category === 'COPIED') return item.targetCong ? text('Target already matches the preview result.', 'El destino ya coincide con el resultado previsto.') : text('No fixed rule applies, so this would copy from the source year.', 'No aplica una regla fija, así que se copiaría del año origen.');
+    if (item.category === 'COPIED') return item.targetCong ? text('Target already matches the preview result.', 'El destino ya coincide con el resultado previsto.') : text('No fixed rule applies, so this will copy from the source year.', 'No aplica una regla fija, así que se copiará del año origen.');
     return text('No fixed rule or source congregation was found.', 'No se encontró regla fija ni congregación en el año origen.');
+  }
+
+  function validationMessage(result) {
+    if (result.missingSource) return text('Source year has no planning data.', 'El año origen no tiene datos de planificación.');
+    if (result.sameYear) return text('Source year and target year cannot be the same.', 'El año origen y el año destino no pueden ser iguales.');
+    if (result.totals.conflicts > 0) return text('Review all conflicts before applying rollover.', 'Revise todos los conflictos antes de aplicar el cambio de año.');
+    return '';
   }
 
   function resultHtml(sourceYear, targetYear) {
@@ -170,22 +201,26 @@
       stat(totals.fixed, text('Fixed arrangements', 'Arreglos fijos')) +
       stat(totals.yearSpecific, text('Year-specific rules', 'Reglas de años específicos')) +
       stat(totals.copied, text('Copied months', 'Meses copiados')) +
-      stat(totals.overrideReview, text('Overrides requiring review', 'Anulaciones por revisar')) +
+      stat(totals.overrideReview, text('Overrides not carried forward', 'Anulaciones no copiadas')) +
       stat(totals.conflicts, text('Conflicts', 'Conflictos')) +
       stat(totals.empty, text('Empty months', 'Meses vacíos')) +
       '</div>';
 
-    if (totals.conflicts) {
-      html += '<div class="rollover-preview-alert"><strong>⚠ ' + escLocal(text('Review required before applying rollover', 'Revisión requerida antes de aplicar el cambio de año')) + '</strong><div class="rollover-preview-small">' + escLocal(text('Conflicts mean the target year already contains different planning data. This preview does not overwrite anything.', 'Los conflictos indican que el año destino ya contiene datos diferentes. Esta vista previa no sobrescribe nada.')) + '</div></div>';
+    const validation = validationMessage(result);
+    if (validation) {
+      html += '<div class="rollover-preview-alert"><strong>⚠ ' + escLocal(validation) + '</strong><div class="rollover-preview-small">' + escLocal(text('Apply is blocked until this is resolved.', 'Aplicar queda bloqueado hasta resolver esto.')) + '</div></div>';
+    } else {
+      html += '<div class="rollover-preview-ok"><strong>✓ ' + escLocal(text('Ready to apply', 'Listo para aplicar')) + '</strong><div class="rollover-preview-small">' + escLocal(text('Review the months below, then use Apply Rollover when ready.', 'Revise los meses abajo y use Aplicar cambio de año cuando esté listo.')) + '</div></div>';
     }
-    html += '<div class="rollover-preview-small" style="margin-bottom:10px;">' + escLocal(text('Read-only preview. Closing this modal changes nothing.', 'Vista previa de solo lectura. Cerrar esta ventana no cambia nada.')) + '</div>';
+
+    html += '<div class="rollover-preview-small" style="margin-bottom:10px;">' + escLocal(text('Preview recalculates before apply. Data changes only after final confirmation.', 'La vista previa se recalcula antes de aplicar. Los datos cambian solo después de la confirmación final.')) + '</div>';
     html += '<div class="rollover-preview-list">';
     result.rows.forEach(function (item) {
       const proposedLine = item.proposedCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Preview result', 'Resultado previsto')) + ':</strong> ' + escLocal(item.proposedCong) + '</div>' : '';
       const sourceLine = item.sourceCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Source', 'Origen')) + ':</strong> ' + escLocal(item.sourceCong) + '</div>' : '';
       const targetLabel = item.category === 'CONFLICT' ? text('Target has now', 'Destino tiene ahora') : text('Target already matches', 'Destino ya coincide');
       const targetLine = item.targetCong ? '<div class="rollover-preview-small"><strong>' + escLocal(targetLabel) + ':</strong> ' + escLocal(item.targetCong) + '</div>' : '';
-      const overrideLine = item.overrideCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Overridden fixed rule', 'Regla fija anulada')) + ':</strong> ' + escLocal(item.overrideCong) + '</div>' : '';
+      const overrideLine = item.overrideCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Source-year override', 'Anulación del año origen')) + ':</strong> ' + escLocal(item.overrideCong) + '</div>' : '';
       html += '<div class="rollover-preview-row ' + rowClass(item.category) + '">' +
         '<strong>' + escLocal(names[item.month] || item.month) + ' — ' + escLocal(categoryLabel(item.category)) + '</strong>' +
         proposedLine + sourceLine + targetLine + overrideLine +
@@ -194,6 +229,93 @@
     });
     html += '</div>';
     return html;
+  }
+
+  function buildApplySummary(result, sourceYear, targetYear) {
+    const t = result.totals;
+    return text('Apply rollover from ', 'Aplicar cambio de año de ') + sourceYear + text(' to ', ' a ') + targetYear + '?\n\n' +
+      text('Fixed arrangements: ', 'Arreglos fijos: ') + t.fixed + '\n' +
+      text('Year-specific rules: ', 'Reglas de años específicos: ') + t.yearSpecific + '\n' +
+      text('Copied months: ', 'Meses copiados: ') + t.copied + '\n' +
+      text('Overrides not carried forward: ', 'Anulaciones no copiadas: ') + t.overrideReview + '\n' +
+      text('Empty months: ', 'Meses vacíos: ') + t.empty + '\n\n' +
+      text('This will update the target planning year after confirmation.', 'Esto actualizará el año destino después de confirmar.');
+  }
+
+  function rowFromPreviewItem(item) {
+    return {
+      id: newId(),
+      month: item.month,
+      congregation: item.proposedCong || '',
+      contact: item.proposedCong ? lookupContact(item.proposedCong) : '',
+      confirmed: false,
+      note: item.category === 'FIXED_RULE' || item.category === 'YEAR_SPECIFIC' ? text('Fixed arrangement', 'Arreglo fijo') : ''
+    };
+  }
+
+  function applyRolloverNow(sourceYear, targetYear, result) {
+    const targetPlan = ensurePlanningYear(targetYear);
+    const existingByMonth = {};
+    targetPlan.rows.forEach(function (row) { existingByMonth[rowMonth(row)] = row; });
+
+    const nextRows = [];
+    result.rows.forEach(function (item) {
+      const current = existingByMonth[item.month];
+      const next = rowFromPreviewItem(item);
+      if (current && rowCongregation(current) === next.congregation) {
+        next.id = current.id || next.id;
+        next.contact = current.contact || next.contact;
+        next.confirmed = current.confirmed || false;
+        next.note = current.note || next.note;
+      }
+      nextRows.push(next);
+    });
+    targetPlan.rows = nextRows;
+    if (typeof saveState === 'function') saveState();
+    if (typeof renderAll === 'function') renderAll();
+    else if (typeof renderPlanning === 'function') renderPlanning();
+  }
+
+  function showApplyComplete(result, targetYear) {
+    const t = result.totals;
+    const message = text('Rollover applied for ', 'Cambio de año aplicado para ') + targetYear + '.\n' +
+      text('Fixed: ', 'Fijos: ') + t.fixed + ', ' +
+      text('Year-specific: ', 'Años específicos: ') + t.yearSpecific + ', ' +
+      text('Copied: ', 'Copiados: ') + t.copied + ', ' +
+      text('Overrides not carried forward: ', 'Anulaciones no copiadas: ') + t.overrideReview + '.';
+    if (typeof toast === 'function') toast(message);
+    const body = document.getElementById('rolloverPreviewShellBody');
+    if (body) body.insertAdjacentHTML('afterbegin', '<div class="rollover-preview-ok"><strong>✓ ' + escLocal(text('Rollover complete', 'Cambio de año completado')) + '</strong><div class="rollover-preview-small">' + escLocal(message) + '</div></div>');
+  }
+
+  function handleApply() {
+    const source = document.getElementById('rolloverPreviewSource');
+    const target = document.getElementById('rolloverPreviewTarget');
+    if (!source || !target) return;
+    const sourceYear = Number(source.value);
+    const targetYear = Number(target.value);
+    const result = previewResults(sourceYear, targetYear);
+    const validation = validationMessage(result);
+    renderPreviewBody();
+    if (validation) {
+      if (typeof toast === 'function') toast(validation);
+      return;
+    }
+    const message = buildApplySummary(result, sourceYear, targetYear);
+    const proceed = function () {
+      const fresh = previewResults(sourceYear, targetYear);
+      const freshValidation = validationMessage(fresh);
+      if (freshValidation) {
+        renderPreviewBody();
+        if (typeof toast === 'function') toast(freshValidation);
+        return;
+      }
+      applyRolloverNow(sourceYear, targetYear, fresh);
+      renderModalText(true);
+      showApplyComplete(fresh, targetYear);
+    };
+    if (typeof showConfirm === 'function') showConfirm(message, proceed);
+    else if (window.confirm(message)) proceed();
   }
 
   function buildModal() {
@@ -206,12 +328,13 @@
       '<div class="rollover-preview-shell-head"><div><h3 id="rolloverPreviewShellTitle"></h3><p class="muted" id="rolloverPreviewShellHint"></p></div><button type="button" class="icon-btn" id="rolloverPreviewShellClose">&#215;</button></div>' +
       '<div class="rollover-preview-shell-controls"><label id="rolloverSourceLabel"></label><label id="rolloverTargetLabel"></label></div>' +
       '<div class="rollover-preview-shell-note" id="rolloverPreviewShellBody"></div>' +
-      '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;"><button type="button" id="rolloverPreviewShellDone"></button><button type="button" id="rolloverPreviewShellApply" disabled></button></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;"><button type="button" id="rolloverPreviewShellDone"></button><button type="button" id="rolloverPreviewShellApply"></button></div>' +
       '</div>';
     document.body.appendChild(modal);
     function close() { modal.classList.remove('open'); }
     document.getElementById('rolloverPreviewShellClose').addEventListener('click', close);
     document.getElementById('rolloverPreviewShellDone').addEventListener('click', close);
+    document.getElementById('rolloverPreviewShellApply').addEventListener('click', handleApply);
     modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
     return modal;
   }
@@ -225,6 +348,17 @@
     const body = document.getElementById('rolloverPreviewShellBody');
     if (!source || !target || !body) return;
     body.innerHTML = resultHtml(Number(source.value), Number(target.value));
+    updateApplyButton();
+  }
+  function updateApplyButton() {
+    const source = document.getElementById('rolloverPreviewSource');
+    const target = document.getElementById('rolloverPreviewTarget');
+    const apply = document.getElementById('rolloverPreviewShellApply');
+    if (!source || !target || !apply) return;
+    const result = previewResults(Number(source.value), Number(target.value));
+    const validation = validationMessage(result);
+    apply.textContent = validation ? text('Apply blocked', 'Aplicar bloqueado') : text('Apply Rollover', 'Aplicar cambio de año');
+    apply.disabled = !!validation;
   }
   function renderModalText(preserveSelection) {
     const modal = buildModal();
@@ -234,12 +368,10 @@
     const previousTarget = document.getElementById('rolloverPreviewTarget')?.value;
     const options = years.map(function (year) { return '<option value="' + year + '">' + year + '</option>'; }).join('');
     document.getElementById('rolloverPreviewShellTitle').textContent = text('Rollover Preview', 'Vista previa del cambio de año');
-    document.getElementById('rolloverPreviewShellHint').textContent = text('Read-only calculation. No data will be changed.', 'Cálculo de solo lectura. No se cambiarán datos.');
+    document.getElementById('rolloverPreviewShellHint').textContent = text('Review first. Apply writes only after final confirmation.', 'Revise primero. Aplicar escribe solo después de la confirmación final.');
     document.getElementById('rolloverSourceLabel').innerHTML = text('Source year', 'Año origen') + ': <select id="rolloverPreviewSource">' + options + '</select>';
     document.getElementById('rolloverTargetLabel').innerHTML = text('Target year', 'Año destino') + ': <select id="rolloverPreviewTarget">' + options + '</select>';
     document.getElementById('rolloverPreviewShellDone').textContent = text('Close', 'Cerrar');
-    document.getElementById('rolloverPreviewShellApply').textContent = text('Stage 4B: Apply disabled', 'Aplicar en Etapa 4B');
-    document.getElementById('rolloverPreviewShellApply').disabled = true;
     const source = document.getElementById('rolloverPreviewSource');
     const target = document.getElementById('rolloverPreviewTarget');
     if (source) source.value = preserveSelection && previousSource ? previousSource : String(defaultSource);
