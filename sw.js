@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v36-note-modal';
+const CACHE_VERSION = 'talk-arrangements-v37-cleanup';
 
 /**
  * All URLs that make up the app shell.
@@ -37,6 +37,7 @@ const PRECACHE_URLS = [
   './js/theme.js',
   './js/error-boundary.js',
   './js/a11y.js',
+  './js/dashboard-notes.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
