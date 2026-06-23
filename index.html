@@ -206,16 +206,16 @@
 
   <!-- Firebase SDK (compat — no build step required) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- JS load order: KHub infra first, then app -->
+  <!-- JS load order: KHub infra first, then app, then feature patches -->
   <script src="js/config.js"></script>
   <script src="js/firebase/firebase-config.js"></script>
   <script src="js/firebase/cloud-backup.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/theme.js"></script>
-    <script src="js/error-boundary.js"></script>
+  <script src="js/error-boundary.js"></script>
   <script src="js/a11y.js"></script>
   <script src="js/components/button.js"></script>
   <script src="js/components/modal.js"></script>
@@ -223,6 +223,11 @@
   <script src="js/components/input.js"></script>
   <script src="js/perf.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/dashboard-notes.js"></script>
+  <script src="js/fixed-preview.js"></script>
+  <script src="js/fixed-manager-ux.js"></script>
+  <script src="js/planning-conflicts.js"></script>
+  <script src="js/rollover-preview.js"></script>
 
   <script>
     if ('serviceWorker' in navigator) {
