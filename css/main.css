@@ -125,7 +125,15 @@
     tbody tr:hover{background:color-mix(in srgb,var(--panel-2),transparent 38%);}
     td select,td input,td textarea{padding:6px 7px;width:100%;}
     td textarea{resize:none;min-height:36px;max-height:80px;overflow-y:auto;}
-    .status-select{font-weight:600;min-width:140px;}
+    #dashboard table{min-width:1040px;}
+    #dashboard th:nth-child(1),#dashboard td:nth-child(1){min-width:128px;width:128px;}
+    #dashboard th:nth-child(2),#dashboard td:nth-child(2){min-width:250px;}
+    #dashboard th:nth-child(3),#dashboard td:nth-child(3){min-width:178px;}
+    #dashboard th:nth-child(4),#dashboard td:nth-child(4){min-width:156px;}
+    #dashboard th:nth-child(5),#dashboard td:nth-child(5){min-width:150px;}
+    #dashboard th:nth-child(6),#dashboard td:nth-child(6){min-width:92px;width:92px;}
+    #dashboard td:first-child select{min-width:112px;}
+    .status-select{font-weight:600;min-width:160px;}
     .s-not-contacted{color:var(--muted);}
     .s-message-sent{color:var(--warn);border-color:var(--warn);background:color-mix(in srgb,var(--warn),var(--panel) 88%);}
     .s-confirmed{color:var(--ok);border-color:var(--ok);background:color-mix(in srgb,var(--ok),var(--panel) 88%);}
@@ -207,8 +215,9 @@
       td select,td input,td textarea{font-size:13px;padding:5px 6px;}
       button{min-height:44px;}.icon-btn,.copy-field-btn{min-height:34px;}
       table{min-width:560px;}
+      #dashboard table{min-width:1040px;}
     }
-  
+   
 
 /* ── Press-scale (KHub house polish) ── */
 button:active:not(:disabled),a.link-btn:active{transform:scale(0.96);}
