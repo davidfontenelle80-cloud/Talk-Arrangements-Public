@@ -1,5 +1,5 @@
 /**
- * planning-conflicts.js — Stage 3.2A Banner Naming Polish.
+ * planning-conflicts.js — Stage 4A Batch 4.1 Terminology Polish.
  * Shows fixed arrangement conflicts directly in Planning and lets the user mark
  * a one-year override without changing the fixed rule or rollover behavior.
  */
@@ -64,19 +64,19 @@
   }
   function conflictLine(c){
     var ms=monthNames();
-    return '<li data-row-id="'+escLocal(c.row.id)+'" data-rule-id="'+escLocal(c.rule.id)+'"><strong>'+escLocal(ms[c.month]||c.month)+'</strong>: '+escLocal(txt('Planned','Planificado'))+' — '+escLocal(c.planned)+'; '+escLocal(txt('Fixed','Fijo'))+' — '+escLocal(c.fixed)+'<div class="planning-fixed-actions"><button type="button" data-fixed-plan-action="use-fixed" data-row-id="'+escLocal(c.row.id)+'" data-rule-id="'+escLocal(c.rule.id)+'">'+escLocal(txt('Use fixed arrangement','Usar arreglo fijo'))+'</button><button type="button" data-fixed-plan-action="override" data-row-id="'+escLocal(c.row.id)+'" data-rule-id="'+escLocal(c.rule.id)+'">'+escLocal(txt('Override for this year','Anular solo este año'))+'</button></div></li>';
+    return '<li data-row-id="'+escLocal(c.row.id)+'" data-rule-id="'+escLocal(c.rule.id)+'"><strong>'+escLocal(ms[c.month]||c.month)+'</strong>: '+escLocal(txt('Current Schedule','Programa actual'))+' — '+escLocal(c.planned)+'; '+escLocal(txt('Fixed Arrangement','Arreglo fijo'))+' — '+escLocal(c.fixed)+'<div class="planning-fixed-actions"><button type="button" data-fixed-plan-action="use-fixed" data-row-id="'+escLocal(c.row.id)+'" data-rule-id="'+escLocal(c.rule.id)+'">'+escLocal(txt('Use Fixed Arrangement','Usar arreglo fijo'))+'</button><button type="button" data-fixed-plan-action="override" data-row-id="'+escLocal(c.row.id)+'" data-rule-id="'+escLocal(c.rule.id)+'">'+escLocal(txt('Keep Current Schedule','Mantener programa actual'))+'</button></div></li>';
   }
   function bannerHtml(conflicts){
     var max=conflicts.slice(0,5).map(conflictLine).join('');
-    var extra=conflicts.length>5?'<div class="planning-fixed-note">+'+(conflicts.length-5)+' '+escLocal(txt('more conflict(s)','conflicto(s) más'))+'</div>':'';
-    return '<div class="planning-fixed-warning" role="alert"><strong>⚠ '+escLocal(txt('Active conflicts','Conflictos activos'))+'</strong><div>'+escLocal(txt('These items still require review before rollover.','Estos asuntos todavía requieren revisión antes del cambio de año.'))+'</div><ul>'+max+'</ul>'+extra+'<div class="planning-fixed-note">'+escLocal(txt('If this is permanent, update the Fixed Arrangement rule.','Si esto es permanente, actualice la regla de Arreglos Fijos.'))+'</div></div>';
+    var extra=conflicts.length>5?'<div class="planning-fixed-note">+'+(conflicts.length-5)+' '+escLocal(txt('more item(s)','asunto(s) más'))+'</div>':'';
+    return '<div class="planning-fixed-warning" role="alert"><strong>⚠ '+escLocal(txt('Review needed','Revisión necesaria'))+'</strong><div>'+escLocal(txt('These months need a decision before continuing.','Estos meses requieren una decisión antes de continuar.'))+'</div><ul>'+max+'</ul>'+extra+'<div class="planning-fixed-note">'+escLocal(txt('If the current schedule should remain long-term, update the Fixed Arrangement.','Si este programa debe mantenerse a largo plazo, actualice el Arreglo Fijo.'))+'</div></div>';
   }
   function overrideHtml(conflicts){
     var ms=monthNames();
     var items=conflicts.map(function(c){
       return '<li><strong>'+escLocal(ms[c.month]||c.month)+'</strong>: '+escLocal(c.planned)+' '+escLocal(txt('kept for this year only.','se mantiene solo para este año.'))+'</li>';
     }).join('');
-    return '<div class="planning-fixed-override"><strong>✓ '+escLocal(txt('Approved overrides','Anulaciones aprobadas'))+'</strong><div>'+escLocal(txt('These items were intentionally overridden and will remain for this year only.','Estos asuntos fueron anulados intencionalmente y permanecerán solo para este año.'))+'</div><ul>'+items+'</ul><div class="planning-fixed-note">'+escLocal(txt('Fixed rule is unchanged. Update the fixed rule only if this is permanent.','La regla fija no cambió. Actualice la regla fija solo si esto es permanente.'))+'</div></div>';
+    return '<div class="planning-fixed-override"><strong>✓ '+escLocal(txt('Approved current schedules','Programas actuales aprobados'))+'</strong><div>'+escLocal(txt('These months were intentionally kept for this year only.','Estos meses se mantuvieron intencionalmente solo para este año.'))+'</div><ul>'+items+'</ul><div class="planning-fixed-note">'+escLocal(txt('The fixed arrangement was not changed. Update it only if this should remain long-term.','El arreglo fijo no cambió. Actualícelo solo si esto debe mantenerse a largo plazo.'))+'</div></div>';
   }
   function decoratePlanningConflicts(){
     if(typeof state==='undefined'||!state||!Array.isArray(state.planning))return;
@@ -111,8 +111,8 @@
   }
   function findRuleById(id){return rules().find(function(r){return r.id===id;})||null;}
   function confirmMsg(c,action){
-    if(action==='use-fixed')return txt('Replace this planning row with the fixed arrangement?','¿Reemplazar esta fila con el arreglo fijo?')+'\n\n'+txt('Fixed','Fijo')+': '+c.rule.congregation+'\n'+txt('Current','Actual')+': '+c.row.congregation;
-    return txt('Override the fixed arrangement for this year only?','¿Anular el arreglo fijo solo para este año?')+'\n\n'+txt('Fixed','Fijo')+': '+c.rule.congregation+'\n'+txt('Keep','Mantener')+': '+c.row.congregation+'\n\n'+txt('The fixed rule will not be changed.','La regla fija no se cambiará.');
+    if(action==='use-fixed')return txt('Replace this planning row with the fixed arrangement?','¿Reemplazar esta fila con el arreglo fijo?')+'\n\n'+txt('Fixed Arrangement','Arreglo fijo')+': '+c.rule.congregation+'\n'+txt('Current Schedule','Programa actual')+': '+c.row.congregation;
+    return txt('Keep the current schedule for this year only?','¿Mantener el programa actual solo para este año?')+'\n\n'+txt('Fixed Arrangement','Arreglo fijo')+': '+c.rule.congregation+'\n'+txt('Keep','Mantener')+': '+c.row.congregation+'\n\n'+txt('The fixed arrangement will not be changed.','El arreglo fijo no se cambiará.');
   }
   function runAction(rowId,ruleId,action){
     var found=findPlanningRowById(rowId),rule=findRuleById(ruleId);
@@ -128,7 +128,7 @@
       }else{
         if(!Array.isArray(row.fixedOverrides))row.fixedOverrides=[];
         if(!isOverride(row,rule))row.fixedOverrides.push({ruleId:rule.id,congregation:rule.congregation,overriddenAt:new Date().toISOString(),scope:'year'});
-        if(typeof toast==='function')toast(txt('Override noted for this year.','Anulación registrada para este año.'));
+        if(typeof toast==='function')toast(txt('Current schedule kept for this year.','Programa actual mantenido para este año.'));
       }
       if(typeof saveState==='function')saveState();
       if(typeof renderPlanning==='function')renderPlanning();else decoratePlanningConflicts();
