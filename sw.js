@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v44-banner-naming-polish';
+const CACHE_VERSION = 'talk-arrangements-v45-rollover-preview-bootstrap';
 
 /**
  * All URLs that make up the app shell.
@@ -41,6 +41,7 @@ const PRECACHE_URLS = [
   './js/fixed-preview.js',
   './js/fixed-manager-ux.js',
   './js/planning-conflicts.js',
+  './js/rollover-preview.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
