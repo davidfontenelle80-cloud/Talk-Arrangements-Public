@@ -1,26 +1,18 @@
 /**
  * Stage 4A — Rollover Preview
- * Batch 3: read-only preview engine.
- * Calculates fixed, copied, override-review, conflict, and empty preview rows.
+ * Batch 4: read-only preview polish and conflict clarity.
  * No save calls. No localStorage writes. No Firebase writes. No rollover apply behavior.
  */
 (function () {
   'use strict';
 
-  function isEs() {
-    return window.state && state.language === 'es';
-  }
-
-  function text(en, es) {
-    return isEs() ? es : en;
-  }
-
+  function isEs() { return window.state && state.language === 'es'; }
+  function text(en, es) { return isEs() ? es : en; }
   function escLocal(value) {
     if (typeof esc === 'function') return esc(value);
     value = String(value == null ? '' : value);
     return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-
   function monthNames() {
     return typeof months === 'function' ? months() : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   }
@@ -41,6 +33,7 @@
       '.rollover-preview-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin-bottom:12px;}',
       '.rollover-preview-stat{border:1px solid var(--line,var(--border));border-radius:var(--radius-sm);padding:9px;background:var(--panel-2,var(--panel));}',
       '.rollover-preview-stat b{display:block;font-size:22px;line-height:1;}',
+      '.rollover-preview-alert{border:1px solid var(--danger);border-radius:var(--radius-sm);background:color-mix(in srgb,var(--danger),var(--panel) 88%);padding:10px;margin:0 0 10px;}',
       '.rollover-preview-list{display:grid;gap:8px;}',
       '.rollover-preview-row{border:1px solid var(--line,var(--border));border-radius:var(--radius-sm);background:var(--panel-2,var(--panel));padding:10px;display:grid;gap:4px;}',
       '.rollover-preview-row strong{font-weight:800;}',
@@ -60,63 +53,52 @@
     if (!Array.isArray(window.state && state.planning)) return [];
     return state.planning.map(function (plan) { return Number(plan.year); }).filter(Boolean);
   }
-
   function yearOptions() {
     const current = Number((window.state && state.currentYear) || new Date().getFullYear());
     const years = planningYears().concat([current, current + 1, current + 2, current + 3, current + 4]);
     return Array.from(new Set(years.filter(Boolean))).sort(function (a, b) { return a - b; });
   }
-
   function defaultSourceYear() {
     const years = planningYears().sort(function (a, b) { return a - b; });
     const current = Number((window.state && state.currentYear) || new Date().getFullYear());
     return years.indexOf(current) !== -1 ? current : (years[0] || current);
   }
-
   function planningFor(year) {
     if (!Array.isArray(window.state && state.planning)) return null;
     return state.planning.find(function (plan) { return Number(plan.year) === Number(year); }) || null;
   }
-
-  function rowMonth(row) {
-    return Number(row && row.month !== undefined ? row.month : row && row[0]);
-  }
-
-  function rowCongregation(row) {
-    return String((row && row.congregation !== undefined ? row.congregation : row && row[1]) || '').trim();
-  }
-
+  function rowMonth(row) { return Number(row && row.month !== undefined ? row.month : row && row[0]); }
+  function rowCongregation(row) { return String((row && row.congregation !== undefined ? row.congregation : row && row[1]) || '').trim(); }
   function rowFor(year, month) {
     const plan = planningFor(year);
     if (!plan || !Array.isArray(plan.rows)) return null;
     return plan.rows.find(function (row) { return rowMonth(row) === Number(month); }) || null;
   }
-
-  function rules() {
-    return Array.isArray(window.state && state.fixedArrangements) ? state.fixedArrangements : [];
-  }
-
+  function rules() { return Array.isArray(window.state && state.fixedArrangements) ? state.fixedArrangements : []; }
   function appliesToYear(rule, year) {
     if (!rule) return false;
     if (rule.mode === 'years') return Array.isArray(rule.years) && rule.years.indexOf(Number(year)) !== -1;
     return true;
   }
-
   function fixedRuleFor(year, month) {
     return rules().find(function (rule) {
       return rule && String(rule.congregation || '').trim() && Array.isArray(rule.months) && rule.months.indexOf(Number(month)) !== -1 && appliesToYear(rule, year);
     }) || null;
   }
-
-  function hasSourceOverride(row) {
-    return !!(row && Array.isArray(row.fixedOverrides) && row.fixedOverrides.length);
-  }
-
+  function hasSourceOverride(row) { return !!(row && Array.isArray(row.fixedOverrides) && row.fixedOverrides.length); }
   function sourceOverrideText(row) {
     if (!hasSourceOverride(row)) return '';
-    return row.fixedOverrides.map(function (override) {
-      return String(override && override.congregation || '').trim();
-    }).filter(Boolean).join(', ');
+    return row.fixedOverrides.map(function (override) { return String(override && override.congregation || '').trim(); }).filter(Boolean).join(', ');
+  }
+
+  function addRow(rows, totals, item) {
+    rows.push(item);
+    if (item.category === 'FIXED_RULE') totals.fixed += 1;
+    else if (item.category === 'YEAR_SPECIFIC') totals.yearSpecific += 1;
+    else if (item.category === 'COPIED') totals.copied += 1;
+    else if (item.category === 'OVERRIDE_REVIEW') totals.overrideReview += 1;
+    else if (item.category === 'CONFLICT') totals.conflicts += 1;
+    else totals.empty += 1;
   }
 
   function previewResults(sourceYear, targetYear) {
@@ -131,33 +113,23 @@
       const fixedRule = fixedRuleFor(targetYear, month);
       const fixedCong = fixedRule ? String(fixedRule.congregation || '').trim() : '';
       const sourceHadOverride = hasSourceOverride(sourceRow);
-      let item;
+      const proposedCong = fixedCong || sourceCong;
+      const base = { month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule };
 
-      if (fixedRule && targetCong && targetCong !== fixedCong) {
-        totals.conflicts += 1;
-        item = { category: 'CONFLICT', month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule, sourceHadOverride: sourceHadOverride };
+      if (targetCong && proposedCong && targetCong !== proposedCong) {
+        addRow(rows, totals, Object.assign(base, { category: 'CONFLICT', proposedCong: proposedCong, reasonKind: fixedRule ? 'fixed-target-diff' : 'copy-target-diff' }));
       } else if (sourceHadOverride) {
-        totals.overrideReview += 1;
-        item = { category: 'OVERRIDE_REVIEW', month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule, overrideCong: sourceOverrideText(sourceRow) };
+        addRow(rows, totals, Object.assign(base, { category: 'OVERRIDE_REVIEW', overrideCong: sourceOverrideText(sourceRow), proposedCong: proposedCong }));
+      } else if (fixedRule && fixedRule.mode === 'years') {
+        addRow(rows, totals, Object.assign(base, { category: 'YEAR_SPECIFIC', proposedCong: fixedCong }));
       } else if (fixedRule) {
-        if (fixedRule.mode === 'years') {
-          totals.yearSpecific += 1;
-          item = { category: 'YEAR_SPECIFIC', month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule };
-        } else {
-          totals.fixed += 1;
-          item = { category: 'FIXED_RULE', month: month, sourceCong: sourceCong, targetCong: targetCong, fixedCong: fixedCong, rule: fixedRule };
-        }
+        addRow(rows, totals, Object.assign(base, { category: 'FIXED_RULE', proposedCong: fixedCong }));
       } else if (sourceCong) {
-        totals.copied += 1;
-        item = { category: 'COPIED', month: month, sourceCong: sourceCong, targetCong: targetCong };
+        addRow(rows, totals, Object.assign(base, { category: 'COPIED', proposedCong: sourceCong }));
       } else {
-        totals.empty += 1;
-        item = { category: 'EMPTY', month: month, sourceCong: '', targetCong: targetCong };
+        addRow(rows, totals, Object.assign(base, { category: 'EMPTY', proposedCong: '' }));
       }
-
-      rows.push(item);
     }
-
     return { totals: totals, rows: rows };
   }
 
@@ -167,35 +139,25 @@
       YEAR_SPECIFIC: text('Year-specific rule', 'Regla de año específico'),
       COPIED: text('Copied from source', 'Copiado del año origen'),
       OVERRIDE_REVIEW: text('Override review', 'Revisar anulación'),
-      CONFLICT: text('Conflict', 'Conflicto'),
+      CONFLICT: text('Conflict — review required', 'Conflicto — requiere revisión'),
       EMPTY: text('Empty', 'Vacío')
     };
     return labels[category] || category;
   }
-
   function rowClass(category) {
-    return {
-      FIXED_RULE: 'rollover-preview-fixed',
-      YEAR_SPECIFIC: 'rollover-preview-year',
-      COPIED: 'rollover-preview-copy',
-      OVERRIDE_REVIEW: 'rollover-preview-override',
-      CONFLICT: 'rollover-preview-conflict',
-      EMPTY: 'rollover-preview-empty'
-    }[category] || '';
+    return { FIXED_RULE: 'rollover-preview-fixed', YEAR_SPECIFIC: 'rollover-preview-year', COPIED: 'rollover-preview-copy', OVERRIDE_REVIEW: 'rollover-preview-override', CONFLICT: 'rollover-preview-conflict', EMPTY: 'rollover-preview-empty' }[category] || '';
   }
-
   function rowDetail(item) {
     if (item.category === 'CONFLICT') {
-      return text('Target year already has a different congregation. Nothing will be overwritten.', 'El año destino ya tiene una congregación diferente. No se sobrescribirá nada.');
+      if (item.reasonKind === 'copy-target-diff') return text('The target year already has a different congregation. This month must be reviewed before any rollover apply step.', 'El año destino ya tiene una congregación diferente. Este mes debe revisarse antes de aplicar cualquier cambio de año.');
+      return text('A fixed rule applies, but the target year already has a different congregation. Nothing will be overwritten.', 'Aplica una regla fija, pero el año destino ya tiene una congregación diferente. No se sobrescribirá nada.');
     }
     if (item.category === 'OVERRIDE_REVIEW') {
-      return item.fixedCong
-        ? text('Source year had a one-year override. The target preview returns to the fixed rule unless reviewed in Stage 4B.', 'El año origen tenía una anulación de un solo año. La vista previa vuelve a la regla fija salvo que se revise en la Etapa 4B.')
-        : text('Source year had a one-year override. It will not copy forward automatically.', 'El año origen tenía una anulación de un solo año. No se copiará automáticamente.');
+      return item.fixedCong ? text('Source year had a one-year override. The target preview returns to the fixed rule unless reviewed in Stage 4B.', 'El año origen tenía una anulación de un solo año. La vista previa vuelve a la regla fija salvo que se revise en la Etapa 4B.') : text('Source year had a one-year override. It will not copy forward automatically.', 'El año origen tenía una anulación de un solo año. No se copiará automáticamente.');
     }
     if (item.category === 'FIXED_RULE') return text('A continuous fixed arrangement applies to this target month.', 'Un arreglo fijo continuo aplica a este mes destino.');
     if (item.category === 'YEAR_SPECIFIC') return text('A selected-years fixed arrangement applies to this target month.', 'Un arreglo fijo de años seleccionados aplica a este mes destino.');
-    if (item.category === 'COPIED') return text('No fixed rule applies, so this would copy from the source year.', 'No aplica una regla fija, así que se copiaría del año origen.');
+    if (item.category === 'COPIED') return item.targetCong ? text('Target already matches the preview result.', 'El destino ya coincide con el resultado previsto.') : text('No fixed rule applies, so this would copy from the source year.', 'No aplica una regla fija, así que se copiaría del año origen.');
     return text('No fixed rule or source congregation was found.', 'No se encontró regla fija ni congregación en el año origen.');
   }
 
@@ -203,9 +165,7 @@
     const names = monthNames();
     const result = previewResults(sourceYear, targetYear);
     const totals = result.totals;
-    const stat = function (count, label) {
-      return '<div class="rollover-preview-stat"><b>' + count + '</b><span>' + escLocal(label) + '</span></div>';
-    };
+    const stat = function (count, label) { return '<div class="rollover-preview-stat"><b>' + count + '</b><span>' + escLocal(label) + '</span></div>'; };
     let html = '<div class="rollover-preview-summary">' +
       stat(totals.fixed, text('Fixed arrangements', 'Arreglos fijos')) +
       stat(totals.yearSpecific, text('Year-specific rules', 'Reglas de años específicos')) +
@@ -215,13 +175,16 @@
       stat(totals.empty, text('Empty months', 'Meses vacíos')) +
       '</div>';
 
+    if (totals.conflicts) {
+      html += '<div class="rollover-preview-alert"><strong>⚠ ' + escLocal(text('Review required before applying rollover', 'Revisión requerida antes de aplicar el cambio de año')) + '</strong><div class="rollover-preview-small">' + escLocal(text('Conflicts mean the target year already contains different planning data. This preview does not overwrite anything.', 'Los conflictos indican que el año destino ya contiene datos diferentes. Esta vista previa no sobrescribe nada.')) + '</div></div>';
+    }
     html += '<div class="rollover-preview-small" style="margin-bottom:10px;">' + escLocal(text('Read-only preview. Closing this modal changes nothing.', 'Vista previa de solo lectura. Cerrar esta ventana no cambia nada.')) + '</div>';
     html += '<div class="rollover-preview-list">';
     result.rows.forEach(function (item) {
-      const proposed = item.category === 'COPIED' ? item.sourceCong : (item.fixedCong || '');
-      const proposedLine = proposed ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Preview result', 'Resultado previsto')) + ':</strong> ' + escLocal(proposed) + '</div>' : '';
+      const proposedLine = item.proposedCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Preview result', 'Resultado previsto')) + ':</strong> ' + escLocal(item.proposedCong) + '</div>' : '';
       const sourceLine = item.sourceCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Source', 'Origen')) + ':</strong> ' + escLocal(item.sourceCong) + '</div>' : '';
-      const targetLine = item.targetCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Target existing', 'Existente en destino')) + ':</strong> ' + escLocal(item.targetCong) + '</div>' : '';
+      const targetLabel = item.category === 'CONFLICT' ? text('Target has now', 'Destino tiene ahora') : text('Target already matches', 'Destino ya coincide');
+      const targetLine = item.targetCong ? '<div class="rollover-preview-small"><strong>' + escLocal(targetLabel) + ':</strong> ' + escLocal(item.targetCong) + '</div>' : '';
       const overrideLine = item.overrideCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Overridden fixed rule', 'Regla fija anulada')) + ':</strong> ' + escLocal(item.overrideCong) + '</div>' : '';
       html += '<div class="rollover-preview-row ' + rowClass(item.category) + '">' +
         '<strong>' + escLocal(names[item.month] || item.month) + ' — ' + escLocal(categoryLabel(item.category)) + '</strong>' +
@@ -236,7 +199,6 @@
   function buildModal() {
     let modal = document.getElementById('rolloverPreviewShellModal');
     if (modal) return modal;
-
     modal = document.createElement('div');
     modal.id = 'rolloverPreviewShellModal';
     modal.className = 'rollover-preview-shell-bg no-print';
@@ -247,19 +209,16 @@
       '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap;"><button type="button" id="rolloverPreviewShellDone"></button><button type="button" id="rolloverPreviewShellApply" disabled></button></div>' +
       '</div>';
     document.body.appendChild(modal);
-
     function close() { modal.classList.remove('open'); }
     document.getElementById('rolloverPreviewShellClose').addEventListener('click', close);
     document.getElementById('rolloverPreviewShellDone').addEventListener('click', close);
     modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
     return modal;
   }
-
   function renderButtonText() {
     const btn = document.getElementById('rolloverPreviewBtn');
     if (btn) btn.innerHTML = '&#128269; <span>' + text('Preview Rollover', 'Vista previa') + '</span>';
   }
-
   function renderPreviewBody() {
     const source = document.getElementById('rolloverPreviewSource');
     const target = document.getElementById('rolloverPreviewTarget');
@@ -267,17 +226,13 @@
     if (!source || !target || !body) return;
     body.innerHTML = resultHtml(Number(source.value), Number(target.value));
   }
-
   function renderModalText(preserveSelection) {
     const modal = buildModal();
     const years = yearOptions();
     const defaultSource = defaultSourceYear();
     const previousSource = document.getElementById('rolloverPreviewSource')?.value;
     const previousTarget = document.getElementById('rolloverPreviewTarget')?.value;
-    const options = years.map(function (year) {
-      return '<option value="' + year + '">' + year + '</option>';
-    }).join('');
-
+    const options = years.map(function (year) { return '<option value="' + year + '">' + year + '</option>'; }).join('');
     document.getElementById('rolloverPreviewShellTitle').textContent = text('Rollover Preview', 'Vista previa del cambio de año');
     document.getElementById('rolloverPreviewShellHint').textContent = text('Read-only calculation. No data will be changed.', 'Cálculo de solo lectura. No se cambiarán datos.');
     document.getElementById('rolloverSourceLabel').innerHTML = text('Source year', 'Año origen') + ': <select id="rolloverPreviewSource">' + options + '</select>';
@@ -285,7 +240,6 @@
     document.getElementById('rolloverPreviewShellDone').textContent = text('Close', 'Cerrar');
     document.getElementById('rolloverPreviewShellApply').textContent = text('Stage 4B: Apply disabled', 'Aplicar en Etapa 4B');
     document.getElementById('rolloverPreviewShellApply').disabled = true;
-
     const source = document.getElementById('rolloverPreviewSource');
     const target = document.getElementById('rolloverPreviewTarget');
     if (source) source.value = preserveSelection && previousSource ? previousSource : String(defaultSource);
@@ -295,18 +249,9 @@
     renderPreviewBody();
     return modal;
   }
-
-  function openModal() {
-    ensureStyles();
-    const modal = renderModalText(false);
-    modal.classList.add('open');
-  }
-
+  function openModal() { ensureStyles(); const modal = renderModalText(false); modal.classList.add('open'); }
   function injectButton() {
-    if (document.getElementById('rolloverPreviewBtn')) {
-      renderButtonText();
-      return;
-    }
+    if (document.getElementById('rolloverPreviewBtn')) { renderButtonText(); return; }
     const rolloverBtn = document.getElementById('rolloverBtn');
     if (!rolloverBtn || !rolloverBtn.parentNode) return;
     const btn = document.createElement('button');
@@ -316,24 +261,14 @@
     rolloverBtn.parentNode.insertBefore(btn, rolloverBtn);
     renderButtonText();
   }
-
   function refreshLanguageText() {
     renderButtonText();
     const modal = document.getElementById('rolloverPreviewShellModal');
     if (modal && modal.classList.contains('open')) renderModalText(true);
   }
-
   document.addEventListener('click', function (event) {
-    if (event.target && event.target.closest('[data-lang]')) {
-      setTimeout(refreshLanguageText, 80);
-    }
+    if (event.target && event.target.closest('[data-lang]')) setTimeout(refreshLanguageText, 80);
   });
-
   let tries = 0;
-  (function waitForApp() {
-    tries += 1;
-    ensureStyles();
-    injectButton();
-    if (tries < 120) setTimeout(waitForApp, 500);
-  })();
+  (function waitForApp() { tries += 1; ensureStyles(); injectButton(); if (tries < 120) setTimeout(waitForApp, 500); })();
 })();
