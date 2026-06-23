@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v42-planning-conflict-warnings';
+const CACHE_VERSION = 'talk-arrangements-v43-planning-override-actions';
 
 /**
  * All URLs that make up the app shell.
