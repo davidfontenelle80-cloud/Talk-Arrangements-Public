@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4a-batch-3-load-repair-code-implemented-live-testing-required
-next_stage: stage-4a-batch-4-or-stage-4b-after-david-approval
-cache_version: talk-arrangements-v49-rollover-script-load-repair
+current_stage: stage-4a-batch-4-preview-polish-code-implemented-live-testing-required
+next_stage: stage-4b-after-david-approval
+cache_version: talk-arrangements-v50-rollover-preview-polish
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -92,39 +92,22 @@ Commits:
 Cache: talk-arrangements-v47-rollover-preview-labels
 
 ### Stage 4A Batch 3 — Rollover Preview Engine
-Status: code implemented / live testing required.
+Status: live-tested by David; approved with observations.
 Commits:
 - d73ff2ce3bcbd19ba9045ede802b0874fc995e3e — Add rollover preview engine
 - d330376020d8551f91142f46ccdd2e1d19df8b03 — Bump cache for rollover preview engine
 - 90c83e9eeee381d672773d3a34432a6feab67160 — Update handoff for rollover preview engine
-Files changed:
-- js/rollover-preview.js
-- sw.js
-- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 Cache: talk-arrangements-v48-rollover-preview-engine
-
-Batch 3 behavior:
-- Existing Preview Rollover modal now calculates 12 read-only month results from state.planning, state.fixedArrangements, and row.fixedOverrides.
-- Shows summary totals for fixed arrangements, year-specific rules, copied months, overrides requiring review, conflicts, and empty months.
-- Displays all 12 months with labels: FIXED_RULE, YEAR_SPECIFIC, COPIED, OVERRIDE_REVIEW, CONFLICT, EMPTY.
-- Fixed rules win in preview, but no data is written.
-- Source-year overrides are shown as review items and are not carried forward automatically.
-- Target-year existing data that differs from an applicable fixed rule is marked as conflict.
-- Apply remains disabled and says Stage 4B / Aplicar en Etapa 4B.
+David screenshot confirmed summary cards and 12-month preview results load.
 
 ### Stage 4A Batch 3 Load Repair — Feature Script Loading
-Status: code implemented / live testing required.
-Reason: David’s live screenshot still showed the old Batch 2 placeholder text. Repo inspection found `index.html` was not explicitly loading the feature scripts after `js/app.js`, so the new Batch 3 engine could not be trusted to load consistently.
+Status: live-tested by David; repair worked.
+Reason: David’s live screenshot initially showed old Batch 2 placeholder text. Repo inspection found `index.html` was not explicitly loading feature scripts after `js/app.js`.
 Commits:
 - 0271b6412574cf2e2875e254fb31c0d5d57ab1c3 — Load fixed arrangement feature scripts
 - 9b07311fe980ca8b5bf6689eb7baa6828bdb9733 — Bump cache for feature script load repair
-- this handoff update commit records the repair state
-Files changed:
-- index.html
-- sw.js
-- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
+- eab120a0d4f1e893caddbdeebeb635c7767e8ddb — Update handoff for script load repair
 Cache: talk-arrangements-v49-rollover-script-load-repair
-
 Repair behavior:
 - `index.html` now loads these feature scripts after `js/app.js`:
   - js/dashboard-notes.js
@@ -132,36 +115,51 @@ Repair behavior:
   - js/fixed-manager-ux.js
   - js/planning-conflicts.js
   - js/rollover-preview.js
-- `sw.js` cache version bumped to force app-shell refresh.
-- No app behavior was changed beyond loading the existing feature patches.
 - No save, localStorage, Firebase, cloud backup, or Apply behavior was added.
 
-Batch 3 / Load Repair test checklist:
+### Stage 4A Batch 4 — Rollover Preview Polish / Conflict Clarity
+Status: code implemented / live testing required.
+Reason: David’s live screenshot showed rows labeled “Copied from source” even when the target year already had a different congregation. That is risky for Stage 4B because it could make a future apply step look safer than it is.
+Commits:
+- 992099a714debb543220d23bc5da2c357cf593e0 — Polish rollover preview conflict clarity
+- 3a21b6802de5494df8122f701b85feac42a19b5e — Bump cache for rollover preview polish
+- this handoff update commit records Batch 4 state
+Files changed:
+- js/rollover-preview.js
+- sw.js
+- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
+Cache: talk-arrangements-v50-rollover-preview-polish
+Batch 4 behavior:
+- Still read-only only.
+- No Apply behavior added.
+- No data writes added.
+- If target year already has a different congregation than the preview result, the row is labeled Conflict — review required.
+- Conflict count now includes target-year conflicts for copied rows, not only fixed-rule rows.
+- Added a warning alert above the list when conflicts exist.
+- Wording changed from “Target existing” to clearer labels:
+  - Conflict rows: “Target has now” / “Destino tiene ahora.”
+  - Matching rows: “Target already matches” / “Destino ya coincide.”
+- Apply button remains disabled and says Stage 4B / Aplicar en Etapa 4B.
+
+Batch 4 test checklist:
 - App loads after cache update.
-- Preview Rollover button appears near Next Year.
-- Modal opens and closes.
-- Modal no longer says “Batch 2 shell only” or “Preview results will be added in the next batch.”
-- Source year and target year selectors work.
-- Changing either selector recalculates results.
-- Preview shows all 12 months.
-- Fixed rules are identified.
-- Year-specific fixed rules are identified.
-- Copied months are identified when no fixed rule applies and source has data.
-- Source overrides are shown as review items and do not copy forward.
-- Conflicts are shown when target has a different congregation than the fixed rule.
-- Empty months are shown when there is no fixed rule and no source congregation.
-- No data changes after closing the modal.
-- English/Spanish labels update while the modal is open.
+- Preview Rollover modal opens.
+- Modal still shows summary totals and all 12 months.
+- Rows where target has a different congregation are marked Conflict — review required.
+- Rows with blank target and source data are marked Copied from source.
+- Conflict warning appears above the list when conflicts exist.
+- Apply remains disabled.
+- EN/ES labels update while modal is open.
 - Mobile layout remains usable.
 - Desktop layout remains usable.
 - Light/dark mode remains usable.
 - No console errors.
+- Closing modal changes no data.
 
 Known issues / risks:
-- Live GitHub Pages verification still required by David.
-- Screenshots still required because UI changed.
-- If multiple fixed rules apply to the same target month, the preview uses the first applicable rule; earlier fixed-manager safeguards should prevent accidental overlaps, but this remains a review risk for future hardening.
-- The service worker file comments were simplified during the prior cache update after one platform-filtered write attempt. Behavior remains the same network-first app-shell strategy.
+- Live GitHub Pages verification required for Batch 4.
+- Screenshots required because UI changed.
+- If multiple fixed rules apply to the same target month, preview still uses the first applicable rule. Earlier fixed-manager safeguards reduce this risk, but future hardening should explicitly detect multiple fixed rules for one month/year.
 
 ## Known Follow-up Request Added by David
 
@@ -169,19 +167,17 @@ Known issues / risks:
 - Clear row should confirm first.
 - Clear row should remove congregation, contact, confirmation, date, notes, and related row fields together.
 - This prevents stale contact data remaining after congregation is cleared.
-- Recommended as Stage 3.3 or Stage 5 polish, not part of Stage 4A Batch 3.
+- Recommended as Stage 5 polish, not part of Stage 4A Batch 4.
 
 ## Next Stage
 
-Stop after Stage 4A Batch 3 Load Repair. Do not begin Stage 4A Batch 4 or Stage 4B until David tests and approves.
+Stop after Stage 4A Batch 4. Do not begin Stage 4B until David tests and approves.
 
-Possible next choices after approval:
-- Stage 4A Batch 4 — preview rendering polish / edge-case hardening if David finds UI issues.
-- Stage 4B — Apply Rollover with explicit confirmation and no silent overwrite.
+After approval:
+- Stage 4B — Apply Rollover with explicit confirmation, conflict stop/review, and no silent overwrite.
 
 ## Later Stages
 
-Stage 4A Batch 5 — polish and approval.
 Stage 4B — Apply Rollover.
 Stage 4.5 — Hybrid Mode: manual or automatic, with safety checks.
 Stage 5 — QA and Planning row clear button.
