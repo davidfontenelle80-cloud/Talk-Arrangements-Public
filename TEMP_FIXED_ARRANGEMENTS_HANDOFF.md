@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-3-1-live-testing
+current_stage: stage-3-2-live-testing
 next_stage: stage-4-rollover-integration
-cache_version: talk-arrangements-v42-planning-conflict-warnings
+cache_version: talk-arrangements-v43-planning-override-actions
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -84,34 +84,16 @@ Commits:
 - ac49fb8d96c4d66aa7a9d9474c00458d1982ff2b
 - c6f12154e2fe99f4ac2e0863cafca38bf81a88c6
 
-Expected behavior:
-
-- Congregations tab shows Fixed Arrangements / Arreglos Fijos button.
-- Manager modal opens.
-- User can add, edit, and delete rules.
-- Rules support congregation, multiple months, continuous mode, selected years, custom year, and note.
-- Rules save into state.fixedArrangements.
-- Rollover behavior is not changed yet.
-
 ### Stage 2.1 — Fixed Arrangements Manager UX Cleanup
 
 Status: code implemented, David reported it works.
 
 Commits:
 
-- b2be195ee71709da84687b53ff484ddd9ce4b08c — Add fixed manager UX cleanup
-- f66557e3e80a24e2d265f89fe1e3e06e2be4ba17 — Load fixed manager UX cleanup
-- a17fc951d3ab72df85d51b4459fc74293466c377 — Bump cache for fixed manager UX cleanup
-- 3a510fa203f1bb3f8e02fc29853ba384de0a1fda — Update handoff for stage 2.1 cleanup
-
-Expected behavior:
-
-- Continuous mode clears and disables years.
-- Selected Years mode enables year selection.
-- Selected Years still requires at least one year.
-- Helper text explains that changing month by year should use separate rules.
-- Duplicate month conflicts between active rules produce a warning before saving anyway.
-- No rollover behavior changed.
+- b2be195ee71709da84687b53ff484ddd9ce4b08c
+- f66557e3e80a24e2d265f89fe1e3e06e2be4ba17
+- a17fc951d3ab72df85d51b4459fc74293466c377
+- 3a510fa203f1bb3f8e02fc29853ba384de0a1fda
 
 ### Stage 3 — Preview and Conflict Engine
 
@@ -119,40 +101,21 @@ Status: code implemented, live testing required.
 
 Commits:
 
-- 644d946649fc1e6b8089633707fb81728b003ff3 — Add fixed arrangement preview engine
-- 8d804ffc0bad647cd20dc9508e464756b49d5d09 — Load fixed preview enhancement
-- 169f1a511791b8f7dad45990528f412c4e1537c5 — Bump cache for fixed preview engine
-- f4ef70c261014dc6ecb4c5330e71cfe409af03f5 — Update handoff for stage 3 preview
-
-Expected behavior:
-
-- Inside Fixed Arrangements manager, a Preview Next Year / Vista previa del próximo año button appears.
-- Preview opens a modal.
-- Preview has target year input.
-- Preview does not change saved schedule data.
-- Preview shows summary counts: Safe, Warnings, Conflicts, Skipped.
-- Conflicts are highlighted red with warning icon.
-- Warnings are highlighted yellow.
-- Safe assignments are highlighted green.
-- Skipped or expired rules are shown as skipped.
-- Planning rows win by default.
-- No rollover integration yet.
+- 644d946649fc1e6b8089633707fb81728b003ff3
+- 8d804ffc0bad647cd20dc9508e464756b49d5d09
+- 169f1a511791b8f7dad45990528f412c4e1537c5
+- f4ef70c261014dc6ecb4c5330e71cfe409af03f5
 
 ### Stage 3.1 — Planning Conflict Awareness
 
-Status: code implemented, live testing required.
+Status: code implemented, David reported conflict banner works.
 
 Commits:
 
-- 2dbd14167b1f13ee95efae9216512a66c87c9f08 — Add planning fixed conflict warnings
-- fafbc65b72cfddc21cc68030a961684bbe0f631e — Load planning conflict warnings
-- 98274af9995c1d50a4ecc6270ba79db930291382 — Bump cache for planning conflict warnings
-
-Cache:
-
-```text
-talk-arrangements-v42-planning-conflict-warnings
-```
+- 2dbd14167b1f13ee95efae9216512a66c87c9f08
+- fafbc65b72cfddc21cc68030a961684bbe0f631e
+- 98274af9995c1d50a4ecc6270ba79db930291382
+- bef5f3c8c45177e241793e329567f8ae4d964c5e
 
 Expected behavior:
 
@@ -163,30 +126,60 @@ Expected behavior:
 - Fixed rules are not changed.
 - No rollover behavior changed.
 
+### Stage 3.2 — Planning Override Action
+
+Status: code implemented, live testing required.
+
+Commits:
+
+- fd1e8eb52113f1e0ec9fc921367e4d4bc214cebe — Add planning fixed override actions
+- a19f6264493d3f05722f6db2f17fea2debbbbc05 — Bump cache for planning override actions
+
+Cache:
+
+```text
+talk-arrangements-v43-planning-override-actions
+```
+
+Expected behavior:
+
+- Conflict banner shows action buttons for each conflict:
+  - Use fixed arrangement
+  - Override for this year
+- Use fixed arrangement confirms first, then changes the planning row back to the fixed congregation and refreshes contact.
+- Override for this year confirms first, then stores row.fixedOverrides[] with the fixed rule id.
+- Overridden rows become warning-highlighted instead of red conflict-highlighted.
+- Banner changes from conflict to Override noted.
+- Fixed rule remains unchanged.
+- No rollover behavior changed.
+
 Known follow-up request added by David:
 
 - Add clear-row button for Planning rows.
 - Clear row should confirm first.
 - Clear row should remove congregation, contact, confirmation, date, notes, and related row fields together.
 - This prevents stale contact data remaining after congregation is cleared.
-- Recommended as Stage 3.2 or Stage 5 polish.
+- Recommended as Stage 3.3 or Stage 5 polish.
 
-## Stage 3.1 Live Test Checklist
+## Stage 3.2 Live Test Checklist
 
 - App loads after cache update.
-- Create or use a fixed rule for a specific year/month.
-- Go to Planning for that same year/month.
-- Enter a different congregation.
-- Confirm the row turns red or is visibly highlighted.
-- Confirm a Fixed Arrangement Conflict warning appears near Year Check.
-- Confirm warning shows planned vs fixed congregation.
-- Confirm changing the planning row back to the fixed congregation removes the warning.
-- Confirm no data is overwritten.
+- Create/use a fixed rule for a specific year/month.
+- In Planning, enter a different congregation for that same year/month.
+- Confirm red conflict banner appears.
+- Tap Override for this year.
+- Confirm modal appears.
+- Confirm override.
+- Confirm row changes from red conflict to warning/override state.
+- Confirm Override noted appears.
+- Confirm fixed rule is unchanged.
+- Tap Use fixed arrangement on another conflict.
+- Confirm row changes back to fixed congregation and contact refreshes.
 - Confirm English/Spanish, light/dark, mobile are usable.
 
 ## Next Stage
 
-Stage 3.1 must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
+Stage 3.2 must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
 
 ## Later Stages
 
