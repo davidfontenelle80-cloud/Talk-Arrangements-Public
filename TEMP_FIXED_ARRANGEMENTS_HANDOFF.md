@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-3-live-testing
-next_stage: stage-4-rollover-integration
-cache_version: talk-arrangements-v40-fixed-preview-engine
+current_stage: stage-2-1-live-testing
+next_stage: stage-3-approval-then-stage-4-rollover-integration
+cache_version: talk-arrangements-v41-fixed-manager-ux-cleanup
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -102,12 +102,7 @@ Commits:
 - 644d946649fc1e6b8089633707fb81728b003ff3 — Add fixed arrangement preview engine
 - 8d804ffc0bad647cd20dc9508e464756b49d5d09 — Load fixed preview enhancement
 - 169f1a511791b8f7dad45990528f412c4e1537c5 — Bump cache for fixed preview engine
-
-Cache:
-
-```text
-talk-arrangements-v40-fixed-preview-engine
-```
+- f4ef70c261014dc6ecb4c5330e71cfe409af03f5 — Update handoff for stage 3 preview
 
 Expected behavior:
 
@@ -115,11 +110,7 @@ Expected behavior:
 - Preview opens a modal.
 - Preview has target year input.
 - Preview does not change saved schedule data.
-- Preview shows summary counts:
-  - Safe
-  - Warnings
-  - Conflicts
-  - Skipped
+- Preview shows summary counts: Safe, Warnings, Conflicts, Skipped.
 - Conflicts are highlighted red with warning icon.
 - Warnings are highlighted yellow.
 - Safe assignments are highlighted green.
@@ -127,43 +118,60 @@ Expected behavior:
 - Planning rows win by default.
 - No rollover integration yet.
 
-## Stage 3 Live Test Checklist
+### Stage 2.1 — Fixed Arrangements Manager UX Cleanup
 
-- App loads.
+Status: code implemented, live testing required.
+
+Commits:
+
+- b2be195ee71709da84687b53ff484ddd9ce4b08c — Add fixed manager UX cleanup
+- f66557e3e80a24e2d265f89fe1e3e06e2be4ba17 — Load fixed manager UX cleanup
+- a17fc951d3ab72df85d51b4459fc74293466c377 — Bump cache for fixed manager UX cleanup
+
+Cache:
+
+```text
+talk-arrangements-v41-fixed-manager-ux-cleanup
+```
+
+Expected behavior:
+
+- Continuous mode clears and disables years.
+- Selected Years mode enables year selection.
+- Selected Years still requires at least one year.
+- Helper text explains that changing month by year should use separate rules.
+- Duplicate month conflicts between active rules produce a warning before saving anyway.
+- No rollover behavior changed.
+
+Known follow-up request added by David:
+
+- Add clear-row button for Planning rows.
+- Clear row should confirm first.
+- Clear row should remove congregation, contact, confirmation, date, notes, and related row fields together.
+- This prevents stale contact data remaining after congregation is cleared.
+- This is not part of Stage 2.1 unless explicitly approved; recommended as Stage 3.1 or Stage 5 polish.
+
+## Stage 2.1 Live Test Checklist
+
+- App loads after cache update.
 - Open Congregations.
 - Open Fixed Arrangements.
-- Confirm Preview Next Year button appears.
-- Create at least one fixed rule if none exists.
-- Open Preview Next Year.
-- Confirm preview modal opens.
-- Confirm target year is shown.
-- Confirm Safe / Warnings / Conflicts / Skipped summary appears.
-- Test a rule for a blank planning month and confirm it appears as Safe.
-- Test a rule that conflicts with an existing Planning month and confirm it appears as Conflict.
-- Test a selected-years rule outside the target year and confirm it appears as Skipped.
-- Confirm no schedule data changes after closing preview.
-- Confirm English and Spanish are acceptable.
-- Confirm light and dark modes are readable.
-- Confirm mobile/tablet layout is usable.
-- Confirm no console errors.
+- Open a new rule.
+- Switch Selected Years to Continuous and confirm years clear/disable.
+- Switch back to Selected Years and confirm years can be selected.
+- Save a rule and confirm it appears in the list.
+- Try to create another active rule for the same month and confirm warning appears.
+- Confirm Save Anyway works only after warning.
+- Confirm no rollover behavior changed.
+- Confirm English/Spanish, light/dark, mobile are usable.
 
 ## Next Stage
 
-### Stage 4 — Rollover Integration
-
-Not started.
-
-Rules when implemented:
-
-- Continuous rules apply every generated year.
-- Selected-year rules apply only when the target year is included.
-- Fixed rules fill blank months only by default.
-- Planning/manual rows win unless user explicitly overrides.
-- Override must require confirmation.
-- Stage 4 must not start until Stage 3 is approved.
+Stage 3 must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
 
 ## Later Stages
 
+Stage 4 — Rollover Integration.
 Stage 4.5 — Hybrid Rollover Mode: manual or automatic, with safety checks.
 Stage 5 — QA and polish.
 
@@ -173,6 +181,7 @@ Future only: message scheduler, push notifications, optional auto-send backend.
 
 - js/dashboard-notes.js
 - js/fixed-preview.js
+- js/fixed-manager-ux.js
 - sw.js
 - js/a11y.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
