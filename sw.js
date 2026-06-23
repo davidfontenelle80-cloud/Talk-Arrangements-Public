@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v34-english-name-format';
+const CACHE_VERSION = 'talk-arrangements-v35-dashboard-month-width';
 
 /**
  * All URLs that make up the app shell.
