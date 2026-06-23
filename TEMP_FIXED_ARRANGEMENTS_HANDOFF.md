@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4a-batch-1-live-testing
-next_stage: stage-4a-batch-2-ui-shell
-cache_version: talk-arrangements-v45-rollover-preview-bootstrap
+current_stage: stage-4a-batch-2-live-testing
+next_stage: stage-4a-batch-3-preview-engine
+cache_version: talk-arrangements-v46-rollover-preview-shell
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -68,19 +68,29 @@ Commits: 11e7c2a7aef4862d4aa3ca8fb47c4309304c5d6a, 1c9cb62c699ed133fb52e39c073e0
 Cache: talk-arrangements-v44-banner-naming-polish
 
 ### Stage 4A — Rollover Preview and Review
-Status: batch 1 code implemented, live testing required.
-Batch: 1 — bootstrap only.
+Status: batch 2 code implemented, live testing required.
+Batch 1 — bootstrap only.
 Commits:
 - b4b5243d90199dd18e871bbdacd0ab9cc1dd2302 — Add rollover preview placeholder/bootstrap file
 - eaa928b0a79e5eaf15a41cd60bb5028402e35995 — Load rollover preview bootstrap
 - 181935a96b44c046429024b1881cecb72805edb0 — Bump cache for rollover preview bootstrap
-Cache: talk-arrangements-v45-rollover-preview-bootstrap
+- 0cb8acb368a3fca184c1ac69d5bd44ea70a43a53 — Update handoff for rollover preview bootstrap
+
+Batch 2 — UI shell only.
+Commits:
+- fc6cb8f52a65527d71d3e5c17333c1f9b948f3b6 — Add rollover preview UI shell
+- 8f679a1bc9acfdff1ccf0c930b9f1915c8d22e61 — Bump cache for rollover preview shell
+
+Cache: talk-arrangements-v46-rollover-preview-shell
 Expected behavior:
-- js/rollover-preview.js loads.
-- No visible UI changes yet.
+- Preview Rollover / Vista previa button appears near Next Year.
+- Modal opens.
+- Modal shows source year and target year selectors.
+- Modal shows placeholder note only.
+- Apply button is disabled.
+- No preview calculation yet.
 - No data changes.
 - No rollover logic changes.
-- App should load normally with no console errors.
 
 Known follow-up request added by David:
 - Add clear-row button for Planning rows.
@@ -89,22 +99,24 @@ Known follow-up request added by David:
 - This prevents stale contact data remaining after congregation is cleared.
 - Recommended as Stage 3.3 or Stage 5 polish.
 
-## Stage 4A Batch 1 Live Test Checklist
+## Stage 4A Batch 2 Live Test Checklist
 
 - App loads after cache update.
-- No visible UI changes.
-- No broken tabs.
+- Preview Rollover button appears near Next Year.
+- Modal opens and closes.
+- Source/Target year selectors appear.
+- Apply button is disabled.
+- No data changes after closing.
+- English/Spanish labels are acceptable.
+- Mobile/desktop layout usable.
 - No console errors.
-- Service worker cache updates to talk-arrangements-v45-rollover-preview-bootstrap.
 
 ## Next Stage
 
-Stage 4A Batch 2 — UI shell.
-Add Preview Rollover button and empty modal shell only. Do not implement preview calculation yet.
+Stage 4A Batch 3 — preview engine. Calculate safe/year-specific/skipped/conflict/override counts, but keep rendering simple.
 
 ## Later Stages
 
-Stage 4A Batch 3 — preview engine.
 Stage 4A Batch 4 — render preview results.
 Stage 4A Batch 5 — polish and approval.
 Stage 4B — Apply Rollover.
