@@ -1,5 +1,5 @@
 /**
- * planning-conflicts.js — Stage 3.2 Planning Override Action.
+ * planning-conflicts.js — Stage 3.2A Banner Naming Polish.
  * Shows fixed arrangement conflicts directly in Planning and lets the user mark
  * a one-year override without changing the fixed rule or rollover behavior.
  */
@@ -69,14 +69,14 @@
   function bannerHtml(conflicts){
     var max=conflicts.slice(0,5).map(conflictLine).join('');
     var extra=conflicts.length>5?'<div class="planning-fixed-note">+'+(conflicts.length-5)+' '+escLocal(txt('more conflict(s)','conflicto(s) más'))+'</div>':'';
-    return '<div class="planning-fixed-warning" role="alert"><strong>⚠ '+escLocal(txt('Fixed arrangement conflict','Conflicto de arreglo fijo'))+'</strong><div>'+escLocal(txt('Review before rollover. This does not change your fixed rule.','Revise antes del cambio de año. Esto no cambia la regla fija.'))+'</div><ul>'+max+'</ul>'+extra+'<div class="planning-fixed-note">'+escLocal(txt('If this is permanent, update the Fixed Arrangement rule.','Si esto es permanente, actualice la regla de Arreglos Fijos.'))+'</div></div>';
+    return '<div class="planning-fixed-warning" role="alert"><strong>⚠ '+escLocal(txt('Active conflicts','Conflictos activos'))+'</strong><div>'+escLocal(txt('These items still require review before rollover.','Estos asuntos todavía requieren revisión antes del cambio de año.'))+'</div><ul>'+max+'</ul>'+extra+'<div class="planning-fixed-note">'+escLocal(txt('If this is permanent, update the Fixed Arrangement rule.','Si esto es permanente, actualice la regla de Arreglos Fijos.'))+'</div></div>';
   }
   function overrideHtml(conflicts){
     var ms=monthNames();
     var items=conflicts.map(function(c){
       return '<li><strong>'+escLocal(ms[c.month]||c.month)+'</strong>: '+escLocal(c.planned)+' '+escLocal(txt('kept for this year only.','se mantiene solo para este año.'))+'</li>';
     }).join('');
-    return '<div class="planning-fixed-override"><strong>✓ '+escLocal(txt('Override noted','Anulación registrada'))+'</strong><div>'+escLocal(txt('Fixed rule is unchanged. Update the fixed rule only if this is permanent.','La regla fija no cambió. Actualice la regla fija solo si esto es permanente.'))+'</div><ul>'+items+'</ul></div>';
+    return '<div class="planning-fixed-override"><strong>✓ '+escLocal(txt('Approved overrides','Anulaciones aprobadas'))+'</strong><div>'+escLocal(txt('These items were intentionally overridden and will remain for this year only.','Estos asuntos fueron anulados intencionalmente y permanecerán solo para este año.'))+'</div><ul>'+items+'</ul><div class="planning-fixed-note">'+escLocal(txt('Fixed rule is unchanged. Update the fixed rule only if this is permanent.','La regla fija no cambió. Actualice la regla fija solo si esto es permanente.'))+'</div></div>';
   }
   function decoratePlanningConflicts(){
     if(typeof state==='undefined'||!state||!Array.isArray(state.planning))return;
