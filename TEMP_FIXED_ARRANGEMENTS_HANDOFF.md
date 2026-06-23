@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4a-batch-3-code-implemented-live-testing-required
+current_stage: stage-4a-batch-3-load-repair-code-implemented-live-testing-required
 next_stage: stage-4a-batch-4-or-stage-4b-after-david-approval
-cache_version: talk-arrangements-v48-rollover-preview-engine
+cache_version: talk-arrangements-v49-rollover-script-load-repair
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -96,7 +96,7 @@ Status: code implemented / live testing required.
 Commits:
 - d73ff2ce3bcbd19ba9045ede802b0874fc995e3e — Add rollover preview engine
 - d330376020d8551f91142f46ccdd2e1d19df8b03 — Bump cache for rollover preview engine
-- this handoff update commit records Batch 3 state
+- 90c83e9eeee381d672773d3a34432a6feab67160 — Update handoff for rollover preview engine
 Files changed:
 - js/rollover-preview.js
 - sw.js
@@ -112,10 +112,35 @@ Batch 3 behavior:
 - Target-year existing data that differs from an applicable fixed rule is marked as conflict.
 - Apply remains disabled and says Stage 4B / Aplicar en Etapa 4B.
 
-Batch 3 test checklist:
+### Stage 4A Batch 3 Load Repair — Feature Script Loading
+Status: code implemented / live testing required.
+Reason: David’s live screenshot still showed the old Batch 2 placeholder text. Repo inspection found `index.html` was not explicitly loading the feature scripts after `js/app.js`, so the new Batch 3 engine could not be trusted to load consistently.
+Commits:
+- 0271b6412574cf2e2875e254fb31c0d5d57ab1c3 — Load fixed arrangement feature scripts
+- 9b07311fe980ca8b5bf6689eb7baa6828bdb9733 — Bump cache for feature script load repair
+- this handoff update commit records the repair state
+Files changed:
+- index.html
+- sw.js
+- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
+Cache: talk-arrangements-v49-rollover-script-load-repair
+
+Repair behavior:
+- `index.html` now loads these feature scripts after `js/app.js`:
+  - js/dashboard-notes.js
+  - js/fixed-preview.js
+  - js/fixed-manager-ux.js
+  - js/planning-conflicts.js
+  - js/rollover-preview.js
+- `sw.js` cache version bumped to force app-shell refresh.
+- No app behavior was changed beyond loading the existing feature patches.
+- No save, localStorage, Firebase, cloud backup, or Apply behavior was added.
+
+Batch 3 / Load Repair test checklist:
 - App loads after cache update.
 - Preview Rollover button appears near Next Year.
 - Modal opens and closes.
+- Modal no longer says “Batch 2 shell only” or “Preview results will be added in the next batch.”
 - Source year and target year selectors work.
 - Changing either selector recalculates results.
 - Preview shows all 12 months.
@@ -136,7 +161,7 @@ Known issues / risks:
 - Live GitHub Pages verification still required by David.
 - Screenshots still required because UI changed.
 - If multiple fixed rules apply to the same target month, the preview uses the first applicable rule; earlier fixed-manager safeguards should prevent accidental overlaps, but this remains a review risk for future hardening.
-- The service worker file was cache-bumped successfully, but comments were simplified during the update after one platform-filtered write attempt. Behavior remains the same network-first app-shell strategy.
+- The service worker file comments were simplified during the prior cache update after one platform-filtered write attempt. Behavior remains the same network-first app-shell strategy.
 
 ## Known Follow-up Request Added by David
 
@@ -148,7 +173,7 @@ Known issues / risks:
 
 ## Next Stage
 
-Stop after Stage 4A Batch 3. Do not begin Stage 4A Batch 4 or Stage 4B until David tests and approves.
+Stop after Stage 4A Batch 3 Load Repair. Do not begin Stage 4A Batch 4 or Stage 4B until David tests and approves.
 
 Possible next choices after approval:
 - Stage 4A Batch 4 — preview rendering polish / edge-case hardening if David finds UI issues.
@@ -164,6 +189,7 @@ Future only: message scheduler, push notifications, optional auto-send backend.
 
 ## Files Involved
 
+- index.html
 - js/dashboard-notes.js
 - js/fixed-preview.js
 - js/fixed-manager-ux.js
