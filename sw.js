@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v52-toolbar-i18n-polish';
+const CACHE_VERSION = 'talk-arrangements-v53-safe-rollover-apply';
 
 const PRECACHE_URLS = [
   './',
