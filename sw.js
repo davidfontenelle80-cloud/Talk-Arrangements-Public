@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v50-rollover-preview-polish';
+const CACHE_VERSION = 'talk-arrangements-v51-terminology-polish';
 
 const PRECACHE_URLS = [
   './',
