@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-3-2-live-testing
+current_stage: stage-3-2a-live-testing
 next_stage: stage-4-rollover-integration
-cache_version: talk-arrangements-v43-planning-override-actions
+cache_version: talk-arrangements-v44-banner-naming-polish
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -58,23 +58,6 @@ Commits:
 - 4532c9526219766601acce8d7b5aa7eb9ae1ace4
 - 301555a329a8e5223b3a5033811270a33c877b72
 
-Data model:
-
-```js
-fixedArrangements: [
-  {
-    id: "uuid",
-    congregation: "",
-    months: [],
-    mode: "continuous",
-    years: [],
-    note: ""
-  }
-]
-```
-
-Existing congregation.isFixed behavior was preserved. Rollover was not changed.
-
 ### Stage 2 — Fixed Arrangements Manager UI
 
 Status: approved by David.
@@ -117,40 +100,40 @@ Commits:
 - 98274af9995c1d50a4ecc6270ba79db930291382
 - bef5f3c8c45177e241793e329567f8ae4d964c5e
 
-Expected behavior:
-
-- Planning rows that conflict with active fixed rules are highlighted red.
-- A Fixed Arrangement Conflict warning appears in the affected planning year panel.
-- Warning shows month, planned congregation, and fixed congregation.
-- Planning data is not overwritten or blocked.
-- Fixed rules are not changed.
-- No rollover behavior changed.
-
 ### Stage 3.2 — Planning Override Action
+
+Status: approved with observations by David screenshot/testing.
+
+Commits:
+
+- fd1e8eb52113f1e0ec9fc921367e4d4bc214cebe
+- a19f6264493d3f05722f6db2f17fea2debbbbc05
+- d4ec18ae2d3a50f0ebc26303a90e28057a2a7891
+
+### Stage 3.2A — Banner Naming Polish
 
 Status: code implemented, live testing required.
 
 Commits:
 
-- fd1e8eb52113f1e0ec9fc921367e4d4bc214cebe — Add planning fixed override actions
-- a19f6264493d3f05722f6db2f17fea2debbbbc05 — Bump cache for planning override actions
+- 11e7c2a7aef4862d4aa3ca8fb47c4309304c5d6a — Polish planning banner labels
+- 1c9cb62c699ed133fb52e39c073e099b7d11420c — Bump cache for banner naming polish
 
 Cache:
 
 ```text
-talk-arrangements-v43-planning-override-actions
+talk-arrangements-v44-banner-naming-polish
 ```
 
 Expected behavior:
 
-- Conflict banner shows action buttons for each conflict:
-  - Use fixed arrangement
-  - Override for this year
-- Use fixed arrangement confirms first, then changes the planning row back to the fixed congregation and refreshes contact.
-- Override for this year confirms first, then stores row.fixedOverrides[] with the fixed rule id.
-- Overridden rows become warning-highlighted instead of red conflict-highlighted.
-- Banner changes from conflict to Override noted.
-- Fixed rule remains unchanged.
+- Active unresolved planning conflicts are titled:
+  - English: Active conflicts
+  - Spanish: Conflictos activos
+- Approved one-year overrides are titled:
+  - English: Approved overrides
+  - Spanish: Anulaciones aprobadas
+- Existing conflict detection, override actions, fixed rules, and storage are unchanged.
 - No rollover behavior changed.
 
 Known follow-up request added by David:
@@ -161,25 +144,19 @@ Known follow-up request added by David:
 - This prevents stale contact data remaining after congregation is cleared.
 - Recommended as Stage 3.3 or Stage 5 polish.
 
-## Stage 3.2 Live Test Checklist
+## Stage 3.2A Live Test Checklist
 
 - App loads after cache update.
-- Create/use a fixed rule for a specific year/month.
-- In Planning, enter a different congregation for that same year/month.
-- Confirm red conflict banner appears.
-- Tap Override for this year.
-- Confirm modal appears.
-- Confirm override.
-- Confirm row changes from red conflict to warning/override state.
-- Confirm Override noted appears.
-- Confirm fixed rule is unchanged.
-- Tap Use fixed arrangement on another conflict.
-- Confirm row changes back to fixed congregation and contact refreshes.
+- Create or use a planning conflict.
+- Confirm banner says Active conflicts / Conflictos activos.
+- Override one conflict.
+- Confirm override banner says Approved overrides / Anulaciones aprobadas.
+- Confirm action buttons still work.
 - Confirm English/Spanish, light/dark, mobile are usable.
 
 ## Next Stage
 
-Stage 3.2 must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
+Stage 3.2A must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
 
 ## Later Stages
 
