@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v51-terminology-polish';
+const CACHE_VERSION = 'talk-arrangements-v52-toolbar-i18n-polish';
 
 const PRECACHE_URLS = [
   './',
@@ -18,6 +18,7 @@ const PRECACHE_URLS = [
   './js/fixed-manager-ux.js',
   './js/planning-conflicts.js',
   './js/rollover-preview.js',
+  './js/toolbar-i18n.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
