@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v39-fixed-manager-ui';
+const CACHE_VERSION = 'talk-arrangements-v40-fixed-preview-engine';
 
 /**
  * All URLs that make up the app shell.
@@ -38,6 +38,7 @@ const PRECACHE_URLS = [
   './js/error-boundary.js',
   './js/a11y.js',
   './js/dashboard-notes.js',
+  './js/fixed-preview.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
