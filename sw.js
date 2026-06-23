@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v41-fixed-manager-ux-cleanup';
+const CACHE_VERSION = 'talk-arrangements-v42-planning-conflict-warnings';
 
 /**
  * All URLs that make up the app shell.
@@ -40,6 +40,7 @@ const PRECACHE_URLS = [
   './js/dashboard-notes.js',
   './js/fixed-preview.js',
   './js/fixed-manager-ux.js',
+  './js/planning-conflicts.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
