@@ -96,6 +96,17 @@
     if (fn) { e.preventDefault(); fn(e); }
   });
 
+  function loadScriptOnce(src) {
+    if (document.querySelector('script[src="' + src + '"]')) return Promise.resolve();
+    return new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      script.onload = resolve;
+      document.body.appendChild(script);
+    });
+  }
+
   // ── Default shortcuts ─────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     applyFontScale(_fontStep);
@@ -109,19 +120,10 @@
 
     // Talk app local enhancement loader. App-specific UI behavior lives in
     // separate files so this boilerplate utility does not carry app UI code.
-    if (document.getElementById('dashboardRows') && !document.querySelector('script[src="js/dashboard-notes.js"]')) {
-      const script = document.createElement('script');
-      script.src = 'js/dashboard-notes.js';
-      script.defer = true;
-      script.onload = function () {
-        if (!document.querySelector('script[src="js/fixed-preview.js"]')) {
-          const preview = document.createElement('script');
-          preview.src = 'js/fixed-preview.js';
-          preview.defer = true;
-          document.body.appendChild(preview);
-        }
-      };
-      document.body.appendChild(script);
+    if (document.getElementById('dashboardRows')) {
+      loadScriptOnce('js/dashboard-notes.js')
+        .then(() => loadScriptOnce('js/fixed-preview.js'))
+        .then(() => loadScriptOnce('js/fixed-manager-ux.js'));
     }
   });
 
