@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4a-batch-2-live-testing
-next_stage: stage-4a-batch-3-preview-engine
-cache_version: talk-arrangements-v46-rollover-preview-shell
+current_stage: stage-4a-batch-3-code-implemented-live-testing-required
+next_stage: stage-4a-batch-4-or-stage-4b-after-david-approval
+cache_version: talk-arrangements-v48-rollover-preview-engine
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -31,6 +31,7 @@ The system must allow fixed arrangements that are continuous, limited to selecte
 - Any future override must require explicit confirmation.
 - Do not change Firebase config, Firestore rules, cloud backup paths, or localStorage keys.
 - Do not implement notifications or auto-send in this cycle.
+- Rollover Preview Stage 4A is read-only only: no saveState, no localStorage writes, no Firebase writes, no new planning year, no Apply behavior.
 
 ## Completed Stages
 
@@ -67,57 +68,94 @@ Status: code implemented, live testing required.
 Commits: 11e7c2a7aef4862d4aa3ca8fb47c4309304c5d6a, 1c9cb62c699ed133fb52e39c073e099b7d11420c, 0455de88231940751279ce0849e1d9e8a9a10660
 Cache: talk-arrangements-v44-banner-naming-polish
 
-### Stage 4A — Rollover Preview and Review
-Status: batch 2 code implemented, live testing required.
-Batch 1 — bootstrap only.
+### Stage 4A Batch 1 — Rollover Preview Bootstrap
+Status: code implemented.
 Commits:
 - b4b5243d90199dd18e871bbdacd0ab9cc1dd2302 — Add rollover preview placeholder/bootstrap file
 - eaa928b0a79e5eaf15a41cd60bb5028402e35995 — Load rollover preview bootstrap
 - 181935a96b44c046429024b1881cecb72805edb0 — Bump cache for rollover preview bootstrap
 - 0cb8acb368a3fca184c1ac69d5bd44ea70a43a53 — Update handoff for rollover preview bootstrap
 
-Batch 2 — UI shell only.
+### Stage 4A Batch 2 — Rollover Preview Button/Modal Shell
+Status: code implemented. David confirmed Preview Rollover button and modal appear.
 Commits:
 - fc6cb8f52a65527d71d3e5c17333c1f9b948f3b6 — Add rollover preview UI shell
 - 8f679a1bc9acfdff1ccf0c930b9f1915c8d22e61 — Bump cache for rollover preview shell
-
 Cache: talk-arrangements-v46-rollover-preview-shell
-Expected behavior:
-- Preview Rollover / Vista previa button appears near Next Year.
-- Modal opens.
-- Modal shows source year and target year selectors.
-- Modal shows placeholder note only.
-- Apply button is disabled.
-- No preview calculation yet.
-- No data changes.
-- No rollover logic changes.
 
-Known follow-up request added by David:
+### Stage 4A Batch 2A — Preview Modal Language Toggle Fix
+Status: code implemented after David found EN/ES modal wording did not update live.
+Commits:
+- dd061856a2c8511293655fd65de1ba88500312e8
+- 2880cb113da854fef84a40f4e3c9bdc8e11293ad
+- 61f15fde00d6a99ce32d9e776a4de2e07091cbf2
+Cache: talk-arrangements-v47-rollover-preview-labels
+
+### Stage 4A Batch 3 — Rollover Preview Engine
+Status: code implemented / live testing required.
+Commits:
+- d73ff2ce3bcbd19ba9045ede802b0874fc995e3e — Add rollover preview engine
+- d330376020d8551f91142f46ccdd2e1d19df8b03 — Bump cache for rollover preview engine
+- this handoff update commit records Batch 3 state
+Files changed:
+- js/rollover-preview.js
+- sw.js
+- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
+Cache: talk-arrangements-v48-rollover-preview-engine
+
+Batch 3 behavior:
+- Existing Preview Rollover modal now calculates 12 read-only month results from state.planning, state.fixedArrangements, and row.fixedOverrides.
+- Shows summary totals for fixed arrangements, year-specific rules, copied months, overrides requiring review, conflicts, and empty months.
+- Displays all 12 months with labels: FIXED_RULE, YEAR_SPECIFIC, COPIED, OVERRIDE_REVIEW, CONFLICT, EMPTY.
+- Fixed rules win in preview, but no data is written.
+- Source-year overrides are shown as review items and are not carried forward automatically.
+- Target-year existing data that differs from an applicable fixed rule is marked as conflict.
+- Apply remains disabled and says Stage 4B / Aplicar en Etapa 4B.
+
+Batch 3 test checklist:
+- App loads after cache update.
+- Preview Rollover button appears near Next Year.
+- Modal opens and closes.
+- Source year and target year selectors work.
+- Changing either selector recalculates results.
+- Preview shows all 12 months.
+- Fixed rules are identified.
+- Year-specific fixed rules are identified.
+- Copied months are identified when no fixed rule applies and source has data.
+- Source overrides are shown as review items and do not copy forward.
+- Conflicts are shown when target has a different congregation than the fixed rule.
+- Empty months are shown when there is no fixed rule and no source congregation.
+- No data changes after closing the modal.
+- English/Spanish labels update while the modal is open.
+- Mobile layout remains usable.
+- Desktop layout remains usable.
+- Light/dark mode remains usable.
+- No console errors.
+
+Known issues / risks:
+- Live GitHub Pages verification still required by David.
+- Screenshots still required because UI changed.
+- If multiple fixed rules apply to the same target month, the preview uses the first applicable rule; earlier fixed-manager safeguards should prevent accidental overlaps, but this remains a review risk for future hardening.
+- The service worker file was cache-bumped successfully, but comments were simplified during the update after one platform-filtered write attempt. Behavior remains the same network-first app-shell strategy.
+
+## Known Follow-up Request Added by David
+
 - Add clear-row button for Planning rows.
 - Clear row should confirm first.
 - Clear row should remove congregation, contact, confirmation, date, notes, and related row fields together.
 - This prevents stale contact data remaining after congregation is cleared.
-- Recommended as Stage 3.3 or Stage 5 polish.
-
-## Stage 4A Batch 2 Live Test Checklist
-
-- App loads after cache update.
-- Preview Rollover button appears near Next Year.
-- Modal opens and closes.
-- Source/Target year selectors appear.
-- Apply button is disabled.
-- No data changes after closing.
-- English/Spanish labels are acceptable.
-- Mobile/desktop layout usable.
-- No console errors.
+- Recommended as Stage 3.3 or Stage 5 polish, not part of Stage 4A Batch 3.
 
 ## Next Stage
 
-Stage 4A Batch 3 — preview engine. Calculate safe/year-specific/skipped/conflict/override counts, but keep rendering simple.
+Stop after Stage 4A Batch 3. Do not begin Stage 4A Batch 4 or Stage 4B until David tests and approves.
+
+Possible next choices after approval:
+- Stage 4A Batch 4 — preview rendering polish / edge-case hardening if David finds UI issues.
+- Stage 4B — Apply Rollover with explicit confirmation and no silent overwrite.
 
 ## Later Stages
 
-Stage 4A Batch 4 — render preview results.
 Stage 4A Batch 5 — polish and approval.
 Stage 4B — Apply Rollover.
 Stage 4.5 — Hybrid Mode: manual or automatic, with safety checks.
@@ -134,6 +172,22 @@ Future only: message scheduler, push notifications, optional auto-send backend.
 - sw.js
 - js/a11y.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
+
+## Required Report Format From Any Worker
+
+- Summary
+- Commit hash
+- Files changed
+- Tests run
+- Screenshots if UI changed
+- Cache version
+- Bugs fixed
+- Known issues
+- Mobile verification
+- Desktop verification
+- Light/dark verification
+- Live GitHub Pages verification
+- Remaining risks
 
 ## Final Cleanup
 
