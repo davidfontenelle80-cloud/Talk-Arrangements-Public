@@ -123,7 +123,8 @@
     if (document.getElementById('dashboardRows')) {
       loadScriptOnce('js/dashboard-notes.js')
         .then(() => loadScriptOnce('js/fixed-preview.js'))
-        .then(() => loadScriptOnce('js/fixed-manager-ux.js'));
+        .then(() => loadScriptOnce('js/fixed-manager-ux.js'))
+        .then(() => loadScriptOnce('js/planning-conflicts.js'));
     }
   });
 
