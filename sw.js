@@ -18,7 +18,7 @@
  * BUMP THIS VERSION STRING on every deploy that changes HTML, CSS, JS, manifest, or SW behavior.
  */
 
-const CACHE_VERSION = 'talk-arrangements-v45-rollover-preview-bootstrap';
+const CACHE_VERSION = 'talk-arrangements-v46-rollover-preview-shell';
 
 /**
  * All URLs that make up the app shell.
