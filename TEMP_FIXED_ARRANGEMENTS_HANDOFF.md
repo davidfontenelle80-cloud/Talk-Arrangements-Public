@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-2-1-live-testing
-next_stage: stage-3-approval-then-stage-4-rollover-integration
-cache_version: talk-arrangements-v41-fixed-manager-ux-cleanup
+current_stage: stage-3-1-live-testing
+next_stage: stage-4-rollover-integration
+cache_version: talk-arrangements-v42-planning-conflict-warnings
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -93,6 +93,26 @@ Expected behavior:
 - Rules save into state.fixedArrangements.
 - Rollover behavior is not changed yet.
 
+### Stage 2.1 — Fixed Arrangements Manager UX Cleanup
+
+Status: code implemented, David reported it works.
+
+Commits:
+
+- b2be195ee71709da84687b53ff484ddd9ce4b08c — Add fixed manager UX cleanup
+- f66557e3e80a24e2d265f89fe1e3e06e2be4ba17 — Load fixed manager UX cleanup
+- a17fc951d3ab72df85d51b4459fc74293466c377 — Bump cache for fixed manager UX cleanup
+- 3a510fa203f1bb3f8e02fc29853ba384de0a1fda — Update handoff for stage 2.1 cleanup
+
+Expected behavior:
+
+- Continuous mode clears and disables years.
+- Selected Years mode enables year selection.
+- Selected Years still requires at least one year.
+- Helper text explains that changing month by year should use separate rules.
+- Duplicate month conflicts between active rules produce a warning before saving anyway.
+- No rollover behavior changed.
+
 ### Stage 3 — Preview and Conflict Engine
 
 Status: code implemented, live testing required.
@@ -118,29 +138,29 @@ Expected behavior:
 - Planning rows win by default.
 - No rollover integration yet.
 
-### Stage 2.1 — Fixed Arrangements Manager UX Cleanup
+### Stage 3.1 — Planning Conflict Awareness
 
 Status: code implemented, live testing required.
 
 Commits:
 
-- b2be195ee71709da84687b53ff484ddd9ce4b08c — Add fixed manager UX cleanup
-- f66557e3e80a24e2d265f89fe1e3e06e2be4ba17 — Load fixed manager UX cleanup
-- a17fc951d3ab72df85d51b4459fc74293466c377 — Bump cache for fixed manager UX cleanup
+- 2dbd14167b1f13ee95efae9216512a66c87c9f08 — Add planning fixed conflict warnings
+- fafbc65b72cfddc21cc68030a961684bbe0f631e — Load planning conflict warnings
+- 98274af9995c1d50a4ecc6270ba79db930291382 — Bump cache for planning conflict warnings
 
 Cache:
 
 ```text
-talk-arrangements-v41-fixed-manager-ux-cleanup
+talk-arrangements-v42-planning-conflict-warnings
 ```
 
 Expected behavior:
 
-- Continuous mode clears and disables years.
-- Selected Years mode enables year selection.
-- Selected Years still requires at least one year.
-- Helper text explains that changing month by year should use separate rules.
-- Duplicate month conflicts between active rules produce a warning before saving anyway.
+- Planning rows that conflict with active fixed rules are highlighted red.
+- A Fixed Arrangement Conflict warning appears in the affected planning year panel.
+- Warning shows month, planned congregation, and fixed congregation.
+- Planning data is not overwritten or blocked.
+- Fixed rules are not changed.
 - No rollover behavior changed.
 
 Known follow-up request added by David:
@@ -149,25 +169,24 @@ Known follow-up request added by David:
 - Clear row should confirm first.
 - Clear row should remove congregation, contact, confirmation, date, notes, and related row fields together.
 - This prevents stale contact data remaining after congregation is cleared.
-- This is not part of Stage 2.1 unless explicitly approved; recommended as Stage 3.1 or Stage 5 polish.
+- Recommended as Stage 3.2 or Stage 5 polish.
 
-## Stage 2.1 Live Test Checklist
+## Stage 3.1 Live Test Checklist
 
 - App loads after cache update.
-- Open Congregations.
-- Open Fixed Arrangements.
-- Open a new rule.
-- Switch Selected Years to Continuous and confirm years clear/disable.
-- Switch back to Selected Years and confirm years can be selected.
-- Save a rule and confirm it appears in the list.
-- Try to create another active rule for the same month and confirm warning appears.
-- Confirm Save Anyway works only after warning.
-- Confirm no rollover behavior changed.
+- Create or use a fixed rule for a specific year/month.
+- Go to Planning for that same year/month.
+- Enter a different congregation.
+- Confirm the row turns red or is visibly highlighted.
+- Confirm a Fixed Arrangement Conflict warning appears near Year Check.
+- Confirm warning shows planned vs fixed congregation.
+- Confirm changing the planning row back to the fixed congregation removes the warning.
+- Confirm no data is overwritten.
 - Confirm English/Spanish, light/dark, mobile are usable.
 
 ## Next Stage
 
-Stage 3 must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
+Stage 3.1 must be live-tested and approved. Then move to Stage 4 — Rollover Integration.
 
 ## Later Stages
 
@@ -182,6 +201,7 @@ Future only: message scheduler, push notifications, optional auto-send backend.
 - js/dashboard-notes.js
 - js/fixed-preview.js
 - js/fixed-manager-ux.js
+- js/planning-conflicts.js
 - sw.js
 - js/a11y.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
