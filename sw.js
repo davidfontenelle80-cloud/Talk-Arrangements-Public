@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v48-rollover-preview-engine';
+const CACHE_VERSION = 'talk-arrangements-v49-rollover-script-load-repair';
 
 const PRECACHE_URLS = [
   './',
