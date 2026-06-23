@@ -7,212 +7,80 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4a-batch-4-preview-polish-code-implemented-live-testing-required
+current_stage: stage-4a-batch-4-1-terminology-polish-code-implemented-live-testing-required
 next_stage: stage-4b-after-david-approval
-cache_version: talk-arrangements-v50-rollover-preview-polish
+cache_version: talk-arrangements-v51-terminology-polish
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
 # Temporary Fixed Arrangements Handoff
 
-This file is temporary project memory. If another chat takes over, read this file first.
+Read this file before continuing work on the Fixed Arrangements / Rollover feature.
 
 ## Goal
 
-Build a Fixed Arrangement Rules system for the Talk Arrangements app.
-
-The system must allow fixed arrangements that are continuous, limited to selected years, and assigned to one month or multiple months. The system must never silently overwrite existing planning or schedule data.
+Build a safe Fixed Arrangement / Rollover system that clearly shows conflicts before any future rollover apply step.
 
 ## Safety Rules
 
 - No silent overwrites.
-- Planning rows win by default.
-- Conflicts must be shown to the user.
-- Any future override must require explicit confirmation.
-- Do not change Firebase config, Firestore rules, cloud backup paths, or localStorage keys.
-- Do not implement notifications or auto-send in this cycle.
-- Rollover Preview Stage 4A is read-only only: no saveState, no localStorage writes, no Firebase writes, no new planning year, no Apply behavior.
+- Show conflicts clearly.
+- Preview and wording batches are display-only.
+- Do not begin Stage 4B until David approves the live UI.
 
-## Completed Stages
+## Current Status
 
-### Stage 0.5 — Cleanup and Stabilization
-Status: code implemented. David reported app looks good.
-Commits: 39114a9ac255b2d694116196e4e3b71e8ae7f5dd, 86bfacce557a8bd49993560fb212a8d4d75a4c68
-
-### Stage 1 — Fixed Arrangement Data Model
-Status: code implemented.
-Commits: 4532c9526219766601acce8d7b5aa7eb9ae1ace4, 301555a329a8e5223b3a5033811270a33c877b72
-
-### Stage 2 — Fixed Arrangements Manager UI
-Status: approved by David.
-Commits: ac49fb8d96c4d66aa7a9d9474c00458d1982ff2b, c6f12154e2fe99f4ac2e0863cafca38bf81a88c6
-
-### Stage 2.1 — Fixed Arrangements Manager UX Cleanup
-Status: code implemented, David reported it works.
-Commits: b2be195ee71709da84687b53ff484ddd9ce4b08c, f66557e3e80a24e2d265f89fe1e3e06e2be4ba17, a17fc951d3ab72df85d51b4459fc74293466c377, 3a510fa203f1bb3f8e02fc29853ba384de0a1fda
-
-### Stage 3 — Preview and Conflict Engine
-Status: code implemented, live testing required.
-Commits: 644d946649fc1e6b8089633707fb81728b003ff3, 8d804ffc0bad647cd20dc9508e464756b49d5d09, 169f1a511791b8f7dad45990528f412c4e1537c5, f4ef70c261014dc6ecb4c5330e71cfe409af03f5
-
-### Stage 3.1 — Planning Conflict Awareness
-Status: code implemented, David reported conflict banner works.
-Commits: 2dbd14167b1f13ee95efae9216512a66c87c9f08, fafbc65b72cfddc21cc68030a961684bbe0f631e, 98274af9995c1d50a4ecc6270ba79db930291382, bef5f3c8c45177e241793e329567f8ae4d964c5e
-
-### Stage 3.2 — Planning Override Action
-Status: approved with observations by David screenshot/testing.
-Commits: fd1e8eb52113f1e0ec9fc921367e4d4bc214cebe, a19f6264493d3f05722f6db2f17fea2debbbbc05, d4ec18ae2d3a50f0ebc26303a90e28057a2a7891
-
-### Stage 3.2A — Banner Naming Polish
-Status: code implemented, live testing required.
-Commits: 11e7c2a7aef4862d4aa3ca8fb47c4309304c5d6a, 1c9cb62c699ed133fb52e39c073e099b7d11420c, 0455de88231940751279ce0849e1d9e8a9a10660
-Cache: talk-arrangements-v44-banner-naming-polish
-
-### Stage 4A Batch 1 — Rollover Preview Bootstrap
-Status: code implemented.
-Commits:
-- b4b5243d90199dd18e871bbdacd0ab9cc1dd2302 — Add rollover preview placeholder/bootstrap file
-- eaa928b0a79e5eaf15a41cd60bb5028402e35995 — Load rollover preview bootstrap
-- 181935a96b44c046429024b1881cecb72805edb0 — Bump cache for rollover preview bootstrap
-- 0cb8acb368a3fca184c1ac69d5bd44ea70a43a53 — Update handoff for rollover preview bootstrap
-
-### Stage 4A Batch 2 — Rollover Preview Button/Modal Shell
-Status: code implemented. David confirmed Preview Rollover button and modal appear.
-Commits:
-- fc6cb8f52a65527d71d3e5c17333c1f9b948f3b6 — Add rollover preview UI shell
-- 8f679a1bc9acfdff1ccf0c930b9f1915c8d22e61 — Bump cache for rollover preview shell
-Cache: talk-arrangements-v46-rollover-preview-shell
-
-### Stage 4A Batch 2A — Preview Modal Language Toggle Fix
-Status: code implemented after David found EN/ES modal wording did not update live.
-Commits:
-- dd061856a2c8511293655fd65de1ba88500312e8
-- 2880cb113da854fef84a40f4e3c9bdc8e11293ad
-- 61f15fde00d6a99ce32d9e776a4de2e07091cbf2
-Cache: talk-arrangements-v47-rollover-preview-labels
-
-### Stage 4A Batch 3 — Rollover Preview Engine
-Status: live-tested by David; approved with observations.
-Commits:
-- d73ff2ce3bcbd19ba9045ede802b0874fc995e3e — Add rollover preview engine
-- d330376020d8551f91142f46ccdd2e1d19df8b03 — Bump cache for rollover preview engine
-- 90c83e9eeee381d672773d3a34432a6feab67160 — Update handoff for rollover preview engine
-Cache: talk-arrangements-v48-rollover-preview-engine
-David screenshot confirmed summary cards and 12-month preview results load.
-
-### Stage 4A Batch 3 Load Repair — Feature Script Loading
-Status: live-tested by David; repair worked.
-Reason: David’s live screenshot initially showed old Batch 2 placeholder text. Repo inspection found `index.html` was not explicitly loading feature scripts after `js/app.js`.
-Commits:
-- 0271b6412574cf2e2875e254fb31c0d5d57ab1c3 — Load fixed arrangement feature scripts
-- 9b07311fe980ca8b5bf6689eb7baa6828bdb9733 — Bump cache for feature script load repair
-- eab120a0d4f1e893caddbdeebeb635c7767e8ddb — Update handoff for script load repair
-Cache: talk-arrangements-v49-rollover-script-load-repair
-Repair behavior:
-- `index.html` now loads these feature scripts after `js/app.js`:
-  - js/dashboard-notes.js
-  - js/fixed-preview.js
-  - js/fixed-manager-ux.js
-  - js/planning-conflicts.js
-  - js/rollover-preview.js
-- No save, localStorage, Firebase, cloud backup, or Apply behavior was added.
-
-### Stage 4A Batch 4 — Rollover Preview Polish / Conflict Clarity
+### Stage 4A Batch 4.1 — Terminology Polish
 Status: code implemented / live testing required.
-Reason: David’s live screenshot showed rows labeled “Copied from source” even when the target year already had a different congregation. That is risky for Stage 4B because it could make a future apply step look safer than it is.
+
 Commits:
-- 992099a714debb543220d23bc5da2c357cf593e0 — Polish rollover preview conflict clarity
-- 3a21b6802de5494df8122f701b85feac42a19b5e — Bump cache for rollover preview polish
-- this handoff update commit records Batch 4 state
+- 285c5b18dc63eb1319f6f035c97de0d6d1072b17 — Polish planning conflict terminology
+- e4409adefbfd637bdbc6376b596ccc10ea8798ca — Bump cache for terminology polish
+- this handoff update commit records Batch 4.1 state
+
 Files changed:
-- js/rollover-preview.js
+- js/planning-conflicts.js
 - sw.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
-Cache: talk-arrangements-v50-rollover-preview-polish
-Batch 4 behavior:
-- Still read-only only.
-- No Apply behavior added.
-- No data writes added.
-- If target year already has a different congregation than the preview result, the row is labeled Conflict — review required.
-- Conflict count now includes target-year conflicts for copied rows, not only fixed-rule rows.
-- Added a warning alert above the list when conflicts exist.
-- Wording changed from “Target existing” to clearer labels:
-  - Conflict rows: “Target has now” / “Destino tiene ahora.”
-  - Matching rows: “Target already matches” / “Destino ya coincide.”
-- Apply button remains disabled and says Stage 4B / Aplicar en Etapa 4B.
 
-Batch 4 test checklist:
+Cache:
+- talk-arrangements-v51-terminology-polish
+
+Batch 4.1 behavior:
+- English conflict banner now says: Review needed.
+- Spanish conflict banner now says: Revisión necesaria.
+- Planned / Planificado changed to Current Schedule / Programa actual.
+- Fixed / Fijo changed to Fixed Arrangement / Arreglo fijo.
+- Override button changed to Keep Current Schedule / Mantener programa actual.
+- Approved override section wording was softened.
+- Confirmation dialogs and toast messages were updated to match.
+- No rollover apply behavior was added.
+
+## Prior Stage Notes
+
+- Stage 4A Batch 3 preview engine was live-tested by David and showed summary cards plus month-by-month results.
+- Stage 4A Batch 3 load repair fixed the script-loading issue by loading feature scripts after js/app.js.
+- Stage 4A Batch 4 clarified rollover preview conflicts and bumped cache to talk-arrangements-v50-rollover-preview-polish.
+
+## Batch 4.1 Live Checklist
+
 - App loads after cache update.
-- Preview Rollover modal opens.
-- Modal still shows summary totals and all 12 months.
-- Rows where target has a different congregation are marked Conflict — review required.
-- Rows with blank target and source data are marked Copied from source.
-- Conflict warning appears above the list when conflicts exist.
-- Apply remains disabled.
-- EN/ES labels update while modal is open.
-- Mobile layout remains usable.
-- Desktop layout remains usable.
-- Light/dark mode remains usable.
+- English wording appears correctly.
+- Spanish wording appears correctly.
+- Buttons still perform the same actions.
+- Confirmation dialogs still appear.
+- Approved current schedule section still appears for existing year-only keeps.
+- Mobile and desktop remain usable.
+- Light and dark mode remain usable.
 - No console errors.
-- Closing modal changes no data.
-
-Known issues / risks:
-- Live GitHub Pages verification required for Batch 4.
-- Screenshots required because UI changed.
-- If multiple fixed rules apply to the same target month, preview still uses the first applicable rule. Earlier fixed-manager safeguards reduce this risk, but future hardening should explicitly detect multiple fixed rules for one month/year.
-
-## Known Follow-up Request Added by David
-
-- Add clear-row button for Planning rows.
-- Clear row should confirm first.
-- Clear row should remove congregation, contact, confirmation, date, notes, and related row fields together.
-- This prevents stale contact data remaining after congregation is cleared.
-- Recommended as Stage 5 polish, not part of Stage 4A Batch 4.
 
 ## Next Stage
 
-Stop after Stage 4A Batch 4. Do not begin Stage 4B until David tests and approves.
+Stop after Stage 4A Batch 4.1. Do not begin Stage 4B until David tests and approves.
 
-After approval:
-- Stage 4B — Apply Rollover with explicit confirmation, conflict stop/review, and no silent overwrite.
+After approval: Stage 4B — Apply Rollover with explicit confirmation, conflict review, and no silent overwrite.
 
-## Later Stages
+## Known Follow-up
 
-Stage 4B — Apply Rollover.
-Stage 4.5 — Hybrid Mode: manual or automatic, with safety checks.
-Stage 5 — QA and Planning row clear button.
-Future only: message scheduler, push notifications, optional auto-send backend.
-
-## Files Involved
-
-- index.html
-- js/dashboard-notes.js
-- js/fixed-preview.js
-- js/fixed-manager-ux.js
-- js/planning-conflicts.js
-- js/rollover-preview.js
-- sw.js
-- js/a11y.js
-- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
-
-## Required Report Format From Any Worker
-
-- Summary
-- Commit hash
-- Files changed
-- Tests run
-- Screenshots if UI changed
-- Cache version
-- Bugs fixed
-- Known issues
-- Mobile verification
-- Desktop verification
-- Light/dark verification
-- Live GitHub Pages verification
-- Remaining risks
-
-## Final Cleanup
-
-When the Fixed Arrangements feature is complete and live-approved, delete this file:
-
-TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
+- Add a clear-row button for Planning rows later.
+- Clear row should confirm first and clear the related row fields together.
