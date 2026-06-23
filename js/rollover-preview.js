@@ -1,6 +1,6 @@
 /**
  * Stage 4A — Rollover Preview
- * Batch 2: visible button and empty modal shell only.
+ * Batch 2A: visible button and empty modal shell only.
  * No preview calculation. No data writes.
  */
 (function () {
@@ -61,17 +61,23 @@
     return modal;
   }
 
-  function openModal() {
-    ensureStyles();
+  function renderButtonText() {
+    const btn = document.getElementById('rolloverPreviewBtn');
+    if (btn) btn.innerHTML = '&#128269; <span>' + text('Preview Rollover', 'Vista previa') + '</span>';
+  }
+
+  function renderModalText(preserveSelection) {
     const modal = buildModal();
     const years = yearOptions();
     const current = Number((window.state && state.currentYear) || new Date().getFullYear());
+    const previousSource = document.getElementById('rolloverPreviewSource')?.value;
+    const previousTarget = document.getElementById('rolloverPreviewTarget')?.value;
     const options = years.map(function (year) {
       return '<option value="' + year + '">' + year + '</option>';
     }).join('');
 
     document.getElementById('rolloverPreviewShellTitle').textContent = text('Rollover Preview', 'Vista previa del cambio de año');
-    document.getElementById('rolloverPreviewShellHint').textContent = text('Batch 2 shell only. No data will be changed.', 'Solo estructura de la etapa 2. No se cambiarán datos.');
+    document.getElementById('rolloverPreviewShellHint').textContent = text('Batch 2 shell only. No data will be changed.', 'Solo estructura del lote 2. No se cambiarán datos.');
     document.getElementById('rolloverSourceLabel').innerHTML = text('Source year', 'Año origen') + ': <select id="rolloverPreviewSource">' + options + '</select>';
     document.getElementById('rolloverTargetLabel').innerHTML = text('Target year', 'Año destino') + ': <select id="rolloverPreviewTarget">' + options + '</select>';
     document.getElementById('rolloverPreviewShellBody').textContent = text('Preview results will be added in the next batch.', 'Los resultados de la vista previa se agregarán en el próximo lote.');
@@ -80,22 +86,43 @@
 
     const source = document.getElementById('rolloverPreviewSource');
     const target = document.getElementById('rolloverPreviewTarget');
-    if (source) source.value = String(current);
-    if (target) target.value = String(current + 1);
+    if (source) source.value = preserveSelection && previousSource ? previousSource : String(current);
+    if (target) target.value = preserveSelection && previousTarget ? previousTarget : String(current + 1);
+    return modal;
+  }
+
+  function openModal() {
+    ensureStyles();
+    const modal = renderModalText(false);
     modal.classList.add('open');
   }
 
   function injectButton() {
-    if (document.getElementById('rolloverPreviewBtn')) return;
+    if (document.getElementById('rolloverPreviewBtn')) {
+      renderButtonText();
+      return;
+    }
     const rolloverBtn = document.getElementById('rolloverBtn');
     if (!rolloverBtn || !rolloverBtn.parentNode) return;
     const btn = document.createElement('button');
     btn.id = 'rolloverPreviewBtn';
     btn.type = 'button';
-    btn.innerHTML = '&#128269; <span>' + text('Preview Rollover', 'Vista previa') + '</span>';
     btn.addEventListener('click', openModal);
     rolloverBtn.parentNode.insertBefore(btn, rolloverBtn);
+    renderButtonText();
   }
+
+  function refreshLanguageText() {
+    renderButtonText();
+    const modal = document.getElementById('rolloverPreviewShellModal');
+    if (modal && modal.classList.contains('open')) renderModalText(true);
+  }
+
+  document.addEventListener('click', function (event) {
+    if (event.target && event.target.closest('[data-lang]')) {
+      setTimeout(refreshLanguageText, 80);
+    }
+  });
 
   let tries = 0;
   (function waitForApp() {
