@@ -10,11 +10,6 @@
 
   function isEs(){ return window.state && state.language === 'es'; }
   function t(en, es){ return isEs() ? es : en; }
-  function escLocal(value){
-    if (typeof esc === 'function') return esc(value);
-    value = String(value == null ? '' : value);
-    return value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
   function monthList(){
     return typeof months === 'function' ? months() : ['January','February','March','April','May','June','July','August','September','October','November','December'];
   }
@@ -32,7 +27,7 @@
       '.unified-note-modal textarea{width:100%;min-height:240px;max-height:50vh;resize:vertical;padding:12px;line-height:1.45;font-size:16px;background:var(--panel-2,var(--panel));}',
       '.unified-note-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}',
       '.unified-note-count{font-size:12px;color:var(--muted);}',
-      'textarea[data-field="note"]{cursor:pointer;}',
+      'textarea[data-field="note"],input[data-field="note"]{cursor:pointer;}',
       '@media(max-width:620px){.unified-note-modal{max-height:92vh;padding:14px}.unified-note-modal textarea{min-height:300px}.unified-note-actions button{flex:1 1 auto;}}'
     ].join('');
     document.head.appendChild(style);
@@ -130,7 +125,7 @@
   }
 
   function handleNoteOpen(event){
-    var field = event.target && event.target.closest ? event.target.closest('textarea[data-field="note"]') : null;
+    var field = event.target && event.target.closest ? event.target.closest('textarea[data-field="note"],input[data-field="note"]') : null;
     if(!field) return;
     var ctx = contextFromField(field);
     if(!ctx) return;
