@@ -103,7 +103,7 @@
     return plan.rows.find(function (row) { return rowMonth(row) === Number(month); }) || null;
   }
   function rules() { return Array.isArray(window.state && state.fixedArrangements) ? state.fixedArrangements : []; }
-  function findRuleById(id) { return rules().find(function (rule) { return rule && String(rule.id) === String(id); }) || null; }
+  function findRuleById(id) { return rules().find(function (rule) { return rule && id && String(rule.id) === String(id); }) || null; }
   function appliesToYear(rule, year) {
     if (!rule) return false;
     if (rule.mode === 'years') return Array.isArray(rule.years) && rule.years.indexOf(Number(year)) !== -1;
@@ -113,6 +113,9 @@
     return rules().find(function (rule) {
       return rule && String(rule.congregation || '').trim() && Array.isArray(rule.months) && rule.months.indexOf(Number(month)) !== -1 && appliesToYear(rule, year);
     }) || null;
+  }
+  function findRuleForConflict(item, ruleId) {
+    return findRuleById(ruleId) || item.rule || fixedRuleFor(item.targetYear, item.month);
   }
   function hasSourceOverride(row) { return !!(row && Array.isArray(row.fixedOverrides) && row.fixedOverrides.length); }
   function sourceOverrideText(row) {
@@ -239,8 +242,8 @@
     let html = '<div class="rollover-resolution-actions">' +
       '<button type="button" data-rollover-resolution="keep-target"' + base + '>' + escLocal(text('Keep Current Schedule', 'Mantener programa actual')) + '</button>' +
       '<button type="button" data-rollover-resolution="use-preview"' + base + '>' + escLocal(text('Use Preview Result', 'Usar resultado previsto')) + '</button>';
-    if (item.rule && item.rule.id && item.targetCong) {
-      html += '<button type="button" data-rollover-resolution="update-fixed" data-rule-id="' + escLocal(item.rule.id) + '"' + base + '>' + escLocal(text('Update Fixed Arrangement', 'Actualizar arreglo fijo')) + '</button>';
+    if (item.rule && item.targetCong) {
+      html += '<button type="button" data-rollover-resolution="update-fixed" data-rule-id="' + escLocal(item.rule.id || '') + '"' + base + '>' + escLocal(text('Update Fixed Arrangement', 'Actualizar arreglo fijo')) + '</button>';
     }
     html += '</div>';
     return html;
@@ -273,7 +276,7 @@
     result.rows.forEach(function (item) {
       const proposedLine = item.proposedCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Preview result', 'Resultado previsto')) + ':</strong> ' + escLocal(item.proposedCong) + '</div>' : '';
       const sourceLine = item.sourceCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Source', 'Origen')) + ':</strong> ' + escLocal(item.sourceCong) + '</div>' : '';
-      const targetLabel = item.category === 'CONFLICT' ? text('Target has now', 'Destino tiene ahora') : text('Target already matches', 'Destino ya coincide');
+      const targetLabel = item.category === 'CONFLICT' || item.category === 'RESOLVED' ? text('Target has now', 'Destino tiene ahora') : text('Target already matches', 'Destino ya coincide');
       const targetLine = item.targetCong ? '<div class="rollover-preview-small"><strong>' + escLocal(targetLabel) + ':</strong> ' + escLocal(item.targetCong) + '</div>' : '';
       const overrideLine = item.overrideCong ? '<div class="rollover-preview-small"><strong>' + escLocal(text('Source-year override', 'Anulación del año origen')) + ':</strong> ' + escLocal(item.overrideCong) + '</div>' : '';
       const resolvedLine = item.category === 'RESOLVED' ? '<div><span class="rollover-resolution-badge">' + escLocal(item.resolutionNote || resolutionLabel(item.resolutionKind)) + '</span></div>' : '';
@@ -393,8 +396,11 @@
       return;
     }
     if (action === 'update-fixed') {
-      const rule = findRuleById(ruleId);
-      if (!rule || !item.targetCong) return;
+      const rule = findRuleForConflict(item, ruleId);
+      if (!rule || !item.targetCong) {
+        if (typeof toast === 'function') toast(text('Fixed arrangement rule could not be found.', 'No se pudo encontrar la regla de arreglo fijo.'));
+        return;
+      }
       const msg = text('Update the fixed arrangement to match the current target schedule? This changes future years. Continue?', '¿Actualizar el arreglo fijo para que coincida con el programa actual del destino? Esto cambiará años futuros. ¿Continuar?') + '\n\n' +
         text('Fixed Arrangement: ', 'Arreglo fijo: ') + String(rule.congregation || '') + '\n' +
         text('New Fixed Arrangement: ', 'Nuevo arreglo fijo: ') + item.targetCong;
