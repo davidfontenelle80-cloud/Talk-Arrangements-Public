@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v64-unified-note-modal';
+const CACHE_VERSION = 'talk-arrangements-v65-toolbar-note-fix';
 
 const PRECACHE_URLS = [
   './',
@@ -21,6 +21,7 @@ const PRECACHE_URLS = [
   './js/toolbar-i18n.js',
   './js/planning-clear-row.js',
   './js/unified-note-modal.js',
+  './js/mobile-toolbar.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
