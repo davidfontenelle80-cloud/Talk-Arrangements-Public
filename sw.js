@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v73-note-modal-description-polish';
+const CACHE_VERSION = 'talk-arrangements-v74-notes-callout-cards';
 
 const PRECACHE_URLS = [
   './',

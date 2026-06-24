@@ -52,7 +52,16 @@
       '.note-launcher.has-notes{border-color:var(--warn);background:color-mix(in srgb,var(--warn),var(--panel) 88%);color:var(--warn);font-weight:800;}',
       '.note-launcher .note-dot{display:inline-flex;align-items:center;justify-content:center;min-width:18px;}',
       '.note-launcher .note-label{overflow:hidden;text-overflow:ellipsis;}',
-      '@media(max-width:620px){.unified-note-bg{align-items:flex-start;padding:10px;padding-top:calc(10px + env(safe-area-inset-top));}.unified-note-modal{max-height:92vh;padding:14px}.unified-note-scope{padding:10px}.unified-note-scope h4{display:grid;gap:6px}.unified-note-scope small{width:max-content}.unified-note-scope textarea{min-height:96px;max-height:22vh}.unified-note-actions button{flex:1 1 auto;}.note-launcher{min-width:150px;}}'
+      '@media(max-width:620px){.unified-note-bg{align-items:flex-start;padding:10px;padding-top:calc(10px + env(safe-area-inset-top));}.unified-note-modal{max-height:92vh;padding:14px}.unified-note-scope{padding:10px}.unified-note-scope h4{display:grid;gap:6px}.unified-note-scope small{width:max-content}.unified-note-scope textarea{min-height:96px;max-height:22vh}.unified-note-actions button{flex:1 1 auto;}.note-launcher{min-width:150px;}}',
+      '.note-callout{border-left:3px solid;border-radius:4px;padding:8px 12px;margin:0 0 8px;font-size:0.82rem;line-height:1.55;}',
+      '.note-callout ul{margin:4px 0 0;padding-left:16px;}',
+      '.note-callout li{margin:2px 0;}',
+      '.note-callout--blue{border-color:#3b82f6;background:rgba(59,130,246,0.10);color:#93c5fd;}',
+      '.note-callout--green{border-color:#22c55e;background:rgba(34,197,94,0.10);color:#86efac;}',
+      '.note-callout--amber{border-color:#f59e0b;background:rgba(245,158,11,0.10);color:#fcd34d;}',
+      '[data-theme="light"] .note-callout--blue{color:#1d4ed8;}',
+      '[data-theme="light"] .note-callout--green{color:#15803d;}',
+      '[data-theme="light"] .note-callout--amber{color:#92400e;}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -105,9 +114,9 @@
     modal.innerHTML = '<div class="unified-note-modal" role="dialog" aria-modal="true" aria-labelledby="unifiedNoteTitle">'+
       '<div class="unified-note-head"><div><h3 id="unifiedNoteTitle"></h3><div class="unified-note-meta" id="unifiedNoteMeta"></div></div><button type="button" class="icon-btn" id="unifiedNoteClose">&#215;</button></div>'+ 
       '<div class="unified-note-scroll" id="unifiedNoteScopes">'+
-        '<section class="unified-note-scope" data-note-scope="global"><h4><span id="globalNoteLabel"></span><small id="globalNoteHint"></small></h4><p class="note-scope-desc" id="globalNoteDesc"></p><input id="globalNoteTitle" autocomplete="off"><textarea id="globalNoteDetails"></textarea></section>'+ 
-        '<section class="unified-note-scope" data-note-scope="congregation"><h4><span id="congNoteLabel"></span><small id="congNoteHint"></small></h4><p class="note-scope-desc" id="congNoteDesc"></p><input id="congNoteTitle" autocomplete="off"><textarea id="congNoteDetails"></textarea></section>'+ 
-        '<section class="unified-note-scope" data-note-scope="month"><h4><span id="monthNoteLabel"></span><small id="monthNoteHint"></small></h4><p class="note-scope-desc" id="monthNoteDesc"></p><input id="monthNoteTitle" autocomplete="off"><textarea id="monthNoteDetails"></textarea></section>'+ 
+        '<section class="unified-note-scope" data-note-scope="global"><h4><span id="globalNoteLabel"></span><small id="globalNoteHint"></small></h4><div class="note-callout note-callout--blue" id="globalNoteDesc"></div><input id="globalNoteTitle" autocomplete="off"><textarea id="globalNoteDetails"></textarea></section>'+
+        '<section class="unified-note-scope" data-note-scope="congregation"><h4><span id="congNoteLabel"></span><small id="congNoteHint"></small></h4><div class="note-callout note-callout--green" id="congNoteDesc"></div><input id="congNoteTitle" autocomplete="off"><textarea id="congNoteDetails"></textarea></section>'+
+        '<section class="unified-note-scope" data-note-scope="month"><h4><span id="monthNoteLabel"></span><small id="monthNoteHint"></small></h4><div class="note-callout note-callout--amber" id="monthNoteDesc"></div><input id="monthNoteTitle" autocomplete="off"><textarea id="monthNoteDetails"></textarea></section>'+
       '</div>'+ 
       '<div class="unified-note-count" id="unifiedNoteCount"></div>'+ 
       '<div class="unified-note-actions"><button type="button" id="unifiedNoteCancel"></button><button type="button" class="primary" id="unifiedNoteSave"></button></div>'+ 
@@ -135,13 +144,19 @@
     document.getElementById('unifiedNoteSave').textContent = t('Save','Guardar');
     document.getElementById('globalNoteLabel').textContent = t('🌎 Global note','🌎 Nota global');
     document.getElementById('globalNoteHint').textContent = t('Visible everywhere','Visible en todas partes');
-    document.getElementById('globalNoteDesc').textContent = t('Shows in Dashboard, Planning, Congregations, and future Calendar. Use this for important information that should always be visible.','Se muestra en Tablero, Planificación, Congregaciones y el futuro Calendario. Úsela para información importante que siempre debe verse.');
+    document.getElementById('globalNoteDesc').innerHTML = isEs()
+      ? 'Visible en:<ul><li>Tablero</li><li>Planificación</li><li>Congregaciones</li><li>Calendario (futuro)</li></ul>Úsela para información que siempre debe verse.'
+      : 'Visible in:<ul><li>Dashboard</li><li>Planning</li><li>Congregations</li><li>Future Calendar</li></ul>Use for info that should always be visible.';
     document.getElementById('congNoteLabel').textContent = t('🏛️ Congregation note','🏛️ Nota de congregación');
     document.getElementById('congNoteHint').textContent = t('Follows this congregation','Sigue a esta congregación');
-    document.getElementById('congNoteDesc').textContent = t('Appears whenever this congregation is used. Best for preferences, restrictions, contacts, or permanent instructions.','Aparece cada vez que esta congregación se usa. Ideal para preferencias, restricciones, contactos o instrucciones permanentes.');
+    document.getElementById('congNoteDesc').innerHTML = isEs()
+      ? 'Esta nota acompaña a esta congregación en cualquier mes o año. Ideal para:<ul><li>Preferencias</li><li>Restricciones</li><li>Contactos</li><li>Instrucciones permanentes</li></ul>'
+      : 'Follows this congregation across any month or year. Best for:<ul><li>Preferences</li><li>Restrictions</li><li>Contacts</li><li>Permanent instructions</li></ul>';
     document.getElementById('monthNoteLabel').textContent = t('📅 Month note','📅 Nota del mes');
     document.getElementById('monthNoteHint').textContent = t('Only this month/year','Solo este mes/año');
-    document.getElementById('monthNoteDesc').textContent = t('Only applies to this specific month and year. Best for assemblies, visits, special events, or temporary changes.','Solo aplica a este mes y año específico. Ideal para asambleas, visitas, eventos especiales o cambios temporales.');
+    document.getElementById('monthNoteDesc').innerHTML = isEs()
+      ? 'Solo afecta este mes y año. Ideal para:<ul><li>Visitas del superintendente</li><li>Asambleas</li><li>Eventos especiales</li><li>Cambios temporales</li></ul>'
+      : 'Only applies to this month and year. Best for:<ul><li>Circuit overseer visits</li><li>Assemblies</li><li>Special events</li><li>Temporary changes</li></ul>';
     document.getElementById('globalNoteTitle').placeholder = t('Global note title','Título de nota global');
     document.getElementById('globalNoteDetails').placeholder = t('Details visible everywhere','Detalles visibles en todas partes');
     document.getElementById('congNoteTitle').placeholder = t('Congregation note title','Título de nota de congregación');
