@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-5-planning-clear-no-jump-code-implemented-live-testing-required
+current_stage: stage-5-planning-input-no-jump-code-implemented-live-testing-required
 next_stage: stage-5-live-verification
-cache_version: talk-arrangements-v61-planning-clear-no-jump
+cache_version: talk-arrangements-v62-planning-input-no-jump
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -17,14 +17,14 @@ remove_when: fixed-arrangements-feature-complete-and-live-approved
 
 ## Current Status
 
-Stage 5 Planning Clear Row no-jump polish is code implemented and needs live testing.
+Stage 5 Planning input no-jump fix is code implemented and needs live testing.
 
 Latest commits:
-- 583a925f42dd1abbfc1975e8b8b63b7d04e2b035
-- 25b88e5bf0cc92dca071c758b988a4d3f44713a6
+- 5553efe2fe4d7ff5340e82e8ddcb3121c9ecdd1b
+- 39f851d5dc27d8946331409ad43f2890826749db
 
 Latest cache:
-- talk-arrangements-v61-planning-clear-no-jump
+- talk-arrangements-v62-planning-input-no-jump
 
 Latest files changed:
 - js/planning-clear-row.js
@@ -32,25 +32,22 @@ Latest files changed:
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
 What changed:
-- Planning row clear no longer re-renders the whole Planning table after confirm.
-- The visible row is updated in place.
-- The screen should not jump up and scroll back down.
-- Scroll position is preserved.
-- The congregation field receives focus without scrolling.
-- Clear still requires confirmation.
-- Cancel still changes nothing.
-- Confirming keeps the month and row id.
-- Confirming clears congregation, contact, confirmed, note, and fixed override data.
+- Planning congregation changes are now handled in place.
+- The whole Planning table should not re-render when selecting a congregation.
+- The screen should not jump up and down when entering a congregation.
+- Contact auto-fill still works when contact is blank.
+- Incomplete row styling updates in place.
+- Clear button state updates in place.
+- Clear still requires confirmation and clears the row in place.
 - No Firebase or cloud backup behavior was changed.
 
 Live test checklist:
 - Refresh the app.
 - Open Planning.
 - Scroll to a lower row.
-- Tap Clear / Limpiar.
-- Cancel first and verify nothing changed.
-- Tap Clear / Limpiar again and confirm.
-- Verify the screen does not jump or roll.
-- Verify the row clears in place.
-- Verify the congregation field is ready to edit.
+- Select a congregation.
+- Verify the screen does not jump.
+- Verify contact fills if blank.
+- Clear the row and confirm.
+- Verify the row clears without jumping.
 - Verify language toggle updates Clear / Limpiar.
