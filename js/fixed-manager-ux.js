@@ -19,6 +19,7 @@
     if(document.getElementById('fixedManagerUxStyles'))return;
     var css=''+
       '.confirm-bg{z-index:10000!important;}'+
+      '.confirm-msg{white-space:pre-line;}'+
       '.fixed-years-disabled{opacity:.45;pointer-events:none;}'+
       '.fixed-helper{font-size:12px;line-height:1.35;color:var(--muted);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px;background:var(--panel);}'+
       '.fixed-conflict-panel{border:1px solid var(--warn);background:color-mix(in srgb,var(--warn),var(--panel) 88%);border-radius:var(--radius-sm);padding:10px;margin:10px 0;display:grid;gap:8px;color:var(--text);}'+
