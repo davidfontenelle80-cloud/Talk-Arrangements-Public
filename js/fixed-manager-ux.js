@@ -1,6 +1,6 @@
 /**
- * fixed-manager-ux.js — Stage 2.1 Fixed Arrangements Manager cleanup.
- * Keeps rule entry safer without changing rollover behavior.
+ * fixed-manager-ux.js — Stage 4C fix.
+ * Keeps fixed-rule entry safer and shows duplicate fixed-month warnings inside the editor.
  */
 (function(){
   'use strict';
@@ -14,22 +14,33 @@
   function selectedYears(){return Array.from(document.querySelectorAll('#fixedRuleEditor [data-fixed-year]:checked')).map(function(i){return +i.dataset.fixedYear;});}
   function selectedCongregation(){var el=document.getElementById('fixedRuleCong');return el?el.value:'';}
   function rules(){return state&&Array.isArray(state.fixedArrangements)?state.fixedArrangements:[];}
-  function toastMsg(msg){if(typeof toast==='function')toast(msg);}
 
   function ensureStyles(){
     if(document.getElementById('fixedManagerUxStyles'))return;
     var css=''+
       '.fixed-years-disabled{opacity:.45;pointer-events:none;}'+
       '.fixed-helper{font-size:12px;line-height:1.35;color:var(--muted);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px;background:var(--panel);}'+
-      '.fixed-conflict-warn{border-color:var(--warn);background:color-mix(in srgb,var(--warn),var(--panel) 88%);}';
+      '.fixed-conflict-panel{border:1px solid var(--warn);background:color-mix(in srgb,var(--warn),var(--panel) 88%);border-radius:var(--radius-sm);padding:10px;margin:10px 0;display:grid;gap:8px;color:var(--text);}'+
+      '.fixed-conflict-panel strong{font-weight:800;}'+
+      '.fixed-conflict-panel ul{margin:0 0 0 18px;padding:0;}'+
+      '.fixed-conflict-panel li{margin:3px 0;}'+
+      '.fixed-conflict-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}'+
+      '.fixed-conflict-actions button{padding:8px 10px;}'+
+      '@media(max-width:620px){.fixed-conflict-actions button{width:100%;}}';
     var style=document.createElement('style');
     style.id='fixedManagerUxStyles';
     style.textContent=css;
     document.head.appendChild(style);
   }
 
+  function editorEl(){return document.getElementById('fixedRuleEditor');}
+  function clearConflictPanel(){
+    var old=document.getElementById('fixedInlineConflictPanel');
+    if(old)old.remove();
+  }
+
   function updateYearModeUI(){
-    var editor=document.getElementById('fixedRuleEditor');
+    var editor=editorEl();
     if(!editor||editor.hidden)return;
     var mode=selectedMode();
     var yearsHost=document.getElementById('fixedYearChoices');
@@ -48,7 +59,7 @@
   }
 
   function addHelperText(){
-    var editor=document.getElementById('fixedRuleEditor');
+    var editor=editorEl();
     if(!editor||editor.hidden||editor.querySelector('.fixed-helper'))return;
     var helper=document.createElement('div');
     helper.className='fixed-helper';
@@ -59,12 +70,14 @@
   }
 
   function setupModeListeners(){
-    var editor=document.getElementById('fixedRuleEditor');
+    var editor=editorEl();
     if(!editor||editor.dataset.uxReady==='1')return;
     editor.dataset.uxReady='1';
     editor.addEventListener('change',function(e){
+      clearConflictPanel();
       if(e.target&&e.target.name==='fixedRuleMode')updateYearModeUI();
     });
+    editor.addEventListener('input',clearConflictPanel);
     updateYearModeUI();
     addHelperText();
   }
@@ -77,7 +90,7 @@
     var years=mode==='years'?selectedYears():[];
     var conflicts=[];
     rules().forEach(function(rule){
-      if(rule.id===id)return;
+      if(rule.id&&id&&rule.id===id)return;
       (rule.months||[]).forEach(function(m){
         if(months.indexOf(+m)===-1)return;
         var overlaps=false;
@@ -91,14 +104,36 @@
     return conflicts;
   }
 
-  function showConflictWarning(conflicts,onProceed){
+  function showInlineConflictWarning(conflicts,btn){
+    var editor=editorEl();
+    if(!editor)return;
+    clearConflictPanel();
     var names=monthsList();
-    var lines=conflicts.slice(0,5).map(function(c){
-      return (names[c.month]||c.month)+': '+c.existing;
-    }).join('\n');
-    var msg=txt('Possible fixed-arrangement conflict. These months already belong to another active rule:\n\n','Posible conflicto de arreglo fijo. Estos meses ya pertenecen a otra regla activa:\n\n')+lines+'\n\n'+txt('Save anyway?','¿Guardar de todos modos?');
-    if(typeof showConfirm==='function')showConfirm(msg,onProceed);
-    else if(window.confirm(msg))onProceed();
+    var panel=document.createElement('div');
+    panel.id='fixedInlineConflictPanel';
+    panel.className='fixed-conflict-panel';
+    var items=conflicts.slice(0,8).map(function(c){
+      return '<li><strong>'+names[c.month]+':</strong> '+c.existing+'</li>';
+    }).join('');
+    panel.innerHTML=''+
+      '<strong>'+txt('Possible fixed-arrangement conflict','Posible conflicto de arreglo fijo')+'</strong>'+
+      '<div>'+txt('These months already belong to another active fixed rule.','Estos meses ya pertenecen a otra regla fija activa.')+'</div>'+
+      '<ul>'+items+'</ul>'+
+      '<div>'+txt('You can cancel and adjust the month/year, or save anyway if this is intentional.','Puede cancelar y ajustar el mes/año, o guardar de todos modos si esto es intencional.')+'</div>'+
+      '<div class="fixed-conflict-actions">'+
+        '<button type="button" id="fixedConflictCancel">'+txt('Cancel','Cancelar')+'</button>'+
+        '<button type="button" id="fixedConflictProceed">'+txt('Save anyway','Guardar de todos modos')+'</button>'+
+      '</div>';
+    var saveRow=btn.closest('.row')||btn.parentElement;
+    if(saveRow&&saveRow.parentElement)saveRow.parentElement.insertBefore(panel,saveRow);
+    else editor.appendChild(panel);
+    panel.querySelector('#fixedConflictCancel').addEventListener('click',function(){clearConflictPanel();});
+    panel.querySelector('#fixedConflictProceed').addEventListener('click',function(){
+      clearConflictPanel();
+      btn.dataset.allowConflictSave='1';
+      btn.click();
+    });
+    try{panel.scrollIntoView({behavior:'smooth',block:'center'});}catch(_){panel.scrollIntoView();}
   }
 
   document.addEventListener('click',function(e){
@@ -116,10 +151,7 @@
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
-      showConflictWarning(conflicts,function(){
-        btn.dataset.allowConflictSave='1';
-        btn.click();
-      });
+      showInlineConflictWarning(conflicts,btn);
     }
   },true);
 
