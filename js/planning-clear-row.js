@@ -84,19 +84,33 @@
       btn.innerHTML = '&#8634; <span>' + t('Clear', 'Limpiar') + '</span>';
     });
   }
+  function restoreClearedRowPosition(yearValue, rowId){
+    setTimeout(function(){
+      addButtons();
+      var panel = document.querySelector('#planningTables .planning-year[data-year="' + CSS.escape(String(yearValue)) + '"]');
+      var tr = panel && panel.querySelector('tbody tr[data-id="' + CSS.escape(String(rowId)) + '"]');
+      if(!tr) return;
+      try{ tr.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      catch(_){ tr.scrollIntoView(); }
+      var congregation = tr.querySelector('[data-field="congregation"]');
+      if(congregation) setTimeout(function(){ congregation.focus(); }, 250);
+    }, 80);
+  }
   function confirmClear(panel, tr){
     var row = findPlanningRow(panel.dataset.year, tr.dataset.id);
     if(!row || !rowHasData(row)) return;
+    var yearValue = panel.dataset.year;
+    var rowId = tr.dataset.id;
     var m = monthList()[Number(row.month)] || t('this month', 'este mes');
     var message = t(
       'Clear this planning row? This will remove the congregation, contact, confirmed status, and note for ',
       '¿Limpiar esta fila de planificación? Esto quitará la congregación, contacto, estado confirmado y nota de '
-    ) + m + ' ' + panel.dataset.year + '.';
+    ) + m + ' ' + yearValue + '.';
     var proceed = function(){
       clearRow(row);
       if(typeof saveState === 'function') saveState();
       if(typeof renderPlanning === 'function') renderPlanning();
-      setTimeout(addButtons, 0);
+      restoreClearedRowPosition(yearValue, rowId);
       if(typeof toast === 'function') toast(t('Planning row cleared.', 'Fila de planificación limpiada.'));
     };
     if(typeof showConfirm === 'function') showConfirm(message, proceed);
