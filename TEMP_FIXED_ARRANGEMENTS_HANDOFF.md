@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4c-fixed-rule-update-fix-code-implemented-live-testing-required
+current_stage: stage-4c-inline-fixed-conflict-warning-code-implemented-live-testing-required
 next_stage: stage-4c-live-verification-and-fixes-if-needed
-cache_version: talk-arrangements-v55-conflict-update-fix
+cache_version: talk-arrangements-v56-inline-fixed-conflict
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -30,11 +30,12 @@ Build a safe Fixed Arrangement / Rollover system that clearly shows and resolves
 - Block unresolved conflicts.
 - Require final user confirmation before writing.
 - Require confirmation before updating a fixed rule.
+- Duplicate fixed-rule month warnings must be visible inside the active fixed-rule editor.
 - Do not change cloud backup or Firebase behavior.
 
 ## Current Status
 
-### Stage 4C Fix — Fixed Rule Update Action
+### Stage 4C Fix — Inline Fixed Rule Conflict Warning
 Status: code implemented / live testing required.
 
 Commits:
@@ -43,37 +44,39 @@ Commits:
 - e211ce9aa2936b2c14765a3adf7c5469fbb0a7f9 — Update handoff for conflict resolution workflow
 - ac46797b3c95d62ffbce4d14d73355374d338757 — Fix fixed-rule conflict update action
 - 61992f34e7a7a2d5f9f800041301709e61efa752 — Bump cache for fixed-rule conflict update fix
-- this handoff update commit records the fix state
+- 7c0225bc2bb40867053544f2d43f13be9081d496 — Update handoff for fixed-rule update fix
+- 374d7528baada1040b72c65c6de0194383a2ce07 — Show fixed rule conflicts inline
+- d33151671af4df9be1d6f1051f15ff7707c63917 — Bump cache for inline fixed conflict warning
+- this handoff update commit records the inline-warning fix
 
 Files changed:
 - js/rollover-preview.js
+- js/fixed-manager-ux.js
 - sw.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
 Cache:
-- talk-arrangements-v55-conflict-update-fix
+- talk-arrangements-v56-inline-fixed-conflict
 
 Fix behavior:
-- Update Fixed Arrangement no longer requires older saved fixed rules to have an id.
-- The app can find the fixed rule from the conflict item or by matching target year/month.
-- Fixed-rule conflicts should now show Actualizar arreglo fijo.
-- If the rule still cannot be found, a clear toast is shown.
-- Resolved conflict cards now label target data as Target has now / Destino tiene ahora instead of saying the target already matches when it does not.
+- Duplicate fixed-arrangement month conflicts now appear inside the fixed-rule editor.
+- The warning lists the month and the existing active rule congregation.
+- The user gets clear inline buttons: Cancel / Cancelar and Save anyway / Guardar de todos modos.
+- The global confirm overlay is no longer used for this fixed-rule duplicate warning.
+- Changing the form clears the warning.
 - No cloud backup or Firebase behavior was changed.
 
 Stage 4C live checklist:
 - App loads after cache update.
-- Preview modal opens.
-- Fixed-rule conflicts show Actualizar arreglo fijo.
-- Tapping Actualizar arreglo fijo shows confirmation.
-- Canceling confirmation changes nothing.
-- Confirming updates the fixed arrangement rule.
-- Preview recalculates after confirmation.
-- Conflict count decreases if the fixed rule now matches the target schedule.
-- Keep Current Schedule still resolves conflicts.
-- Use Preview Result still resolves conflicts.
+- Fixed rule editor opens.
+- Creating a duplicate fixed month shows an inline warning in the editor.
+- Warning is visible and not hidden behind another modal.
+- Cancel clears the warning and saves nothing.
+- Save anyway proceeds intentionally.
+- Changing selected month/year clears the warning.
+- Rollover conflict resolution buttons still work.
+- Fixed-rule conflicts still show Actualizar arreglo fijo.
 - Apply remains blocked until every conflict is resolved.
-- Apply becomes enabled after all conflicts are resolved.
 - Language toggle updates labels.
 - Mobile and desktop remain usable.
 - Light and dark mode remain usable.
@@ -88,6 +91,7 @@ Stage 4C live checklist:
 - Stage 4A Batch 4.2 fixed toolbar cloud button language switching.
 - Stage 4B added safe Apply with same-year guard, conflict blocking, confirmation, and success summary.
 - Stage 4C added conflict resolution buttons and resolved conflict tracking.
+- Stage 4C fix made Actualizar arreglo fijo visible for older fixed rules without ids.
 
 ## Next Step
 
