@@ -11,6 +11,11 @@
   function monthList(){
     return typeof months === 'function' ? months() : ['January','February','March','April','May','June','July','August','September','October','November','December'];
   }
+  function lookupContact(name){
+    if (typeof lookupCoord === 'function') return lookupCoord(name);
+    var c = Array.isArray(window.state && state.congregations) ? state.congregations.find(function(item){ return item && item.name === name; }) : null;
+    return c ? (c.coordinator || '') : '';
+  }
   function ensureStyles(){
     if(document.getElementById('planningClearRowStyles')) return;
     var style = document.createElement('style');
@@ -79,12 +84,39 @@
       btn.innerHTML = '&#8634; <span>' + t('Clear', 'Limpiar') + '</span>';
     });
   }
+  function setClearButtonState(tr, row){
+    var btn = tr && tr.querySelector('[data-planning-clear]');
+    if(btn) btn.disabled = !rowHasData(row);
+  }
+  function markIncomplete(tr, row){
+    if(!tr || !row) return;
+    tr.classList.toggle('planning-incomplete', !String(row.congregation || '').trim());
+  }
+  function updatePlanningFieldInPlace(target){
+    var field = target && target.dataset ? target.dataset.field : '';
+    if(field !== 'congregation') return false;
+    var tr = target.closest('tr');
+    var panel = target.closest('.planning-year');
+    if(!tr || !panel) return false;
+    var row = findPlanningRow(panel.dataset.year, tr.dataset.id);
+    if(!row) return false;
+    row.congregation = target.value;
+    var contact = tr.querySelector('[data-field="contact"]');
+    if(contact && !String(row.contact || '').trim()){
+      row.contact = lookupContact(row.congregation);
+      contact.value = row.contact;
+    }
+    markIncomplete(tr, row);
+    setClearButtonState(tr, row);
+    if(typeof saveState === 'function') saveState();
+    return true;
+  }
   function replaceVisibleRow(yearValue, rowId){
     var row = findPlanningRow(yearValue, rowId);
     var panel = document.querySelector('#planningTables .planning-year[data-year="' + CSS.escape(String(yearValue)) + '"]');
     var tr = panel && panel.querySelector('tbody tr[data-id="' + CSS.escape(String(rowId)) + '"]');
     if(!row || !tr) return false;
-    tr.classList.add('planning-incomplete');
+    markIncomplete(tr, row);
     var congregation = tr.querySelector('[data-field="congregation"]');
     var contact = tr.querySelector('[data-field="contact"]');
     var confirmed = tr.querySelector('[data-field="confirmed"]');
@@ -93,8 +125,7 @@
     if(contact) contact.value = '';
     if(confirmed) confirmed.checked = false;
     if(note) note.value = '';
-    var btn = tr.querySelector('[data-planning-clear]');
-    if(btn) btn.disabled = true;
+    setClearButtonState(tr, row);
     if(congregation) setTimeout(function(){ congregation.focus({preventScroll:true}); }, 0);
     return true;
   }
@@ -121,6 +152,18 @@
     else if(window.confirm(message)) proceed();
   }
 
+  document.addEventListener('input', function(event){
+    if(updatePlanningFieldInPlace(event.target)){
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+  document.addEventListener('change', function(event){
+    if(updatePlanningFieldInPlace(event.target)){
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+  }, true);
   document.addEventListener('click', function(event){
     var btn = event.target && event.target.closest ? event.target.closest('[data-planning-clear]') : null;
     if(!btn) return;
