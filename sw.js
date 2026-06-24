@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v65-toolbar-note-fix';
+const CACHE_VERSION = 'talk-arrangements-v66-congregations-mobile-scroll';
 
 const PRECACHE_URLS = [
   './',
