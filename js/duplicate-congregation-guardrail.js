@@ -23,8 +23,11 @@
       var status = row.status;
       if(typeof statusLabel === 'function') status = statusLabel(row.status);
       bits.push(status);
+    }else if(row.confirmed){
+      bits.push(t('confirmed','confirmado'));
+    }else{
+      bits.push(t('not contacted','sin contactar'));
     }
-    if(row.confirmed) bits.push(t('confirmed','confirmado'));
     return bits.filter(Boolean).join(' — ');
   }
   function dashboardRows(){
@@ -61,7 +64,10 @@
     var p = pending;
     bypassKeys[key(p.scope, p.year, p.rowId, p.newValue)] = true;
     var row = p.scope === 'dashboard' ? findDashboardRow(p.rowId) : findPlanningRow(p.year, p.rowId);
-    if(row) row.congregation = p.newValue;
+    if(row){
+      row.congregation = p.newValue;
+      if(p.scope === 'planning' && typeof lookupCoord === 'function') row.contact = lookupCoord(row.congregation);
+    }
     setFieldValue(p.target, p.newValue);
     if(typeof saveState === 'function') saveState();
     if(p.scope === 'dashboard'){
@@ -71,7 +77,6 @@
       if(typeof renderKpis === 'function') renderKpis();
       if(typeof renderConflicts === 'function') renderConflicts();
     }else{
-      if(row && !row.contact && typeof lookupCoord === 'function') row.contact = lookupCoord(row.congregation);
       if(typeof renderPlanning === 'function') renderPlanning();
     }
     if(typeof toast === 'function') toast(t('Duplicate scheduled intentionally.','Duplicado programado intencionalmente.'));
@@ -79,7 +84,15 @@
   }
   function cancelPending(){
     if(!pending) return;
-    setFieldValue(pending.target, pending.oldValue);
+    var p = pending;
+    var row = p.scope === 'dashboard' ? findDashboardRow(p.rowId) : findPlanningRow(p.year, p.rowId);
+    if(row){
+      row.congregation = p.oldValue || '';
+      if(p.scope === 'planning' && typeof lookupCoord === 'function') row.contact = lookupCoord(row.congregation);
+    }
+    setFieldValue(p.target, p.oldValue || '');
+    if(typeof saveState === 'function') saveState();
+    if(p.scope === 'planning' && typeof renderPlanning === 'function') renderPlanning();
     pending = null;
   }
   function warnIfNeeded(scope, yearValue, rowId, target, oldValue, newValue){
@@ -89,7 +102,7 @@
     var dups = duplicateRows(scope, yearValue, rowId, newValue);
     if(!dups.length) return false;
     pending = { scope: scope, year: yearValue, rowId: rowId, target: target, oldValue: oldValue || '', newValue: newValue };
-    setFieldValue(target, oldValue || '');
+    if(scope === 'dashboard') setFieldValue(target, oldValue || '');
     if(typeof showConfirm === 'function') showConfirm(message(newValue, dups, yearValue), applyPending, cancelPending);
     else if(window.confirm(message(newValue, dups, yearValue))) applyPending(); else cancelPending();
     return true;
@@ -108,25 +121,34 @@
       event.stopImmediatePropagation();
     }
   }
+  function rememberPlanningValue(event){
+    var target = event.target;
+    if(!target || !target.matches || !target.matches('#planningTables [data-field="congregation"]')) return;
+    target.dataset.duplicateGuardOldValue = target.value || '';
+  }
   function planningHandler(event){
     var target = event.target;
     if(!target || !target.matches || !target.matches('#planningTables [data-field="congregation"]')) return;
     var panel = target.closest('[data-year]');
     var tr = target.closest('tr');
     if(!panel || !tr) return;
-    var row = findPlanningRow(panel.dataset.year, tr.dataset.id);
-    if(!row) return;
-    var oldValue = row.congregation || '';
+    var yearValue = panel.dataset.year;
+    var rowId = tr.dataset.id;
+    var oldValue = target.dataset.duplicateGuardOldValue || '';
     var newValue = target.value || '';
-    if(warnIfNeeded('planning', panel.dataset.year, row.id, target, oldValue, newValue)){
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-    }
+    // Let the app's existing Planning save handler run first, then validate the final saved value.
+    setTimeout(function(){
+      var row = findPlanningRow(yearValue, rowId);
+      if(!row) return;
+      var finalValue = row.congregation || newValue;
+      warnIfNeeded('planning', yearValue, rowId, target, oldValue, finalValue);
+    }, 0);
   }
 
+  document.addEventListener('focusin', rememberPlanningValue, true);
+  document.addEventListener('pointerdown', rememberPlanningValue, true);
+  document.addEventListener('touchstart', rememberPlanningValue, true);
   document.addEventListener('input', dashboardHandler, true);
   document.addEventListener('change', dashboardHandler, true);
-  document.addEventListener('input', planningHandler, true);
   document.addEventListener('change', planningHandler, true);
 })();
