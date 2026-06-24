@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v60-planning-clear-position';
+const CACHE_VERSION = 'talk-arrangements-v61-planning-clear-no-jump';
 
 const PRECACHE_URLS = [
   './',
