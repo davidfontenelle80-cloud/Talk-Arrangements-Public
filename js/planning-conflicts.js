@@ -1,5 +1,5 @@
 /**
- * planning-conflicts.js — Stage 4A Batch 4.1 Terminology Polish.
+ * planning-conflicts.js — Stage 5A Resolved Notice Wording Fix.
  * Shows fixed arrangement conflicts directly in Planning and lets the user mark
  * a one-year override without changing the fixed rule or rollover behavior.
  */
@@ -15,6 +15,23 @@
     return v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
   function rules(){return state&&Array.isArray(state.fixedArrangements)?state.fixedArrangements:[];}
+  function hiddenNotices(){
+    if(!state.hiddenResolvedPlanningNotices||typeof state.hiddenResolvedPlanningNotices!=='object')state.hiddenResolvedPlanningNotices={};
+    return state.hiddenResolvedPlanningNotices;
+  }
+  function noticeKey(yearObj){
+    var rows=(yearObj&&Array.isArray(yearObj.rows)?yearObj.rows:[]).map(function(r){
+      var ovs=Array.isArray(r.fixedOverrides)?r.fixedOverrides:[];
+      return ovs.map(function(o){return [r.id,o.ruleId,o.overriddenAt||''].join(':');}).join('|');
+    }).filter(Boolean).join('||');
+    return String(yearObj&&yearObj.year||'')+'::'+rows;
+  }
+  function clearHiddenForYear(yearValue){
+    var notices=hiddenNotices();
+    Object.keys(notices).forEach(function(key){
+      if(String(key).indexOf(String(yearValue)+'::')===0)delete notices[key];
+    });
+  }
   function applies(rule,year){
     if(rule.mode==='years')return Array.isArray(rule.years)&&rule.years.indexOf(+year)!==-1;
     return true;
@@ -56,7 +73,9 @@
       '.planning-fixed-warning li,.planning-fixed-override li{margin:6px 0;}'+
       '.planning-fixed-note{font-size:12px;color:var(--muted);margin-top:6px;}'+
       '.planning-fixed-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}'+
-      '.planning-fixed-actions button{font-size:12px;padding:6px 8px;}';
+      '.planning-fixed-actions button{font-size:12px;padding:6px 8px;}'+
+      '.planning-resolved-notice-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap;}'+
+      '.planning-resolved-notice-actions button{font-size:12px;padding:6px 9px;}';
     var style=document.createElement('style');
     style.id='planningConflictStyles';
     style.textContent=css;
@@ -71,12 +90,13 @@
     var extra=conflicts.length>5?'<div class="planning-fixed-note">+'+(conflicts.length-5)+' '+escLocal(txt('more item(s)','asunto(s) más'))+'</div>':'';
     return '<div class="planning-fixed-warning" role="alert"><strong>⚠ '+escLocal(txt('Review needed','Revisión necesaria'))+'</strong><div>'+escLocal(txt('These months need a decision before continuing.','Estos meses requieren una decisión antes de continuar.'))+'</div><ul>'+max+'</ul>'+extra+'<div class="planning-fixed-note">'+escLocal(txt('If the current schedule should remain long-term, update the Fixed Arrangement.','Si este programa debe mantenerse a largo plazo, actualice el Arreglo Fijo.'))+'</div></div>';
   }
-  function overrideHtml(conflicts){
+  function overrideHtml(yearObj,conflicts,canHide){
     var ms=monthNames();
     var items=conflicts.map(function(c){
       return '<li><strong>'+escLocal(ms[c.month]||c.month)+'</strong>: '+escLocal(c.planned)+' '+escLocal(txt('kept for this year only.','se mantiene solo para este año.'))+'</li>';
     }).join('');
-    return '<div class="planning-fixed-override"><strong>✓ '+escLocal(txt('Approved current schedules','Programas actuales aprobados'))+'</strong><div>'+escLocal(txt('These months were intentionally kept for this year only.','Estos meses se mantuvieron intencionalmente solo para este año.'))+'</div><ul>'+items+'</ul><div class="planning-fixed-note">'+escLocal(txt('The fixed arrangement was not changed. Update it only if this should remain long-term.','El arreglo fijo no cambió. Actualícelo solo si esto debe mantenerse a largo plazo.'))+'</div></div>';
+    var actions=canHide?'<div class="planning-resolved-notice-actions"><button type="button" data-hide-resolved-planning-notice="'+escLocal(noticeKey(yearObj))+'" data-year="'+escLocal(yearObj.year)+'">'+escLocal(txt('Hide notice','Ocultar aviso'))+'</button></div>':'';
+    return '<div class="planning-fixed-override"><strong>✓ '+escLocal(txt('Approved current schedules','Programas actuales aprobados'))+'</strong><div>'+escLocal(txt('These months were intentionally kept for this year only.','Estos meses se mantuvieron intencionalmente solo para este año.'))+'</div><ul>'+items+'</ul><div class="planning-fixed-note">'+escLocal(txt('The fixed arrangement was not changed. Update it only if this should remain long-term.','El arreglo fijo no cambió. Actualícelo solo si esto debe mantenerse a largo plazo.'))+'</div>'+actions+'</div>';
   }
   function decoratePlanningConflicts(){
     if(typeof state==='undefined'||!state||!Array.isArray(state.planning))return;
@@ -96,7 +116,8 @@
       var title=panel.querySelector('.planning-title')||panel.querySelector('.panel-title');
       if(title){
         if(active.length)title.insertAdjacentHTML('beforeend',bannerHtml(active));
-        if(overrides.length)title.insertAdjacentHTML('beforeend',overrideHtml(overrides));
+        var key=noticeKey(yearObj);
+        if(overrides.length&&!hiddenNotices()[key])title.insertAdjacentHTML('beforeend',overrideHtml(yearObj,overrides,active.length===0));
       }
     });
   }
@@ -114,12 +135,25 @@
     if(action==='use-fixed')return txt('Replace this planning row with the fixed arrangement?','¿Reemplazar esta fila con el arreglo fijo?')+'\n\n'+txt('Fixed Arrangement','Arreglo fijo')+': '+c.rule.congregation+'\n'+txt('Current Schedule','Programa actual')+': '+c.row.congregation;
     return txt('Keep the current schedule for this year only?','¿Mantener el programa actual solo para este año?')+'\n\n'+txt('Fixed Arrangement','Arreglo fijo')+': '+c.rule.congregation+'\n'+txt('Keep','Mantener')+': '+c.row.congregation+'\n\n'+txt('The fixed arrangement will not be changed.','El arreglo fijo no se cambiará.');
   }
+  function hideResolvedNotice(key){
+    if(!key)return;
+    var proceed=function(){
+      hiddenNotices()[key]=true;
+      if(typeof saveState==='function')saveState();
+      decoratePlanningConflicts();
+      if(typeof toast==='function')toast(txt('Resolved notice hidden.','Aviso resuelto ocultado.'));
+    };
+    var msg=txt('Hide this resolved notice?','¿Desea ocultar este aviso resuelto?')+'\n\n'+txt('This conflict has already been resolved. You may hide it from the preview if it is no longer needed.','Este aviso ya fue resuelto. Puede ocultarlo de la vista si ya no necesita verlo.');
+    if(typeof showConfirm==='function')showConfirm(msg,proceed);
+    else if(window.confirm(msg))proceed();
+  }
   function runAction(rowId,ruleId,action){
     var found=findPlanningRowById(rowId),rule=findRuleById(ruleId);
     if(!found||!rule)return;
     var row=found.row;
     var c={year:found.year,row:row,rule:rule};
     var proceed=function(){
+      clearHiddenForYear(found.year.year);
       if(action==='use-fixed'){
         row.congregation=rule.congregation;
         row.contact=typeof lookupCoord==='function'?lookupCoord(rule.congregation):'';
@@ -137,6 +171,12 @@
     else if(window.confirm(confirmMsg(c,action)))proceed();
   }
   document.addEventListener('click',function(e){
+    var hideBtn=e.target&&e.target.closest?e.target.closest('[data-hide-resolved-planning-notice]'):null;
+    if(hideBtn){
+      e.preventDefault();
+      hideResolvedNotice(hideBtn.dataset.hideResolvedPlanningNotice);
+      return;
+    }
     var btn=e.target&&e.target.closest?e.target.closest('[data-fixed-plan-action]'):null;
     if(!btn)return;
     e.preventDefault();
