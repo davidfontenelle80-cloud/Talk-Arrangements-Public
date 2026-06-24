@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v72-note-launcher-polish';
+const CACHE_VERSION = 'talk-arrangements-v73-note-modal-description-polish';
 
 const PRECACHE_URLS = [
   './',
