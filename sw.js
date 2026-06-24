@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v71-planning-state-watcher-guardrail';
+const CACHE_VERSION = 'talk-arrangements-v72-note-launcher-polish';
 
 const PRECACHE_URLS = [
   './',
