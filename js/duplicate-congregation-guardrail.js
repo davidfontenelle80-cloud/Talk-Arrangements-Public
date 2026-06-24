@@ -1,13 +1,15 @@
 /**
  * Stage 5D — Duplicate Congregation Guardrail.
- * Warns when the same congregation is scheduled more than once in the same year.
- * Warning only; user may continue anyway. No rollover/fixed/cloud changes.
+ * Dashboard uses direct input guardrail.
+ * Planning uses a state watcher so iPhone Safari select behavior cannot bypass the warning.
  */
 (function(){
   'use strict';
 
   var pending = null;
   var bypassKeys = Object.create(null);
+  var planningSnapshot = Object.create(null);
+  var planningWatcherReady = false;
 
   function isEs(){ return window.state && state.language === 'es'; }
   function t(en, es){ return isEs() ? es : en; }
@@ -16,6 +18,7 @@
   }
   function norm(value){ return String(value || '').trim().toLowerCase(); }
   function key(scope, year, rowId, congregation){ return [scope, year, rowId, norm(congregation)].join('|'); }
+  function rowKey(yearValue, rowId){ return String(yearValue) + '|' + String(rowId); }
   function rowLabel(row){
     var m = monthList()[Number(row.month)] || '';
     var bits = [m];
@@ -33,8 +36,11 @@
   function dashboardRows(){
     return Array.isArray(window.state && state.schedule) ? state.schedule : [];
   }
+  function planningYears(){
+    return Array.isArray(window.state && state.planning) ? state.planning : [];
+  }
   function planningYear(yearValue){
-    return Array.isArray(window.state && state.planning) ? state.planning.find(function(y){ return String(y.year) === String(yearValue); }) : null;
+    return planningYears().find(function(y){ return String(y.year) === String(yearValue); }) || null;
   }
   function duplicateRows(scope, yearValue, currentRowId, congregation){
     var n = norm(congregation);
@@ -59,6 +65,16 @@
   function setFieldValue(target, value){
     if(target) target.value = value || '';
   }
+  function syncPlanningSnapshot(){
+    var next = Object.create(null);
+    planningYears().forEach(function(year){
+      (year.rows || []).forEach(function(row){
+        next[rowKey(year.year, row.id)] = row.congregation || '';
+      });
+    });
+    planningSnapshot = next;
+    planningWatcherReady = true;
+  }
   function applyPending(){
     if(!pending) return;
     var p = pending;
@@ -77,6 +93,7 @@
       if(typeof renderKpis === 'function') renderKpis();
       if(typeof renderConflicts === 'function') renderConflicts();
     }else{
+      syncPlanningSnapshot();
       if(typeof renderPlanning === 'function') renderPlanning();
     }
     if(typeof toast === 'function') toast(t('Duplicate scheduled intentionally.','Duplicado programado intencionalmente.'));
@@ -92,7 +109,10 @@
     }
     setFieldValue(p.target, p.oldValue || '');
     if(typeof saveState === 'function') saveState();
-    if(p.scope === 'planning' && typeof renderPlanning === 'function') renderPlanning();
+    if(p.scope === 'planning'){
+      syncPlanningSnapshot();
+      if(typeof renderPlanning === 'function') renderPlanning();
+    }
     pending = null;
   }
   function warnIfNeeded(scope, yearValue, rowId, target, oldValue, newValue){
@@ -101,7 +121,7 @@
     if(bypassKeys[k]) return false;
     var dups = duplicateRows(scope, yearValue, rowId, newValue);
     if(!dups.length) return false;
-    pending = { scope: scope, year: yearValue, rowId: rowId, target: target, oldValue: oldValue || '', newValue: newValue };
+    pending = { scope: scope, year: yearValue, rowId: rowId, target: target || null, oldValue: oldValue || '', newValue: newValue };
     if(scope === 'dashboard') setFieldValue(target, oldValue || '');
     if(typeof showConfirm === 'function') showConfirm(message(newValue, dups, yearValue), applyPending, cancelPending);
     else if(window.confirm(message(newValue, dups, yearValue))) applyPending(); else cancelPending();
@@ -121,37 +141,34 @@
       event.stopImmediatePropagation();
     }
   }
-  function rememberPlanningValue(event){
-    var target = event.target;
-    if(!target || !target.matches || !target.matches('#planningTables [data-field="congregation"]')) return;
-    if(target.dataset.duplicateGuardOldValue === undefined || event.type !== 'input'){
-      target.dataset.duplicateGuardOldValue = target.value || '';
+  function planningStateWatcher(){
+    if(pending || !window.state || !Array.isArray(state.planning)) return;
+    if(!planningWatcherReady){ syncPlanningSnapshot(); return; }
+    for(var yi=0; yi<state.planning.length; yi++){
+      var year = state.planning[yi];
+      var rows = year.rows || [];
+      for(var ri=0; ri<rows.length; ri++){
+        var row = rows[ri];
+        var rk = rowKey(year.year, row.id);
+        var oldValue = planningSnapshot[rk] || '';
+        var newValue = row.congregation || '';
+        if(norm(oldValue) !== norm(newValue)){
+          if(warnIfNeeded('planning', year.year, row.id, null, oldValue, newValue)) return;
+          planningSnapshot[rk] = newValue;
+        }
+      }
     }
-  }
-  function planningHandler(event){
-    var target = event.target;
-    if(!target || !target.matches || !target.matches('#planningTables [data-field="congregation"]')) return;
-    var panel = target.closest('[data-year]');
-    var tr = target.closest('tr');
-    if(!panel || !tr) return;
-    var yearValue = panel.dataset.year;
-    var rowId = tr.dataset.id;
-    var oldValue = target.dataset.duplicateGuardOldValue || '';
-    var newValue = target.value || '';
-    setTimeout(function(){
-      var row = findPlanningRow(yearValue, rowId);
-      if(!row) return;
-      var finalValue = row.congregation || newValue;
-      var didWarn = warnIfNeeded('planning', yearValue, rowId, target, oldValue, finalValue);
-      if(!didWarn) target.dataset.duplicateGuardOldValue = finalValue || '';
-    }, 0);
+    // Pick up added/deleted planning rows without warning on untouched existing data.
+    planningYears().forEach(function(year){
+      (year.rows || []).forEach(function(row){
+        var rk = rowKey(year.year, row.id);
+        if(planningSnapshot[rk] === undefined) planningSnapshot[rk] = row.congregation || '';
+      });
+    });
   }
 
-  document.addEventListener('focusin', rememberPlanningValue, true);
-  document.addEventListener('pointerdown', rememberPlanningValue, true);
-  document.addEventListener('touchstart', rememberPlanningValue, true);
   document.addEventListener('input', dashboardHandler, true);
   document.addEventListener('change', dashboardHandler, true);
-  document.addEventListener('input', planningHandler, true);
-  document.addEventListener('change', planningHandler, true);
+  setTimeout(syncPlanningSnapshot, 800);
+  setInterval(planningStateWatcher, 250);
 })();
