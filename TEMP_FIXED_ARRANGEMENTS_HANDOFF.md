@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-5-planning-clear-position-fix-code-implemented-live-testing-required
+current_stage: stage-5-planning-clear-no-jump-code-implemented-live-testing-required
 next_stage: stage-5-live-verification
-cache_version: talk-arrangements-v60-planning-clear-position
+cache_version: talk-arrangements-v61-planning-clear-no-jump
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -17,14 +17,14 @@ remove_when: fixed-arrangements-feature-complete-and-live-approved
 
 ## Current Status
 
-Stage 5 Planning Clear Row position fix is code implemented and needs live testing.
+Stage 5 Planning Clear Row no-jump polish is code implemented and needs live testing.
 
 Latest commits:
-- 3676f4ab8230c9cee66762ffc610c832b6e4355b
-- e4057f9881ffae3fe8a24ee93989d7f5d89ecb62
+- 583a925f42dd1abbfc1975e8b8b63b7d04e2b035
+- 25b88e5bf0cc92dca071c758b988a4d3f44713a6
 
 Latest cache:
-- talk-arrangements-v60-planning-clear-position
+- talk-arrangements-v61-planning-clear-no-jump
 
 Latest files changed:
 - js/planning-clear-row.js
@@ -32,8 +32,11 @@ Latest files changed:
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
 What changed:
-- After clearing a Planning row, the app returns to the same row instead of jumping to the top.
-- The congregation field on that row receives focus so the user can immediately choose a new congregation.
+- Planning row clear no longer re-renders the whole Planning table after confirm.
+- The visible row is updated in place.
+- The screen should not jump up and scroll back down.
+- Scroll position is preserved.
+- The congregation field receives focus without scrolling.
 - Clear still requires confirmation.
 - Cancel still changes nothing.
 - Confirming keeps the month and row id.
@@ -47,12 +50,7 @@ Live test checklist:
 - Tap Clear / Limpiar.
 - Cancel first and verify nothing changed.
 - Tap Clear / Limpiar again and confirm.
-- Verify the app stays around the cleared row.
+- Verify the screen does not jump or roll.
+- Verify the row clears in place.
 - Verify the congregation field is ready to edit.
-- Verify congregation, contact, confirmed, and note are cleared.
-- Verify the month remains.
 - Verify language toggle updates Clear / Limpiar.
-
-Prior approved:
-- Stage 4C confirmed conflict resolution and fixed-rule update workflow.
-- Stage 5 initial clear-row action was implemented.
