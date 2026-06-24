@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v58-confirm-message-polish';
+const CACHE_VERSION = 'talk-arrangements-v59-planning-clear-row';
 
 const PRECACHE_URLS = [
   './',
@@ -19,6 +19,7 @@ const PRECACHE_URLS = [
   './js/planning-conflicts.js',
   './js/rollover-preview.js',
   './js/toolbar-i18n.js',
+  './js/planning-clear-row.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
