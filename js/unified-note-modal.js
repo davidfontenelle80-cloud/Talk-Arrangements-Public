@@ -1,7 +1,7 @@
 /**
- * Stage 5B — Unified Note Modal.
- * Gives Dashboard, Planning, and Congregation note fields the same large editor.
- * Data shape is unchanged: each record still owns its existing note field.
+ * Stage 5B Batch 1 — Scoped Notes Foundation.
+ * One editor can now show Global, Congregation, and Month notes.
+ * Existing row.note and congregation.note storage remains intact.
  */
 (function(){
   'use strict';
@@ -13,6 +13,14 @@
   function monthList(){
     return typeof months === 'function' ? months() : ['January','February','March','April','May','June','July','August','September','October','November','December'];
   }
+  function ensureNotesState(){
+    if(!window.state) return { global: { title:'', details:'' } };
+    if(!state.notes || typeof state.notes !== 'object') state.notes = {};
+    if(!state.notes.global || typeof state.notes.global !== 'object') state.notes.global = { title:'', details:'' };
+    if(state.notes.global.title === undefined) state.notes.global.title = '';
+    if(state.notes.global.details === undefined) state.notes.global.details = '';
+    return state.notes;
+  }
   function ensureStyles(){
     if(document.getElementById('unifiedNoteModalStyles')) return;
     var style = document.createElement('style');
@@ -20,15 +28,20 @@
     style.textContent = [
       '.unified-note-bg{display:none;position:fixed;inset:0;z-index:920;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);}',
       '.unified-note-bg.open{display:flex;}',
-      '.unified-note-modal{width:min(680px,100%);max-height:90vh;display:flex;flex-direction:column;gap:12px;background:var(--panel);border:1px solid var(--line,var(--border));border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}',
+      '.unified-note-modal{width:min(760px,100%);max-height:90vh;display:flex;flex-direction:column;gap:12px;background:var(--panel);border:1px solid var(--line,var(--border));border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}',
       '.unified-note-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}',
       '.unified-note-head h3{margin:0;font-size:20px;}',
       '.unified-note-meta{color:var(--muted);font-size:13px;line-height:1.35;}',
-      '.unified-note-modal textarea{width:100%;min-height:240px;max-height:50vh;resize:vertical;padding:12px;line-height:1.45;font-size:16px;background:var(--panel-2,var(--panel));}',
+      '.unified-note-scroll{overflow:auto;display:grid;gap:12px;padding-right:2px;}',
+      '.unified-note-scope{border:1px solid var(--line,var(--border));border-radius:var(--radius-sm);background:var(--panel-2,var(--panel));padding:10px;display:grid;gap:8px;}',
+      '.unified-note-scope h4{margin:0;font-size:14px;display:flex;justify-content:space-between;gap:8px;align-items:center;}',
+      '.unified-note-scope small{color:var(--muted);font-weight:400;line-height:1.3;}',
+      '.unified-note-scope input,.unified-note-scope textarea{width:100%;padding:10px;line-height:1.45;font-size:16px;background:var(--panel);}',
+      '.unified-note-scope textarea{min-height:120px;max-height:34vh;resize:vertical;}',
       '.unified-note-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}',
       '.unified-note-count{font-size:12px;color:var(--muted);}',
       'textarea[data-field="note"],input[data-field="note"]{cursor:pointer;}',
-      '@media(max-width:620px){.unified-note-modal{max-height:92vh;padding:14px}.unified-note-modal textarea{min-height:300px}.unified-note-actions button{flex:1 1 auto;}}'
+      '@media(max-width:620px){.unified-note-modal{max-height:92vh;padding:14px}.unified-note-scope textarea{min-height:150px}.unified-note-actions button{flex:1 1 auto;}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -44,24 +57,29 @@
   function findCongregation(rowId){
     return Array.isArray(window.state && state.congregations) ? state.congregations.find(function(c){ return String(c.id) === String(rowId); }) || null : null;
   }
+  function findCongByName(name){
+    var n = String(name || '').trim().toLowerCase();
+    if(!n || !Array.isArray(window.state && state.congregations)) return null;
+    return state.congregations.find(function(c){ return String(c.name || '').trim().toLowerCase() === n; }) || null;
+  }
   function contextFromField(field){
     var tr = field && field.closest ? field.closest('tr') : null;
     if(!tr || !tr.dataset.id) return null;
     if(field.closest('#dashboardRows')){
       var srow = findScheduleRow(tr.dataset.id);
       if(!srow) return null;
-      return { type:'dashboard', row:srow, field:field, label:t('Dashboard note','Nota del tablero'), meta:(monthList()[Number(srow.month)] || '') + (srow.congregation ? ' — ' + srow.congregation : '') };
+      return { type:'dashboard', row:srow, congregation:findCongByName(srow.congregation), field:field, label:t('Dashboard notes','Notas del tablero'), meta:(monthList()[Number(srow.month)] || '') + (srow.congregation ? ' — ' + srow.congregation : '') };
     }
     var planningPanel = field.closest('#planningTables .planning-year');
     if(planningPanel){
       var prow = findPlanningRow(planningPanel.dataset.year, tr.dataset.id);
       if(!prow) return null;
-      return { type:'planning', row:prow, field:field, label:t('Planning note','Nota de planificación'), meta:(monthList()[Number(prow.month)] || '') + ' ' + planningPanel.dataset.year + (prow.congregation ? ' — ' + prow.congregation : '') };
+      return { type:'planning', row:prow, congregation:findCongByName(prow.congregation), field:field, label:t('Planning notes','Notas de planificación'), meta:(monthList()[Number(prow.month)] || '') + ' ' + planningPanel.dataset.year + (prow.congregation ? ' — ' + prow.congregation : '') };
     }
     if(field.closest('#congregationRows')){
       var cong = findCongregation(tr.dataset.id);
       if(!cong) return null;
-      return { type:'congregation', row:cong, field:field, label:t('Congregation note','Nota de congregación'), meta:cong.name || '' };
+      return { type:'congregation', row:null, congregation:cong, field:field, label:t('Congregation notes','Notas de congregación'), meta:cong.name || '' };
     }
     return null;
   }
@@ -75,7 +93,11 @@
     modal.className = 'unified-note-bg no-print';
     modal.innerHTML = '<div class="unified-note-modal" role="dialog" aria-modal="true" aria-labelledby="unifiedNoteTitle">'+
       '<div class="unified-note-head"><div><h3 id="unifiedNoteTitle"></h3><div class="unified-note-meta" id="unifiedNoteMeta"></div></div><button type="button" class="icon-btn" id="unifiedNoteClose">&#215;</button></div>'+ 
-      '<textarea id="unifiedNoteText"></textarea>'+ 
+      '<div class="unified-note-scroll" id="unifiedNoteScopes">'+
+        '<section class="unified-note-scope" data-note-scope="global"><h4><span id="globalNoteLabel"></span><small id="globalNoteHint"></small></h4><input id="globalNoteTitle" autocomplete="off"><textarea id="globalNoteDetails"></textarea></section>'+ 
+        '<section class="unified-note-scope" data-note-scope="congregation"><h4><span id="congNoteLabel"></span><small id="congNoteHint"></small></h4><input id="congNoteTitle" autocomplete="off"><textarea id="congNoteDetails"></textarea></section>'+ 
+        '<section class="unified-note-scope" data-note-scope="month"><h4><span id="monthNoteLabel"></span><small id="monthNoteHint"></small></h4><input id="monthNoteTitle" autocomplete="off"><textarea id="monthNoteDetails"></textarea></section>'+ 
+      '</div>'+ 
       '<div class="unified-note-count" id="unifiedNoteCount"></div>'+ 
       '<div class="unified-note-actions"><button type="button" id="unifiedNoteCancel"></button><button type="button" class="primary" id="unifiedNoteSave"></button></div>'+ 
       '</div>';
@@ -84,43 +106,93 @@
     document.getElementById('unifiedNoteClose').addEventListener('click', closeModal);
     document.getElementById('unifiedNoteCancel').addEventListener('click', closeModal);
     document.getElementById('unifiedNoteSave').addEventListener('click', saveNote);
-    document.getElementById('unifiedNoteText').addEventListener('input', updateCount);
+    ['globalNoteTitle','globalNoteDetails','congNoteTitle','congNoteDetails','monthNoteTitle','monthNoteDetails'].forEach(function(id){
+      document.getElementById(id).addEventListener('input', updateCount);
+    });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
     return modal;
   }
   function updateCount(){
-    var text = document.getElementById('unifiedNoteText');
+    var ids = ['globalNoteTitle','globalNoteDetails','congNoteTitle','congNoteDetails','monthNoteTitle','monthNoteDetails'];
+    var total = ids.reduce(function(sum,id){ var el=document.getElementById(id); return sum + (el ? el.value.length : 0); },0);
     var count = document.getElementById('unifiedNoteCount');
-    if(text && count) count.textContent = String(text.value.length) + ' ' + t('characters','caracteres');
+    if(count) count.textContent = String(total) + ' ' + t('characters','caracteres');
   }
   function renderModalText(){
-    document.getElementById('unifiedNoteTitle').textContent = t('Edit Note','Editar nota');
+    document.getElementById('unifiedNoteTitle').textContent = t('Notes','Notas');
     document.getElementById('unifiedNoteCancel').textContent = t('Cancel','Cancelar');
     document.getElementById('unifiedNoteSave').textContent = t('Save','Guardar');
+    document.getElementById('globalNoteLabel').textContent = t('Global note','Nota global');
+    document.getElementById('globalNoteHint').textContent = t('Visible everywhere','Visible en todas partes');
+    document.getElementById('congNoteLabel').textContent = t('Congregation note','Nota de congregación');
+    document.getElementById('congNoteHint').textContent = t('Follows this congregation','Sigue a esta congregación');
+    document.getElementById('monthNoteLabel').textContent = t('Month note','Nota del mes');
+    document.getElementById('monthNoteHint').textContent = t('Only this month/year','Solo este mes/año');
+    document.getElementById('globalNoteTitle').placeholder = t('Global note title','Título de nota global');
+    document.getElementById('globalNoteDetails').placeholder = t('Details visible everywhere','Detalles visibles en todas partes');
+    document.getElementById('congNoteTitle').placeholder = t('Congregation note title','Título de nota de congregación');
+    document.getElementById('congNoteDetails').placeholder = t('Details for this congregation','Detalles para esta congregación');
+    document.getElementById('monthNoteTitle').placeholder = t('Month note title','Título de nota del mes');
+    document.getElementById('monthNoteDetails').placeholder = t('Details for this month/year only','Detalles solo para este mes/año');
   }
   function openModal(ctx){
     activeContext = ctx;
     var modal = ensureModal();
     renderModalText();
+    var notes = ensureNotesState();
     document.getElementById('unifiedNoteMeta').textContent = (ctx.label || '') + (ctx.meta ? ' • ' + ctx.meta : '');
-    var text = document.getElementById('unifiedNoteText');
-    text.value = String(ctx.row.note || '');
+    document.getElementById('globalNoteTitle').value = String(notes.global.title || '');
+    document.getElementById('globalNoteDetails').value = String(notes.global.details || '');
+    var congSection = modal.querySelector('[data-note-scope="congregation"]');
+    var monthSection = modal.querySelector('[data-note-scope="month"]');
+    if(ctx.congregation){
+      congSection.style.display = '';
+      document.getElementById('congNoteTitle').value = String(ctx.congregation.noteTitle || '');
+      document.getElementById('congNoteDetails').value = String(ctx.congregation.note || '');
+    }else{
+      congSection.style.display = 'none';
+      document.getElementById('congNoteTitle').value = '';
+      document.getElementById('congNoteDetails').value = '';
+    }
+    if(ctx.row){
+      monthSection.style.display = '';
+      document.getElementById('monthNoteTitle').value = String(ctx.row.noteTitle || '');
+      document.getElementById('monthNoteDetails').value = String(ctx.row.note || '');
+    }else{
+      monthSection.style.display = 'none';
+      document.getElementById('monthNoteTitle').value = '';
+      document.getElementById('monthNoteDetails').value = '';
+    }
     modal.classList.add('open');
     updateCount();
-    setTimeout(function(){ text.focus(); text.selectionStart = text.selectionEnd = text.value.length; }, 30);
+    setTimeout(function(){ document.getElementById('monthNoteDetails').focus(); }, 30);
   }
   function closeModal(){
     var modal = document.getElementById('unifiedNoteModal');
     if(modal) modal.classList.remove('open');
     activeContext = null;
   }
+  function refreshVisibleField(){
+    if(!activeContext || !activeContext.field) return;
+    if(activeContext.type === 'congregation' && activeContext.congregation) activeContext.field.value = activeContext.congregation.note || '';
+    else if(activeContext.row) activeContext.field.value = activeContext.row.note || '';
+  }
   function saveNote(){
-    if(!activeContext || !activeContext.row) return;
-    var text = document.getElementById('unifiedNoteText');
-    activeContext.row.note = text ? text.value : '';
-    if(activeContext.field) activeContext.field.value = activeContext.row.note;
+    if(!activeContext) return;
+    var notes = ensureNotesState();
+    notes.global.title = document.getElementById('globalNoteTitle').value;
+    notes.global.details = document.getElementById('globalNoteDetails').value;
+    if(activeContext.congregation){
+      activeContext.congregation.noteTitle = document.getElementById('congNoteTitle').value;
+      activeContext.congregation.note = document.getElementById('congNoteDetails').value;
+    }
+    if(activeContext.row){
+      activeContext.row.noteTitle = document.getElementById('monthNoteTitle').value;
+      activeContext.row.note = document.getElementById('monthNoteDetails').value;
+    }
+    refreshVisibleField();
     if(typeof saveState === 'function') saveState();
-    if(typeof toast === 'function') toast(t('Note saved.','Nota guardada.'));
+    if(typeof toast === 'function') toast(t('Notes saved.','Notas guardadas.'));
     closeModal();
   }
 
@@ -142,4 +214,5 @@
     }
   });
   ensureStyles();
+  ensureNotesState();
 })();
