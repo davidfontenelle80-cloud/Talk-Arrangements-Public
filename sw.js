@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v67-scoped-notes-foundation';
+const CACHE_VERSION = 'talk-arrangements-v68-duplicate-congregation-guardrail';
 
 const PRECACHE_URLS = [
   './',
@@ -22,6 +22,7 @@ const PRECACHE_URLS = [
   './js/planning-clear-row.js',
   './js/unified-note-modal.js',
   './js/mobile-toolbar.js',
+  './js/duplicate-congregation-guardrail.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
