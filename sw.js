@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v56-inline-fixed-conflict';
+const CACHE_VERSION = 'talk-arrangements-v57-confirm-stacking-fix';
 
 const PRECACHE_URLS = [
   './',
