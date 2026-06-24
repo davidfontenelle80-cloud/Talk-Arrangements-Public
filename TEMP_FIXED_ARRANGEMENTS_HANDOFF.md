@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-5-planning-clear-row-code-implemented-live-testing-required
+current_stage: stage-5-planning-clear-position-fix-code-implemented-live-testing-required
 next_stage: stage-5-live-verification
-cache_version: talk-arrangements-v59-planning-clear-row
+cache_version: talk-arrangements-v60-planning-clear-position
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -17,43 +17,42 @@ remove_when: fixed-arrangements-feature-complete-and-live-approved
 
 ## Current Status
 
-Stage 5 Planning Clear Row is code implemented and needs live testing.
+Stage 5 Planning Clear Row position fix is code implemented and needs live testing.
 
 Latest commits:
-- a3723e0fc3303783fc57bd0d8bfcac621cc84bf2
-- cf0e11c1c9ed7dc2cd683a56548ed9927d585199
-- 165b36b7db374745f61498c64554a522c314b8ac
+- 3676f4ab8230c9cee66762ffc610c832b6e4355b
+- e4057f9881ffae3fe8a24ee93989d7f5d89ecb62
 
 Latest cache:
-- talk-arrangements-v59-planning-clear-row
+- talk-arrangements-v60-planning-clear-position
 
 Latest files changed:
 - js/planning-clear-row.js
-- index.html
 - sw.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
 What changed:
-- Planning rows now get a Clear / Limpiar action.
-- Clear is disabled when the row is already empty.
-- Clear requires confirmation.
+- After clearing a Planning row, the app returns to the same row instead of jumping to the top.
+- The congregation field on that row receives focus so the user can immediately choose a new congregation.
+- Clear still requires confirmation.
+- Cancel still changes nothing.
 - Confirming keeps the month and row id.
 - Confirming clears congregation, contact, confirmed, note, and fixed override data.
-- Canceling changes nothing.
 - No Firebase or cloud backup behavior was changed.
 
 Live test checklist:
 - Refresh the app.
 - Open Planning.
-- Find a row with congregation/contact/note or confirmed checked.
+- Scroll to a lower row.
 - Tap Clear / Limpiar.
 - Cancel first and verify nothing changed.
 - Tap Clear / Limpiar again and confirm.
+- Verify the app stays around the cleared row.
+- Verify the congregation field is ready to edit.
 - Verify congregation, contact, confirmed, and note are cleared.
 - Verify the month remains.
-- Verify empty row is marked as incomplete.
 - Verify language toggle updates Clear / Limpiar.
-- Verify mobile and desktop remain usable.
 
 Prior approved:
 - Stage 4C confirmed conflict resolution and fixed-rule update workflow.
+- Stage 5 initial clear-row action was implemented.
