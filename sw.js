@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v75-notes-ux-polish';
+const CACHE_VERSION = 'talk-arrangements-v76-stage-6-ux-polish';
 
 const PRECACHE_URLS = [
   './',

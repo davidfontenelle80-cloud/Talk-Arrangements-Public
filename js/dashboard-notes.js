@@ -259,8 +259,8 @@
       saveNote:es?"Guardar nota":"Save note",
       cancel:typeof tt==="function"?tt("cancel"):(es?"Cancelar":"Cancel"),
       month:typeof tt==="function"?tt("month"):(es?"Mes":"Month"),
-      congregation:typeof tt==="function"?tt("congregation"):(es?"Congregacion":"Congregation"),
-      placeholder:es?"Escriba la nota completa aqui...":"Write the full note here..."
+      congregation:typeof tt==="function"?tt("congregation"):(es?"Congregación":"Congregation"),
+      placeholder:es?"Escriba la nota completa aquí...":"Write the full note here..."
     };
     return labels[key]||key;
   }

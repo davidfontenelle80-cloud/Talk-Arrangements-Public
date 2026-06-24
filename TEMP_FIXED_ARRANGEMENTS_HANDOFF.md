@@ -1,141 +1,90 @@
----
-title: Temporary Fixed Arrangements Handoff
-repo: davidfontenelle80-cloud/Talk-Arrangements-Public
-app: Talk Arrangements
-status: active-temporary
-created: 2026-06-23
-last_updated: 2026-06-24
-owner: David
-feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-5d-notes-ux-polish-code-implemented-not-live-approved
-next_stage: stage-5e-tbd
-cache_version: talk-arrangements-v75-notes-ux-polish
-remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
+# Talk Arrangements — Dev Handoff Notes
+
+## Current State
+- **Stage**: Stage 6 Complete (UX Polish & Pre-Calendar Audit)
+- **Cache Version**: talk-arrangements-v76-stage-6-ux-polish
+- **Repo**: davidfontenelle80-cloud/Talk-Arrangements-Public (main branch)
+- **Live URL**: https://davidfontenelle80-cloud.github.io/Talk-Arrangements-Public/
+- **Last Commit**: Stage 6 UX Polish — touch targets, i18n accent fixes, aria-labels, print heading fix
+
 ---
 
-# Temporary Fixed Arrangements Handoff
+## Stage History
+| Stage | Description | Cache |
+|-------|-------------|-------|
+| 1 | Initial build | v1 |
+| 2 | Planning tab, congregation management | — |
+| 3 | Notes system foundation | — |
+| 4 | Multi-scope notes, unified modal | — |
+| 5A | Notes UX refinements | — |
+| 5B | Dashboard notes panel (MD was last updated here) | v73 |
+| 5C | Additional notes polish | v74 |
+| 5D | Notes UX polish final | v75 |
+| **6** | **UX Polish & Pre-Calendar Audit (current)** | **v76** |
 
-## Current Status
+---
 
-Stage 5D complete (code). Stronger visual hierarchy added to note-type callout cards.
-No functionality, data model, storage, or cloud changes.
+## Stage 6 Changes (commit: TBD — see git log)
 
-Current deployment/cache:
-- talk-arrangements-v75-notes-ux-polish
+### Touch Targets (css/main.css)
+- `.segmented button`: min-height bumped 30px → 36px, added min-width:36px
+- `.icon-btn`: added min-height:36px (was missing)
 
-## Goals
+### i18n Accent Fixes (js/app.js)
+- `T.es.planning`: Planificacion → Planificación
+- `T.es.subtitle`: publicos → públicos, congregacion → congregación
+- `T.es.congregation`: Congregacion → Congregación
+- `T.es.congregations`: Congregaciónes (wrong accent) → Congregaciones
+- `T.es.congTitle`: congregaciónes → congregaciones
+- `T.es.planningHint`: seccion → sección
+- `T.es.congHint`: aqui → aquí
+- `T.es.addMonth`: Anadir → Añadir
+- `T.es.addYear`: Anadir ano → Añadir año
+- `T.es.addCong`: Anadir → Añadir
+- `T.es.missingFixed`: Congregacion → Congregación
+- `T.es.profileCong`: congregacion → congregación, Telefono → Teléfono
+- `T.es.archiveNote`: Planificacion → Planificación
+- phone/coordinator fields: Telefono → Teléfono, telefono → teléfono
 
-- Preserve existing arrangement data.
-- Improve Planning reliability and mobile usability.
-- Keep fixed-arrangement conflict handling safe.
-- Keep notes understandable across Dashboard, Planning, and Congregations.
-- Prepare for future Calendar/Event system without mixing scopes early.
+### i18n Accent Fixes (js/dashboard-notes.js)
+- Congregacion → Congregación (1 instance)
+- aqui. → aquí. (1 instance)
 
-## Completed Stages
+### i18n Accent Fixes (js/unified-note-modal.js)
+- Congregacion → Congregación (1 instance)
+- Congregaciónes → Congregaciones (1 instance)
 
-### Stage 4C / Fixed Arrangement Conflict Workflow
-Status: COMPLETE
+### Accessibility (js/unified-note-modal.js)
+- Added aria-label="Note text" to #globalNoteDetails textarea
+- Added aria-label="Congregation note" to #congNoteDetails textarea
+- Added aria-label="Month note" to #monthNoteDetails textarea
 
-### Stage 5A / Planning and Mobile UX
-Status: COMPLETE
+### Print Heading Fix (index.html)
+- Changed `<h2 id="printHeading">` to `<p id="printHeading">` with font-weight:700 styling
+- Eliminates duplicate h2 in accessibility tree (#dashboardTitle is the canonical h2)
 
-Completed:
-- Clear-row behavior in Planning.
-- Scroll-jump fixes on mobile.
-- Mobile Congregations table horizontal scrolling.
-- Collapsible mobile Tools/Herramientas panel.
-- Duplicate congregation guardrail.
-- Planning duplicate guardrail fixed with state watcher.
-- David verified duplicate warning, Cancel, and Confirm behavior on iPhone.
+---
 
-### Stage 5B / Notes Foundation
-Status: COMPLETE
+## Architecture Notes
+- 26 local JS modules loaded in index.html
+- Global translation object: `var T={en:{...},es:{...}}` in js/app.js at char offset 623
+- i18n runtime: js/i18n.js handles lookup/interpolation; `data-i18n` attributes auto-translated
+- Service worker: sw.js with CACHE_VERSION constant — bump on every deploy
+- Notes: 3-scope system (speaker, congregation, month) via unified-note-modal.js
+- Firebase used for auth/data sync (no schema changes in Stage 6)
 
-Completed:
-- Unified note modal.
-- Global, Congregation, and Month note scopes.
-- Existing row.note and congregation.note preserved.
-- Note launcher buttons replace cramped inline note boxes.
-- Note count launcher labels and Spanish equivalents.
-- Note descriptions added for each scope.
-- Mobile modal layout improved.
+---
 
-### Stage 5C / Colored Note Callout Cards
-Status: COMPLETE — commit 3c18174
+## What's NOT Done Yet (Stage 7+)
+- Calendar/Event system (deliberately deferred)
+- "Edit note" → "Add note" label when modal opens on empty row (cosmetic polish)
+- Additional keyboard navigation audit (tab order in modals)
+- Full WCAG 2.1 AA audit (contrast ratios checked, touch targets fixed; full audit pending)
 
-Completed:
-- Colored callout cards (blue/green/amber) for Global/Congregation/Month notes.
-- Light and dark mode colors verified.
-- CACHE_VERSION: talk-arrangements-v74-notes-callout-cards
+---
 
-### Stage 5D / Notes UX Polish — Stronger Visual Hierarchy
-Status: CODE IMPLEMENTED — not live-approved yet
-
-Files changed:
-- js/unified-note-modal.js
-- sw.js
-- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
-
-Changes:
-- Added .note-callout-heading CSS class: font-weight 700, font-size 0.78rem, uppercase, letter-spacing 0.04em.
-- Global callout heading: "DONDE APARECE ESTA NOTA" with Dashboard / Planning / Congregations / Future Calendar bullets.
-- Congregation callout heading: "CUANDO USAR ESTA NOTA" with Restrictions / Preferences / Contacts / Permanent instructions bullets.
-- Month callout heading: "CUANDO USAR ESTA NOTA" with Assembly / Circuit overseer visit / Special event / Temporary change bullets.
-- Bilingual: t() function used for all strings, EN and ES.
-- CACHE_VERSION bumped: v74-notes-callout-cards → v75-notes-ux-polish.
-
-Verification required:
-- Mobile: no clipping, no overlap, no horizontal scroll, modal scroll works.
-- Desktop: same.
-- Dark mode: callouts look correct.
-- Light mode: callouts look correct.
-- English: text renders correctly.
-- Spanish: translations switch correctly.
-
-## Cache History
-
-- v68: duplicate congregation guardrail
-- v69: Planning duplicate guardrail fix
-- v70: Planning input duplicate listener
-- v71: Planning state watcher guardrail
-- v72: note launcher polish
-- v73: note modal description polish
-- v74: notes callout cards (Stage 5C)
-- v75: notes UX polish — stronger heading hierarchy (Stage 5D)
-
-## Recent Commits
-
-Stage 5C colored callout cards:
-- 3c18174166087429f6954eaf66d9a1d5b9dffc3a — Stage 5C colored note callout cards
-
-Stage 5D notes UX polish:
-- (pending commit)
-
-## Files Changed in Stage 5D
-
-- js/unified-note-modal.js
-- sw.js
-- TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
-
-## Risks
-
-- Notes system uses state.notes.global and noteTitle fields; export/import/cloud likely preserve them but still needs explicit verification.
-- Stage 5D is UI-only: no storage, auth, or cloud changes.
-- Calendar/Event system should not start until Stage 5B–5D note polish is live-approved.
-
-## Stop Conditions
-
-Stop before future feature work if:
-- Temporary MD is stale or missing.
-- Cache version is not bumped for deployable changes.
-- Notes do not persist after reload.
-- Export/import loses notes.
-- Cloud backup loses notes.
-- Duplicate guardrail regresses.
-- Planning scroll jumps return.
-- Modal stacking returns.
-
-## Next Stage Candidate
-
-Stage 5E: Live approval and verification of Stage 5D note UX changes on mobile/desktop/light/dark/EN/ES.
-After approval, Stage 5F or Stage 6 Calendar/Event Foundation.
+## Stop Conditions (do not implement without explicit approval)
+- Any Calendar or Event tab/view
+- Firebase schema changes or new collections
+- Changes to existing user data structures
+- Export/import format changes
