@@ -8,11 +8,6 @@
 
   function isEs(){ return window.state && state.language === 'es'; }
   function t(en, es){ return isEs() ? es : en; }
-  function escLocal(value){
-    if (typeof esc === 'function') return esc(value);
-    value = String(value == null ? '' : value);
-    return value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
   function monthList(){
     return typeof months === 'function' ? months() : ['January','February','March','April','May','June','July','August','September','October','November','December'];
   }
@@ -84,17 +79,24 @@
       btn.innerHTML = '&#8634; <span>' + t('Clear', 'Limpiar') + '</span>';
     });
   }
-  function restoreClearedRowPosition(yearValue, rowId){
-    setTimeout(function(){
-      addButtons();
-      var panel = document.querySelector('#planningTables .planning-year[data-year="' + CSS.escape(String(yearValue)) + '"]');
-      var tr = panel && panel.querySelector('tbody tr[data-id="' + CSS.escape(String(rowId)) + '"]');
-      if(!tr) return;
-      try{ tr.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-      catch(_){ tr.scrollIntoView(); }
-      var congregation = tr.querySelector('[data-field="congregation"]');
-      if(congregation) setTimeout(function(){ congregation.focus(); }, 250);
-    }, 80);
+  function replaceVisibleRow(yearValue, rowId){
+    var row = findPlanningRow(yearValue, rowId);
+    var panel = document.querySelector('#planningTables .planning-year[data-year="' + CSS.escape(String(yearValue)) + '"]');
+    var tr = panel && panel.querySelector('tbody tr[data-id="' + CSS.escape(String(rowId)) + '"]');
+    if(!row || !tr) return false;
+    tr.classList.add('planning-incomplete');
+    var congregation = tr.querySelector('[data-field="congregation"]');
+    var contact = tr.querySelector('[data-field="contact"]');
+    var confirmed = tr.querySelector('[data-field="confirmed"]');
+    var note = tr.querySelector('[data-field="note"]');
+    if(congregation) congregation.value = '';
+    if(contact) contact.value = '';
+    if(confirmed) confirmed.checked = false;
+    if(note) note.value = '';
+    var btn = tr.querySelector('[data-planning-clear]');
+    if(btn) btn.disabled = true;
+    if(congregation) setTimeout(function(){ congregation.focus({preventScroll:true}); }, 0);
+    return true;
   }
   function confirmClear(panel, tr){
     var row = findPlanningRow(panel.dataset.year, tr.dataset.id);
@@ -107,10 +109,12 @@
       '¿Limpiar esta fila de planificación? Esto quitará la congregación, contacto, estado confirmado y nota de '
     ) + m + ' ' + yearValue + '.';
     var proceed = function(){
+      var scrollX = window.scrollX;
+      var scrollY = window.scrollY;
       clearRow(row);
       if(typeof saveState === 'function') saveState();
-      if(typeof renderPlanning === 'function') renderPlanning();
-      restoreClearedRowPosition(yearValue, rowId);
+      replaceVisibleRow(yearValue, rowId);
+      window.scrollTo(scrollX, scrollY);
       if(typeof toast === 'function') toast(t('Planning row cleared.', 'Fila de planificación limpiada.'));
     };
     if(typeof showConfirm === 'function') showConfirm(message, proceed);
