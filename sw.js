@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v69-planning-duplicate-guardrail-fix';
+const CACHE_VERSION = 'talk-arrangements-v70-planning-input-duplicate-listener';
 
 const PRECACHE_URLS = [
   './',
