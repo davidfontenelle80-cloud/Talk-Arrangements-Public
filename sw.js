@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v57-confirm-stacking-fix';
+const CACHE_VERSION = 'talk-arrangements-v58-confirm-message-polish';
 
 const PRECACHE_URLS = [
   './',
