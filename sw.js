@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v68-duplicate-congregation-guardrail';
+const CACHE_VERSION = 'talk-arrangements-v69-planning-duplicate-guardrail-fix';
 
 const PRECACHE_URLS = [
   './',
