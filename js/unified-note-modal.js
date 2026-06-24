@@ -1,18 +1,21 @@
 /**
- * Stage 5B Batch 1 — Scoped Notes Foundation.
- * One editor can now show Global, Congregation, and Month notes.
+ * Stage 5B — Scoped Notes Foundation + Note Launcher Polish.
+ * One editor shows Global, Congregation, and Month notes.
+ * Table note cells now use a clean launcher instead of cramped inline editing.
  * Existing row.note and congregation.note storage remains intact.
  */
 (function(){
   'use strict';
 
   var activeContext = null;
+  var observerStarted = false;
 
   function isEs(){ return window.state && state.language === 'es'; }
   function t(en, es){ return isEs() ? es : en; }
   function monthList(){
     return typeof months === 'function' ? months() : ['January','February','March','April','May','June','July','August','September','October','November','December'];
   }
+  function hasText(value){ return String(value || '').trim().length > 0; }
   function ensureNotesState(){
     if(!window.state) return { global: { title:'', details:'' } };
     if(!state.notes || typeof state.notes !== 'object') state.notes = {};
@@ -40,8 +43,12 @@
       '.unified-note-scope textarea{min-height:120px;max-height:34vh;resize:vertical;}',
       '.unified-note-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;}',
       '.unified-note-count{font-size:12px;color:var(--muted);}',
-      'textarea[data-field="note"],input[data-field="note"]{cursor:pointer;}',
-      '@media(max-width:620px){.unified-note-modal{max-height:92vh;padding:14px}.unified-note-scope textarea{min-height:150px}.unified-note-actions button{flex:1 1 auto;}}'
+      'textarea[data-field="note"],input[data-field="note"]{display:none!important;}',
+      '.note-launcher{width:100%;min-width:128px;justify-content:flex-start;border-color:var(--line,var(--border));background:var(--panel);color:var(--muted);white-space:nowrap;}',
+      '.note-launcher.has-notes{border-color:var(--warn);background:color-mix(in srgb,var(--warn),var(--panel) 88%);color:var(--warn);font-weight:800;}',
+      '.note-launcher .note-dot{display:inline-flex;align-items:center;justify-content:center;min-width:18px;}',
+      '.note-launcher .note-label{overflow:hidden;text-overflow:ellipsis;}',
+      '@media(max-width:620px){.unified-note-modal{max-height:92vh;padding:14px}.unified-note-scope textarea{min-height:150px}.unified-note-actions button{flex:1 1 auto;}.note-launcher{min-width:150px;}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -165,17 +172,37 @@
     }
     modal.classList.add('open');
     updateCount();
-    setTimeout(function(){ document.getElementById('monthNoteDetails').focus(); }, 30);
+    setTimeout(function(){
+      var target = ctx.row ? document.getElementById('monthNoteDetails') : (ctx.congregation ? document.getElementById('congNoteDetails') : document.getElementById('globalNoteDetails'));
+      if(target) target.focus();
+    }, 30);
   }
   function closeModal(){
     var modal = document.getElementById('unifiedNoteModal');
     if(modal) modal.classList.remove('open');
     activeContext = null;
   }
+  function updateLauncherForField(field){
+    var launcher = field && field.parentNode ? field.parentNode.querySelector('.note-launcher') : null;
+    if(!launcher) return;
+    var ctx = contextFromField(field);
+    if(!ctx) return;
+    var notes = ensureNotesState();
+    var count = 0;
+    if(hasText(notes.global.title) || hasText(notes.global.details)) count++;
+    if(ctx.congregation && (hasText(ctx.congregation.noteTitle) || hasText(ctx.congregation.note))) count++;
+    if(ctx.row && (hasText(ctx.row.noteTitle) || hasText(ctx.row.note))) count++;
+    launcher.classList.toggle('has-notes', count > 0);
+    var label = count > 1 ? t(count + ' notes', count + ' notas') : (count === 1 ? t('Note', 'Nota') : t('Add note', 'Agregar nota'));
+    launcher.innerHTML = '<span class="note-dot">📝</span><span class="note-label">' + label + '</span>';
+    launcher.setAttribute('aria-label', label);
+    launcher.title = label;
+  }
   function refreshVisibleField(){
     if(!activeContext || !activeContext.field) return;
     if(activeContext.type === 'congregation' && activeContext.congregation) activeContext.field.value = activeContext.congregation.note || '';
     else if(activeContext.row) activeContext.field.value = activeContext.row.note || '';
+    updateLauncherForField(activeContext.field);
   }
   function saveNote(){
     if(!activeContext) return;
@@ -193,11 +220,30 @@
     refreshVisibleField();
     if(typeof saveState === 'function') saveState();
     if(typeof toast === 'function') toast(t('Notes saved.','Notas guardadas.'));
+    decorateNoteFields();
     closeModal();
   }
 
+  function createLauncher(field){
+    if(!field || !field.parentNode || field.parentNode.querySelector('.note-launcher')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'note-launcher';
+    btn.dataset.noteLauncher = '1';
+    field.parentNode.insertBefore(btn, field.nextSibling);
+    updateLauncherForField(field);
+  }
+  function decorateNoteFields(){
+    document.querySelectorAll('textarea[data-field="note"],input[data-field="note"]').forEach(createLauncher);
+  }
   function handleNoteOpen(event){
-    var field = event.target && event.target.closest ? event.target.closest('textarea[data-field="note"],input[data-field="note"]') : null;
+    var launcher = event.target && event.target.closest ? event.target.closest('.note-launcher') : null;
+    var field = null;
+    if(launcher){
+      field = launcher.parentNode ? launcher.parentNode.querySelector('textarea[data-field="note"],input[data-field="note"]') : null;
+    }else{
+      field = event.target && event.target.closest ? event.target.closest('textarea[data-field="note"],input[data-field="note"]') : null;
+    }
     if(!field) return;
     var ctx = contextFromField(field);
     if(!ctx) return;
@@ -205,14 +251,26 @@
     event.stopPropagation();
     openModal(ctx);
   }
+  function startObserver(){
+    if(observerStarted) return;
+    observerStarted = true;
+    var mo = new MutationObserver(function(){ decorateNoteFields(); });
+    mo.observe(document.body, { childList:true, subtree:true });
+    setInterval(decorateNoteFields, 1000);
+  }
 
   document.addEventListener('focusin', handleNoteOpen, true);
   document.addEventListener('click', handleNoteOpen, true);
   document.addEventListener('click', function(event){
     if(event.target && event.target.closest && event.target.closest('[data-lang]')){
-      setTimeout(function(){ if(document.getElementById('unifiedNoteModal') && document.getElementById('unifiedNoteModal').classList.contains('open')) renderModalText(); }, 120);
+      setTimeout(function(){
+        if(document.getElementById('unifiedNoteModal') && document.getElementById('unifiedNoteModal').classList.contains('open')) renderModalText();
+        decorateNoteFields();
+      }, 120);
     }
   });
   ensureStyles();
   ensureNotesState();
+  decorateNoteFields();
+  startObserver();
 })();
