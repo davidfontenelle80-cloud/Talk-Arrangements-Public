@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4c-confirmation-polish-live-approved
-next_stage: stage-5-qa-and-planning-clear-row
-cache_version: talk-arrangements-v58-confirm-message-polish
+current_stage: stage-5-planning-clear-row-code-implemented-live-testing-required
+next_stage: stage-5-live-verification
+cache_version: talk-arrangements-v59-planning-clear-row
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -17,36 +17,43 @@ remove_when: fixed-arrangements-feature-complete-and-live-approved
 
 ## Current Status
 
-Stage 4C confirmation polish is live-approved by David.
+Stage 5 Planning Clear Row is code implemented and needs live testing.
 
 Latest commits:
-- db1310d97c556a189f81f8b815173be225091e22
-- 253b2473e7630b2129116ea4ce8e0a4600cfbcbd
+- a3723e0fc3303783fc57bd0d8bfcac621cc84bf2
+- cf0e11c1c9ed7dc2cd683a56548ed9927d585199
+- 165b36b7db374745f61498c64554a522c314b8ac
 
 Latest cache:
-- talk-arrangements-v58-confirm-message-polish
+- talk-arrangements-v59-planning-clear-row
 
 Latest files changed:
-- js/fixed-manager-ux.js
+- js/planning-clear-row.js
+- index.html
 - sw.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
-What is approved:
-- Rollover preview opens.
-- Same-year rollover is blocked.
-- Conflicts are detected.
-- Keep current schedule works.
-- Use preview result works.
-- Update fixed arrangement appears for fixed-rule conflicts.
-- Confirmation now appears in front of preview.
-- Confirmation text line breaks are readable.
-- Duplicate fixed-month warning appears inline in the fixed-rule editor.
+What changed:
+- Planning rows now get a Clear / Limpiar action.
+- Clear is disabled when the row is already empty.
+- Clear requires confirmation.
+- Confirming keeps the month and row id.
+- Confirming clears congregation, contact, confirmed, note, and fixed override data.
+- Canceling changes nothing.
+- No Firebase or cloud backup behavior was changed.
 
-No Firebase or cloud backup behavior was changed.
+Live test checklist:
+- Refresh the app.
+- Open Planning.
+- Find a row with congregation/contact/note or confirmed checked.
+- Tap Clear / Limpiar.
+- Cancel first and verify nothing changed.
+- Tap Clear / Limpiar again and confirm.
+- Verify congregation, contact, confirmed, and note are cleared.
+- Verify the month remains.
+- Verify empty row is marked as incomplete.
+- Verify language toggle updates Clear / Limpiar.
+- Verify mobile and desktop remain usable.
 
-Next recommended stage:
-- Stage 5 QA and Planning clear-row button.
-
-Known follow-up:
-- Add a clear-row button for Planning rows.
-- Clear row should confirm first and clear congregation, contact, confirmed, and note together.
+Prior approved:
+- Stage 4C confirmed conflict resolution and fixed-rule update workflow.
