@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-23
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-4c-conflict-resolution-code-implemented-live-testing-required
+current_stage: stage-4c-fixed-rule-update-fix-code-implemented-live-testing-required
 next_stage: stage-4c-live-verification-and-fixes-if-needed
-cache_version: talk-arrangements-v54-conflict-resolution
+cache_version: talk-arrangements-v55-conflict-update-fix
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -34,13 +34,16 @@ Build a safe Fixed Arrangement / Rollover system that clearly shows and resolves
 
 ## Current Status
 
-### Stage 4C — Conflict Resolution Workflow
+### Stage 4C Fix — Fixed Rule Update Action
 Status: code implemented / live testing required.
 
 Commits:
 - e96f97d9f4006ff6ad1c89ab5d33f6dc38b22d02 — Add rollover conflict resolution workflow
 - db42dff6b1fb47ccdbf867628d0d4a742e888bba — Bump cache for conflict resolution workflow
-- this handoff update commit records Stage 4C state
+- e211ce9aa2936b2c14765a3adf7c5469fbb0a7f9 — Update handoff for conflict resolution workflow
+- ac46797b3c95d62ffbce4d14d73355374d338757 — Fix fixed-rule conflict update action
+- 61992f34e7a7a2d5f9f800041301709e61efa752 — Bump cache for fixed-rule conflict update fix
+- this handoff update commit records the fix state
 
 Files changed:
 - js/rollover-preview.js
@@ -48,29 +51,27 @@ Files changed:
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
 Cache:
-- talk-arrangements-v54-conflict-resolution
+- talk-arrangements-v55-conflict-update-fix
 
-Stage 4C behavior:
-- Conflict cards now show resolution actions.
-- Keep Current Schedule resolves a conflict by using the target-year schedule value.
-- Use Preview Result resolves a conflict by using the preview result, including fixed-rule result when applicable.
-- Update Fixed Arrangement appears for fixed-rule conflicts and requires confirmation before changing the rule.
-- Resolved conflicts get a Resolved badge.
-- Summary totals include unresolved and resolved conflicts.
-- Apply remains blocked while unresolved conflicts remain.
-- Apply becomes available when conflicts are resolved and other guards pass.
-- English and Spanish labels are included.
+Fix behavior:
+- Update Fixed Arrangement no longer requires older saved fixed rules to have an id.
+- The app can find the fixed rule from the conflict item or by matching target year/month.
+- Fixed-rule conflicts should now show Actualizar arreglo fijo.
+- If the rule still cannot be found, a clear toast is shown.
+- Resolved conflict cards now label target data as Target has now / Destino tiene ahora instead of saying the target already matches when it does not.
 - No cloud backup or Firebase behavior was changed.
 
 Stage 4C live checklist:
 - App loads after cache update.
 - Preview modal opens.
-- Conflict cards show resolution buttons.
-- Keep Current Schedule resolves a conflict.
-- Use Preview Result resolves a conflict.
-- Update Fixed Arrangement asks for confirmation and updates the rule only after confirmation.
-- Conflict count decreases after resolution.
-- Resolved conflict count increases after resolution.
+- Fixed-rule conflicts show Actualizar arreglo fijo.
+- Tapping Actualizar arreglo fijo shows confirmation.
+- Canceling confirmation changes nothing.
+- Confirming updates the fixed arrangement rule.
+- Preview recalculates after confirmation.
+- Conflict count decreases if the fixed rule now matches the target schedule.
+- Keep Current Schedule still resolves conflicts.
+- Use Preview Result still resolves conflicts.
 - Apply remains blocked until every conflict is resolved.
 - Apply becomes enabled after all conflicts are resolved.
 - Language toggle updates labels.
@@ -86,10 +87,11 @@ Stage 4C live checklist:
 - Stage 4A Batch 4.1 simplified Planning conflict wording.
 - Stage 4A Batch 4.2 fixed toolbar cloud button language switching.
 - Stage 4B added safe Apply with same-year guard, conflict blocking, confirmation, and success summary.
+- Stage 4C added conflict resolution buttons and resolved conflict tracking.
 
 ## Next Step
 
-Stop after Stage 4C code implementation. David must live-test before approval.
+Stop after this Stage 4C fix. David must live-test before approval.
 
 If Stage 4C passes live testing, next stage should be Stage 5 QA / Planning clear-row button.
 
