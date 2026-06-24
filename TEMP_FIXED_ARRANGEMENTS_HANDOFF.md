@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-24
 owner: David
 feature: fixed-arrangement-rules
-current_stage: stage-5b-batch-1-scoped-notes-foundation-code-implemented-live-testing-required
-next_stage: stage-5b-batch-2-note-display-chips-or-duplicate-congregation-guardrail
-cache_version: talk-arrangements-v67-scoped-notes-foundation
+current_stage: stage-5d-duplicate-congregation-guardrail-code-implemented-live-testing-required
+next_stage: stage-5d-live-verification-then-calendar-events-engine
+cache_version: talk-arrangements-v68-duplicate-congregation-guardrail
 remove_when: fixed-arrangements-feature-complete-and-live-approved
 ---
 
@@ -17,47 +17,48 @@ remove_when: fixed-arrangements-feature-complete-and-live-approved
 
 ## Current Status
 
-Stage 5B Batch 1 Scoped Notes Foundation is code implemented and needs live testing.
+Stage 5D Duplicate Congregation Guardrail is code implemented and needs live testing.
 
 Latest commits:
-- d1eda9e2cdc79d37c5a343962c8e9620b99a2178
-- fd9d57d43977caea3c9a9e50b8fd6669c113d6b4
+- ec908f0d34537368ca76e0f362629178b557f258
+- 41344a5d5d2836fc87e135de89bad15c378067e9
+- 15e5314f068304549b6dacf4995ffcdac9c4feaa
 
 Latest cache:
-- talk-arrangements-v67-scoped-notes-foundation
+- talk-arrangements-v68-duplicate-congregation-guardrail
 
 Latest files changed:
-- js/unified-note-modal.js
+- js/duplicate-congregation-guardrail.js
+- index.html
 - sw.js
 - TEMP_FIXED_ARRANGEMENTS_HANDOFF.md
 
 What changed:
-- The note modal now supports three scopes in one place:
-  - Global note: stored at state.notes.global and visible/editable from any note modal.
-  - Congregation note: stored on the congregation record and follows the congregation.
-  - Month note: stored on the dashboard/planning row and applies only to that row/month/year.
-- Existing row.note and congregation.note fields are preserved.
-- Added optional noteTitle fields for congregation and month notes without migrating or deleting legacy note text.
-- No rollover, fixed arrangement, calendar, notification, Firebase, or cloud auth behavior was changed.
-- Backup/export/import/cloud should include the new state.notes object automatically because it is part of state.
+- Added a warning when assigning a congregation that already appears elsewhere in the same year.
+- Guardrail applies to Dashboard current-year assignments.
+- Guardrail applies to Planning year assignments.
+- Warning shows the existing month or months where the congregation is already scheduled.
+- User can cancel, which restores the previous congregation selection.
+- User can continue anyway, which saves the duplicate intentionally.
+- This is a warning only, not a hard block.
+- No calendar, notification, rollover, fixed arrangement, Firebase, cloud auth, or backup logic was changed.
 
 Live test checklist:
 - Refresh the app.
-- Dashboard: tap a note field and verify Global, Congregation, and Month sections appear.
-- Save a global note and verify it appears when opening another note modal.
-- Save a congregation note and verify it appears when that congregation is opened from another tab.
-- Save a month note and verify it stays only on that month row.
-- Planning: repeat the same checks.
-- Congregations: verify Global and Congregation sections appear, but Month section is hidden.
-- Cancel and verify no changes are saved.
-- Toggle English/Spanish and verify modal labels update.
-- Verify mobile and desktop layout.
-- Verify light/dark readability.
+- Dashboard: choose a congregation that already appears in the same current year.
+- Verify warning appears.
+- Cancel and verify the old congregation remains.
+- Repeat and choose Continue/Confirm.
+- Verify the duplicate is saved intentionally.
+- Planning: repeat the same test in one planning year.
+- Verify changing notes/status/contact/follow-up does not trigger this warning.
+- Verify English/Spanish wording.
+- Verify mobile layout.
 - Verify no console errors.
 
 Prior approved:
 - Stage 4C conflict resolution and fixed-rule update workflow.
 - Stage 5 Planning clear row and no-jump Planning input fixes.
 - Stage 5A resolved notice wording fix.
-- Stage 5B unified large note modal baseline.
+- Stage 5B scoped notes foundation.
 - Mobile toolbar and congregations horizontal scroll polish.
