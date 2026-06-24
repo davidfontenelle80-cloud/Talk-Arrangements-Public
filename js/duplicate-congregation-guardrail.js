@@ -124,7 +124,9 @@
   function rememberPlanningValue(event){
     var target = event.target;
     if(!target || !target.matches || !target.matches('#planningTables [data-field="congregation"]')) return;
-    target.dataset.duplicateGuardOldValue = target.value || '';
+    if(target.dataset.duplicateGuardOldValue === undefined || event.type !== 'input'){
+      target.dataset.duplicateGuardOldValue = target.value || '';
+    }
   }
   function planningHandler(event){
     var target = event.target;
@@ -136,12 +138,12 @@
     var rowId = tr.dataset.id;
     var oldValue = target.dataset.duplicateGuardOldValue || '';
     var newValue = target.value || '';
-    // Let the app's existing Planning save handler run first, then validate the final saved value.
     setTimeout(function(){
       var row = findPlanningRow(yearValue, rowId);
       if(!row) return;
       var finalValue = row.congregation || newValue;
-      warnIfNeeded('planning', yearValue, rowId, target, oldValue, finalValue);
+      var didWarn = warnIfNeeded('planning', yearValue, rowId, target, oldValue, finalValue);
+      if(!didWarn) target.dataset.duplicateGuardOldValue = finalValue || '';
     }, 0);
   }
 
@@ -150,5 +152,6 @@
   document.addEventListener('touchstart', rememberPlanningValue, true);
   document.addEventListener('input', dashboardHandler, true);
   document.addEventListener('change', dashboardHandler, true);
+  document.addEventListener('input', planningHandler, true);
   document.addEventListener('change', planningHandler, true);
 })();
