@@ -61,7 +61,8 @@
       '.note-callout--amber{border-color:#f59e0b;background:rgba(245,158,11,0.10);color:#fcd34d;}',
       '[data-theme="light"] .note-callout--blue{color:#1d4ed8;}',
       '[data-theme="light"] .note-callout--green{color:#15803d;}',
-      '[data-theme="light"] .note-callout--amber{color:#92400e;}'
+      '[data-theme="light"] .note-callout--amber{color:#92400e;}',
+      '.note-callout-heading{font-weight:700;font-size:0.78rem;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px;display:block;}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -144,19 +145,19 @@
     document.getElementById('unifiedNoteSave').textContent = t('Save','Guardar');
     document.getElementById('globalNoteLabel').textContent = t('🌎 Global note','🌎 Nota global');
     document.getElementById('globalNoteHint').textContent = t('Visible everywhere','Visible en todas partes');
-    document.getElementById('globalNoteDesc').innerHTML = isEs()
-      ? 'Visible en:<ul><li>Tablero</li><li>Planificación</li><li>Congregaciones</li><li>Calendario (futuro)</li></ul>Úsela para información que siempre debe verse.'
-      : 'Visible in:<ul><li>Dashboard</li><li>Planning</li><li>Congregations</li><li>Future Calendar</li></ul>Use for info that should always be visible.';
+    document.getElementById('globalNoteDesc').innerHTML =
+      '<span class="note-callout-heading">' + t('📍 WHERE THIS NOTE APPEARS','📍 DÓNDE APARECE ESTA NOTA') + '</span>' +
+      '<ul><li>' + t('Dashboard','Tablero') + '</li><li>' + t('Planning','Planificación') + '</li><li>' + t('Congregations','Congregaciones') + '</li><li>' + t('Future Calendar','Calendario futuro') + '</li></ul>';
     document.getElementById('congNoteLabel').textContent = t('🏛️ Congregation note','🏛️ Nota de congregación');
     document.getElementById('congNoteHint').textContent = t('Follows this congregation','Sigue a esta congregación');
-    document.getElementById('congNoteDesc').innerHTML = isEs()
-      ? 'Esta nota acompaña a esta congregación en cualquier mes o año. Ideal para:<ul><li>Preferencias</li><li>Restricciones</li><li>Contactos</li><li>Instrucciones permanentes</li></ul>'
-      : 'Follows this congregation across any month or year. Best for:<ul><li>Preferences</li><li>Restrictions</li><li>Contacts</li><li>Permanent instructions</li></ul>';
+    document.getElementById('congNoteDesc').innerHTML =
+      '<span class="note-callout-heading">' + t('🏛 WHEN TO USE THIS NOTE','🏛 CUÁNDO USAR ESTA NOTA') + '</span>' +
+      '<ul><li>' + t('Restrictions','Restricciones') + '</li><li>' + t('Preferences','Preferencias') + '</li><li>' + t('Contacts','Contactos') + '</li><li>' + t('Permanent instructions','Instrucciones permanentes') + '</li></ul>';
     document.getElementById('monthNoteLabel').textContent = t('📅 Month note','📅 Nota del mes');
     document.getElementById('monthNoteHint').textContent = t('Only this month/year','Solo este mes/año');
-    document.getElementById('monthNoteDesc').innerHTML = isEs()
-      ? 'Solo afecta este mes y año. Ideal para:<ul><li>Visitas del superintendente</li><li>Asambleas</li><li>Eventos especiales</li><li>Cambios temporales</li></ul>'
-      : 'Only applies to this month and year. Best for:<ul><li>Circuit overseer visits</li><li>Assemblies</li><li>Special events</li><li>Temporary changes</li></ul>';
+    document.getElementById('monthNoteDesc').innerHTML =
+      '<span class="note-callout-heading">' + t('📅 WHEN TO USE THIS NOTE','📅 CUÁNDO USAR ESTA NOTA') + '</span>' +
+      '<ul><li>' + t('Assembly','Asamblea') + '</li><li>' + t('Circuit overseer visit','Visita del superintendente') + '</li><li>' + t('Special event','Evento especial') + '</li><li>' + t('Temporary change','Cambio temporal') + '</li></ul>';
     document.getElementById('globalNoteTitle').placeholder = t('Global note title','Título de nota global');
     document.getElementById('globalNoteDetails').placeholder = t('Details visible everywhere','Detalles visibles en todas partes');
     document.getElementById('congNoteTitle').placeholder = t('Congregation note title','Título de nota de congregación');
