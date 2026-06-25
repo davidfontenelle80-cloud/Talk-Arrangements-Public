@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Talk Arrangements â public talk schedule manager for Spanish-speaking JW congregation." />
+  <meta name="description" content="Talk Arrangements Ã¢ÂÂ public talk schedule manager for Spanish-speaking JW congregation." />
   <meta name="theme-color" content="#0b0d12" />
 
   <!-- PWA -->
@@ -15,13 +15,61 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Talks" />
 
-  <!-- CSS â KHub standard layers -->
+  <!-- CSS Ã¢ÂÂ KHub standard layers -->
   <link rel="stylesheet" href="css/dark-mode.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/responsive.css" />
   <link rel="stylesheet" href="css/main.css" />
 
   <title>Talk Arrangements</title>
+  <style id="stage8b-css">
+    /* Stage 8B: Calendar */
+    .cal-wrap{margin-top:12px}
+    .cal-tb{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+    .cal-nav{display:flex;align-items:center;gap:6px}
+    .cal-ml{font-weight:600;font-size:1rem;min-width:150px;text-align:center}
+    .cal-filter-sel{padding:4px 8px;border-radius:6px;border:1px solid var(--border,#ddd);background:var(--bg,#fff);color:inherit;font-size:.85rem}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+    .cal-hdr{text-align:center;font-size:.7rem;font-weight:600;padding:3px;opacity:.6;text-transform:uppercase}
+    .cal-day{min-height:52px;padding:3px;border-radius:6px;background:var(--surface,#fff);border:1px solid var(--border,#eee);cursor:default;transition:background .12s}
+    .cal-has-ev{cursor:pointer}
+    .cal-has-ev:hover{background:rgba(200,169,110,.1)}
+    .cal-today{border-color:var(--color-primary,#C8A96E)!important}
+    .cal-today .cal-dn{background:var(--color-primary,#C8A96E);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem}
+    .cal-empty{background:transparent!important;border-color:transparent!important;cursor:default!important}
+    .cal-dn{font-size:.78rem;font-weight:500;line-height:1.2}
+    .cal-badges{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
+    .cal-badge{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+    .cal-det-panel{margin-top:10px;padding:12px;background:var(--surface,#fff);border-radius:10px;border:1px solid var(--border,#eee)}
+    .cal-det-inner{position:relative;padding-top:4px}
+    .cal-det-cls{position:absolute;right:0;top:0}
+    .cal-det-card{padding:8px 0;border-bottom:1px solid var(--border,#eee)}
+    .cal-det-card:last-child{border-bottom:none}
+    .cal-det-type{font-size:.82rem;font-weight:600;margin-bottom:2px}
+    .cal-det-title{font-size:.95rem;font-weight:700}
+    .cal-det-dates{font-size:.78rem;opacity:.6;margin-top:2px}
+    .cal-det-desc{font-size:.82rem;margin-top:5px}
+    .up-widget{padding:10px 12px;background:var(--surface,#fff);border-radius:10px;border:1px solid var(--border,#eee);margin-bottom:12px}
+    .up-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .up-title{font-weight:700;font-size:.9rem}
+    .up-badge{background:var(--color-primary,#C8A96E);color:#fff;border-radius:10px;padding:2px 8px;font-size:.75rem;font-weight:600}
+    .up-next{border-left:4px solid #C8A96E;padding-left:8px;margin-bottom:8px}
+    .up-next-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;opacity:.6;margin-bottom:2px}
+    .up-next-ico{font-size:1.2rem}
+    .up-next-ttl{font-weight:700;font-size:.9rem}
+    .up-next-dt{font-size:.78rem;opacity:.6}
+    .up-list{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+    .up-item{display:flex;align-items:center;gap:7px;font-size:.82rem}
+    .up-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+    .up-info{flex:1;line-height:1.3}
+    .up-empty{text-align:center;padding:8px;opacity:.6;font-size:.85rem;margin:0}
+    @media(max-width:480px){
+      .cal-day{min-height:36px;padding:2px}
+      .cal-ml{min-width:110px;font-size:.9rem}
+      .cal-badge{width:6px;height:6px}
+      .cal-hdr{font-size:.6rem}
+    }
+  </style>
 </head>
 <body>
 
@@ -35,7 +83,7 @@
        aria-live="polite"
        aria-atomic="true"
        hidden>
-    Update available â <button class="btn btn-sm btn-secondary"
+    Update available Ã¢ÂÂ <button class="btn btn-sm btn-secondary"
             onclick="KHub.SW.applyUpdate()">Refresh</button>
   </div>
 
@@ -133,7 +181,8 @@
             <div id="planningContactCard" class="contact-card" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"></div>
           </aside>
         </div>
-      </section>
+            <div id="upcomingEventsDash"></div>
+    </section>
       <!-- PLANNING -->
       <section id="planning" hidden>
         <div class="section-head">
@@ -173,9 +222,10 @@
             <h2 data-i18n="eventsTitle">Events</h2>
             <p data-i18n="eventsHint">Manage congregation events</p>
           </div>
-          <button class="primary" id="addEventBtn">＋ <span data-i18n="addEvent">Add Event</span></button>
+          <button class="primary" id="addEventBtn">ï¼ <span data-i18n="addEvent">Add Event</span></button>
         </div>
-        <div id="eventList"></div>
+        <div id="eventsCalendar"></div>
+      <div id="eventList"></div>
       </section>
 </main>
   </div>
@@ -216,7 +266,7 @@
   </div>
   </div>
 
-  <!-- Firebase SDK (compat â no build step required) -->
+  <!-- Firebase SDK (compat Ã¢ÂÂ no build step required) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -261,7 +311,7 @@
     <div class="modal-box" style="max-width:520px">
       <div class="modal-header">
         <strong id="eventModalTitle" data-i18n="addEvent">Add Event</strong>
-        <button class="icon-btn" id="closeEventModalBtn" aria-label="Close">✕</button>
+        <button class="icon-btn" id="closeEventModalBtn" aria-label="Close">â</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="evIdField">
@@ -272,7 +322,7 @@
         <div class="field-row">
           <label data-i18n="eventType">Event type</label>
           <select id="evTypeField">
-            <option value="">—</option>
+            <option value="">â</option>
             <option value="circuit-overseer">Circuit Overseer Visit</option>
             <option value="assembly">Assembly</option>
             <option value="convention">Convention</option>
@@ -320,7 +370,7 @@
   </div>
 </body>
 </html>
-    /* ── Event Manager ─────────────────────────────────────────── */
+    /* ââ Event Manager âââââââââââââââââââââââââââââââââââââââââââ */
     .event-card {
       background: var(--panel);
       border: 1px solid var(--line);
