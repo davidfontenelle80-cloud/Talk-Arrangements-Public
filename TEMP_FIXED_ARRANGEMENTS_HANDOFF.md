@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-8c-bugfix-verification-in-progress
 next_stage: stage-8c-live-verification
-cache_version: talk-arrangements-v83-stage-8c-bugfix
+cache_version: talk-arrangements-v84-stage-8c-bugfix
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -142,3 +142,9 @@ Stop before next feature stage if:
 2. Approve or repair Stage 8C.
 3. Run regression QA.
 4. Implement dedicated Date-Time Reminders & Push Notifications stage before Version 1.0 release.
+
+## Bug 5 — applyBadges stale badge cleanup (found during Step 7 verification)
+- **Symptom**: After deleting all calendar events, blocked/advisory badges remained on Planning rows
+- **Root cause**: `stage8c_applyBadges()` early-returned when `state.taEvents` was empty without cleaning up existing DOM badges; per-row guard `if(tr.querySelector('.ta-evt-badge'))return` also prevented re-processing
+- **Fix**: Inserted cleanup block (remove all `.ta-evt-badge` spans + strip `ta-evt-blocked/ta-evt-advisory` classes) before early-return; badge guard now harmless
+- **Commits**: app.js `500e3969`, sw.js `e2e7b31d` (v83→v84)
