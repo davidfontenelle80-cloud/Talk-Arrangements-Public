@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-8c-bugfix-verification-in-progress
 next_stage: stage-8c-live-verification
-cache_version: talk-arrangements-v82-stage-8c-bugfix
+cache_version: talk-arrangements-v83-stage-8c-bugfix
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -19,30 +19,40 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Stage 8C Bugs Found & Fixed (Live Verification 2026-06-25)
 
-### Bug 1 â Double-comma SyntaxError (CRITICAL)
+### Bug 1 Ã¢ÂÂ Double-comma SyntaxError (CRITICAL)
 - **Symptom**: App crashed on load with `Uncaught SyntaxError: Unexpected token ','  at app.js:16:7`
-- **Root cause**: Stage 8C appended Spanish event translation keys (eventsTitle, eventsHint, addEvent, editEvent, deleteEvent, eventTitle, eventType, confirmDeleteEvent) as top-level properties of the T translations object with a leading comma â creating a double comma `,,` after the existing trailing comma closing `en:{}`
+- **Root cause**: Stage 8C appended Spanish event translation keys (eventsTitle, eventsHint, addEvent, editEvent, deleteEvent, eventTitle, eventType, confirmDeleteEvent) as top-level properties of the T translations object with a leading comma Ã¢ÂÂ creating a double comma `,,` after the existing trailing comma closing `en:{}`
 - **Fix**: Moved orphaned ES keys into the `es:{}` block before its closing `}`
 - **Commit**: 22ab9768
 
-### Bug 2 â Stale Event Manager CSS injected after </html> (HIGH)
+### Bug 2 Ã¢ÂÂ Stale Event Manager CSS injected after </html> (HIGH)
 - **Symptom**: Raw CSS text rendered visibly in page body below the error modal
-- **Root cause**: Stage 8C cleanup moved Event Manager CSS into `css/components.css` but forgot to remove the original CSS block from `index.html` (lines 373â508, 135 lines)
+- **Root cause**: Stage 8C cleanup moved Event Manager CSS into `css/components.css` but forgot to remove the original CSS block from `index.html` (lines 373Ã¢ÂÂ508, 135 lines)
 - **Fix**: Stripped everything after `</html>` in index.html
 - **Commit**: 3e11133e
 
-### Bug 3 — Event modal HTML placed after script tag (HIGH)
-- **Symptom**: `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')` at app.js:1172:46 on every page load. saveEventBtn, closeEventModalBtn, evTypeField, evStartField, evColorSwatches, eventModal — all returned null during wiring because app.js (line 287 of HTML) ran synchronously before those elements (lines 310–366) were parsed.
+### Bug 3 â Event modal HTML placed after script tag (HIGH)
+- **Symptom**: `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')` at app.js:1172:46 on every page load. saveEventBtn, closeEventModalBtn, evTypeField, evStartField, evColorSwatches, eventModal â all returned null during wiring because app.js (line 287 of HTML) ran synchronously before those elements (lines 310â366) were parsed.
 - **Root cause**: Stage 8C added the #eventModal div AFTER the `<script src="js/app.js">` tag. The app has no DOMContentLoaded wrapper; wiring runs at parse time.
 - **Fix**: Moved the #eventModal block (61 lines) to before the script tag. All 6 previously-null elements are now accessible at wire time.
 - **Commit**: 1c63a7b1
 
 ### Cache bump (second)
-- v81-stage-8c-bugfix → v82-stage-8c-bugfix
+- v81-stage-8c-bugfix â v82-stage-8c-bugfix
 - **Commit**: 630b8a1e
 
+### Bug 4 — stage8c_applyBadges() not called after saveEvent/deleteEvent (HIGH)
+- **Symptom**: After adding a BLOCKING or ADVISORY event, badges did NOT appear on Planning rows until page refresh. stage8c_applyBadges() ran on page load (line 1436) so existing events worked, but live updates after save/delete were not reflected.
+- **Root cause**: saveEvent and deleteEvent both called renderEvents() to refresh the Events tab but did NOT call stage8c_applyBadges() to re-decorate Planning rows.
+- **Fix**: Added stage8c_applyBadges() after renderEvents() in both saveEvent and deleteEvent.
+- **Commit**: 360575fb
+
+### Cache bump (third)
+- v82-stage-8c-bugfix → v83-stage-8c-bugfix
+- **Commit**: d7797aee
+
 ### Cache bump
-- v80-stage-8c-cleanup â v81-stage-8c-bugfix
+- v80-stage-8c-cleanup Ã¢ÂÂ v81-stage-8c-bugfix
 - **Commit**: 9dc00618
 
 
