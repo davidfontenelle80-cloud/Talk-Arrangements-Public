@@ -7,15 +7,34 @@ created: 2026-06-23
 last_updated: 2026-06-25
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-8c-cleanup-code-complete-not-live-approved
+current_stage: stage-8c-bugfix-verification-in-progress
 next_stage: stage-8c-live-verification
-cache_version: talk-arrangements-v80-stage-8c-cleanup
+cache_version: talk-arrangements-v81-stage-8c-bugfix
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
 # Temporary Fixed Arrangements Handoff
 
 ## Current Status
+
+## Stage 8C Bugs Found & Fixed (Live Verification 2026-06-25)
+
+### Bug 1 — Double-comma SyntaxError (CRITICAL)
+- **Symptom**: App crashed on load with `Uncaught SyntaxError: Unexpected token ','  at app.js:16:7`
+- **Root cause**: Stage 8C appended Spanish event translation keys (eventsTitle, eventsHint, addEvent, editEvent, deleteEvent, eventTitle, eventType, confirmDeleteEvent) as top-level properties of the T translations object with a leading comma — creating a double comma `,,` after the existing trailing comma closing `en:{}`
+- **Fix**: Moved orphaned ES keys into the `es:{}` block before its closing `}`
+- **Commit**: 22ab9768
+
+### Bug 2 — Stale Event Manager CSS injected after </html> (HIGH)
+- **Symptom**: Raw CSS text rendered visibly in page body below the error modal
+- **Root cause**: Stage 8C cleanup moved Event Manager CSS into `css/components.css` but forgot to remove the original CSS block from `index.html` (lines 373–508, 135 lines)
+- **Fix**: Stripped everything after `</html>` in index.html
+- **Commit**: 3e11133e
+
+### Cache bump
+- v80-stage-8c-cleanup → v81-stage-8c-bugfix
+- **Commit**: 9dc00618
+
 
 Stage 8C calendar intelligence is code-complete and has received a repo cleanup pass. It is not live-approved yet.
 
