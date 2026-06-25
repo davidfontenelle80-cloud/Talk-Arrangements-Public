@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v78-stage-8b-calendar';
+const CACHE_VERSION = 'talk-arrangements-v79-stage-8c-intelligence';
 
 const PRECACHE_URLS = [
   './',

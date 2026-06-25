@@ -1,5 +1,5 @@
 /**
- * components.css — KHub mobile app chrome
+ * components.css â KHub mobile app chrome
  * Keep this file intentionally light. App-specific classes such as .card,
  * .btn, .modal, and inputs belong in main.css so generated apps keep their
  * own visual language.
@@ -164,3 +164,21 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* ── Stage 8C: Calendar Intelligence ─────────────────────── */
+.ta-evt-badge {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.82em;
+  cursor: pointer;
+  vertical-align: middle;
+  line-height: 1;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.ta-evt-blocked { color: #ef4444; }
+.ta-evt-advisory { color: #f59e0b; }
+.ta-evt-row-blocked { background: rgba(239,68,68,0.06) !important; }
+.ta-evt-row-advisory { background: rgba(245,158,11,0.06) !important; }
+[data-theme="light"] .ta-evt-row-blocked { background: rgba(239,68,68,0.09) !important; }
+[data-theme="light"] .ta-evt-row-advisory { background: rgba(245,158,11,0.09) !important; }
