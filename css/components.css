@@ -311,7 +311,11 @@
 }
 .ta-evt-blocked { color: #ef4444; }
 .ta-evt-advisory { color: #f59e0b; }
-.ta-evt-row-blocked { background: rgba(239,68,68,0.06) !important; }
-.ta-evt-row-advisory { background: rgba(245,158,11,0.06) !important; }
-[data-theme="light"] .ta-evt-row-blocked { background: rgba(239,68,68,0.09) !important; }
-[data-theme="light"] .ta-evt-row-advisory { background: rgba(245,158,11,0.09) !important; }
+.ta-evt-row-blocked,
+tr.ta-evt-blocked { background: rgba(239,68,68,0.06) !important; }
+.ta-evt-row-advisory,
+tr.ta-evt-advisory { background: rgba(245,158,11,0.06) !important; }
+[data-theme="light"] .ta-evt-row-blocked,
+[data-theme="light"] tr.ta-evt-blocked { background: rgba(239,68,68,0.09) !important; }
+[data-theme="light"] .ta-evt-row-advisory,
+[data-theme="light"] tr.ta-evt-advisory { background: rgba(245,158,11,0.09) !important; }
