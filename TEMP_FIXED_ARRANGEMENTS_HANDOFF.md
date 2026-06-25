@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-8c-bugfix-verification-in-progress
 next_stage: stage-8c-live-verification
-cache_version: talk-arrangements-v84-stage-8c-bugfix
+cache_version: talk-arrangements-v85-stage-8c-bugfix
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -148,3 +148,9 @@ Stop before next feature stage if:
 - **Root cause**: `stage8c_applyBadges()` early-returned when `state.taEvents` was empty without cleaning up existing DOM badges; per-row guard `if(tr.querySelector('.ta-evt-badge'))return` also prevented re-processing
 - **Fix**: Inserted cleanup block (remove all `.ta-evt-badge` spans + strip `ta-evt-blocked/ta-evt-advisory` classes) before early-return; badge guard now harmless
 - **Commits**: app.js `500e3969`, sw.js `e2e7b31d` (v83→v84)
+
+## Bug 5b — applyBadges cleanup selector too narrow (found during Bug 5 regression test)
+- **Symptom**: After deleting all events, one `ta-evt-blocked` row persisted in `#planningTables`
+- **Root cause**: Cleanup selector was scoped to `#dashboardRows tr.ta-evt-blocked` — missed rows in `#planningTables`
+- **Fix**: Broadened selector to `tr.ta-evt-blocked,tr.ta-evt-advisory` (no container restriction)
+- **Commits**: app.js `bf4fd67f`, sw.js `e18e9a4f` (v84→v85)
