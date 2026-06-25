@@ -796,13 +796,13 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         if(!state.taEvents)state.taEvents=[];
         state.taEvents.push({id:'evt-'+now,title:title,type:typeVal,description:document.getElementById('evDescField').value,startDate:startDate,endDate:endDate,allDay:document.getElementById('evAllDayField').checked,recurring:false,recurrenceRule:'',congregationScope:'all',color:document.getElementById('evColorInput').value||et.color,icon:et.icon,active:document.getElementById('evActiveField').checked,notes:document.getElementById('evNotesField').value,createdAt:now,updatedAt:now});
       }
-      saveState();closeEventModal();renderEvents();toast(tt('saved'));
+      saveState();closeEventModal();renderEvents();stage8c_applyBadges();toast(tt('saved'));
     }
 
     function deleteEvent(evId){
       showConfirm(tt('confirmDeleteEvent'),function(){
         state.taEvents=(state.taEvents||[]).filter(function(e){return e.id!==evId;});
-        saveState();renderEvents();toast(tt('deleteEvent'));
+        saveState();renderEvents();stage8c_applyBadges();toast(tt('deleteEvent'));
       });
     }
 
