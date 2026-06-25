@@ -97,7 +97,7 @@ Required reminder design:
 - Stage 8A / Calendar Event Foundation: COMPLETE
 - Stage 8B / Calendar Rendering & Dashboard Integration: COMPLETE
 - Stage 8C / Calendar Intelligence: LIVE APPROVED
-- Stage 9 / Date-Time Reminders: REQUIRES CHANGES / BLOCKED
+- Stage 9 / Date-Time Reminders: REPAIR COMPLETE — READY FOR RE-TEST
 
 ## Cache History
 
@@ -106,6 +106,7 @@ Required reminder design:
 - v79: Stage 8C calendar intelligence
 - v80-v85: Stage 8C bugfix/live approval series
 - v86: Stage 9 reminders implementation with blockers
+- v87: Stage 9 repair (mojibake fix, sanitizeInlineArg in app.js, honest in-app-only labels)
 
 ## Required Next Repair
 
@@ -125,3 +126,39 @@ Stop before Release Candidate if:
 - Calendar/Event button actions do not respond.
 - Notifications do not meet the agreed Version 1.0 requirement.
 - Any cloud/export/import regression appears.
+
+---
+
+## Stage 9 Repair — 2026-06-25 (commit 02161168dbc5)
+
+### What Was Fixed
+
+| Bug | Fix Applied |
+|-----|------------|
+| Mojibake in T.en / T.es | 4-level latin-1→utf-8 decode applied to entire T block; all non-ASCII re-encoded as \\uXXXX escapes |
+| `ReferenceError: sanitizeInlineArg` | `function sanitizeInlineArg()` added directly to app.js body (before renderReminders) |
+| Closed-app notifications mislabeled | `reminders.inAppOnly` i18n key added; renderReminders now shows ⚠️ in-app-only notice |
+| i18n.js runtime string-patch hack | Removed `patchTalkArrangementStrings()` and its `setInterval` loop; kept belt-and-suspenders `window.sanitizeInlineArg` fallback |
+| Service worker cache stale | Bumped v86 → v87-stage-9-repair |
+
+### Files Changed
+
+- `js/app.js` — mojibake fixed, sanitizeInlineArg defined, reminders.inAppOnly added to T.en + T.es, renderReminders updated
+- `js/i18n.js` — removed Stage 9 emergency string-patch hack, kept sanitizeInlineArg global fallback
+- `sw.js` — CACHE_VERSION bumped to `talk-arrangements-v87-stage-9-repair`
+
+### Notification Architecture Decision
+
+**In-app reminders only (setTimeout-based).** The app must be open and active for reminders to fire. True closed-app push notifications require a backend VAPID/Web Push server — not implemented. The UI now honestly labels this with ⚠️ and `reminders.inAppOnly` in both EN and ES.
+
+Deferred to future stage: backend push notifications (VAPID key pair, push subscription storage, server-side trigger).
+
+### Remaining Risk
+
+- The comment section of app.js still contains decorative box-drawing characters in mojibake form (cosmetic only — not user-visible strings).
+- iOS "Add to Home Screen" banner still needed for best reminder experience on Safari/iOS.
+- Full re-test checklist (EN/ES, calendar, reminders, cloud backup, export/import) should be run before Version 1.0 release candidate.
+
+### Updated Stage Status
+
+- Stage 9 / Date-Time Reminders: **REPAIR COMPLETE — READY FOR RE-TEST**
