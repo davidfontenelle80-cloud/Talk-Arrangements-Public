@@ -154,3 +154,30 @@ Stop before next feature stage if:
 - **Root cause**: Cleanup selector was scoped to `#dashboardRows tr.ta-evt-blocked` — missed rows in `#planningTables`
 - **Fix**: Broadened selector to `tr.ta-evt-blocked,tr.ta-evt-advisory` (no container restriction)
 - **Commits**: app.js `bf4fd67f`, sw.js `e18e9a4f` (v84→v85)
+
+## Stage 8C Live Verification — COMPLETE
+**Result**: PASS WITH BUGS FOUND AND FIXED
+**Final cache version**: talk-arrangements-v85-stage-8c-bugfix
+**Date**: 2026-06-25
+**All 16 verification steps**: PASS on v85
+
+### Verification Steps Summary
+1. SW/cache v85 confirmed ✅
+2. BLOCKING event → 2 RED badges on rows ✅
+3. Badge click → conflict modal opens ✅
+4. Modal labels EN ("Restricted date / Understood") ✅
+5. Modal labels ES ("Fecha restringida / Entendido") ✅
+6. ADVISORY event (circuit-overseer) → 2 AMBER badges ✅
+7. Advisory months allow scheduling (not blocked) ✅
+8. Remove BLOCKING event → badges clear ✅ (Bug 5 fix)
+9. Remove ADVISORY event → badges clear ✅
+10. Existing 12-row schedule unchanged ✅
+11. Notes: open modal, save, trigger updates ✅
+12. Cloud backup: "Saved to cloud" toast ✅
+13. Export JSON: date-stamped file triggered ✅
+14. Import JSON: "Backup imported." toast ✅
+15. Mobile: viewport meta + CSS breakpoints correct ✅ (375px live render limited by OS min window size)
+16. Desktop: 4 tabs visible, no h-scroll ✅
+
+### Pages Deploy Note
+One transient Pages deploy failure occurred (build succeeded, deploy step failed). Re-run resolved it. Root cause: GitHub Pages infra transient; NOT a code issue.
