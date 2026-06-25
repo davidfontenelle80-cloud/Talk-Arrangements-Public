@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-25
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-8c-bugfix-verification-in-progress
-next_stage: stage-8c-live-verification
+current_stage: stage-8c-live-approved
+next_stage: stage-9-reminders
 cache_version: talk-arrangements-v85-stage-8c-bugfix
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -19,34 +19,34 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Stage 8C Bugs Found & Fixed (Live Verification 2026-06-25)
 
-### Bug 1 — Double-comma SyntaxError (CRITICAL)
+### Bug 1 â Double-comma SyntaxError (CRITICAL)
 - **Symptom**: App crashed on load with `Uncaught SyntaxError: Unexpected token ','  at app.js:16:7`
 - **Root cause**: Stage 8C appended Spanish event translation keys as top-level properties of the T translations object with a leading comma.
 - **Fix**: Moved orphaned ES keys into the `es:{}` block before its closing `}`
 - **Commit**: 22ab9768
 
-### Bug 2 — Stale Event Manager CSS injected after </html> (HIGH)
+### Bug 2 â Stale Event Manager CSS injected after </html> (HIGH)
 - **Symptom**: Raw CSS text rendered visibly in page body below the error modal
 - **Root cause**: Stage 8C cleanup moved Event Manager CSS into `css/components.css` but forgot to remove the original CSS block from `index.html`
 - **Fix**: Stripped everything after `</html>` in index.html
 - **Commit**: 3e11133e
 
-### Bug 3 — Event modal HTML placed after script tag (HIGH)
+### Bug 3 â Event modal HTML placed after script tag (HIGH)
 - **Symptom**: `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')` at app.js:1172:46 on every page load.
 - **Root cause**: Stage 8C added the #eventModal div AFTER the `<script src="js/app.js">` tag. The app has no DOMContentLoaded wrapper; wiring runs at parse time.
 - **Fix**: Moved the #eventModal block to before the script tag.
 - **Commit**: 1c63a7b1
 
-### Bug 4 — stage8c_applyBadges() not called after saveEvent/deleteEvent (HIGH)
+### Bug 4 â stage8c_applyBadges() not called after saveEvent/deleteEvent (HIGH)
 - **Symptom**: After adding a BLOCKING or ADVISORY event, badges did NOT appear on Planning rows until page refresh.
 - **Root cause**: saveEvent and deleteEvent both called renderEvents() but did NOT call stage8c_applyBadges().
 - **Fix**: Added stage8c_applyBadges() after renderEvents() in both saveEvent and deleteEvent.
 - **Commit**: 360575fb
 
 ### Cache bumps
-- v80-stage-8c-cleanup → v81-stage-8c-bugfix — Commit: 9dc00618
-- v81-stage-8c-bugfix → v82-stage-8c-bugfix — Commit: 630b8a1e
-- v82-stage-8c-bugfix → v83-stage-8c-bugfix — Commit: d7797aee
+- v80-stage-8c-cleanup â v81-stage-8c-bugfix â Commit: 9dc00618
+- v81-stage-8c-bugfix â v82-stage-8c-bugfix â Commit: 630b8a1e
+- v82-stage-8c-bugfix â v83-stage-8c-bugfix â Commit: d7797aee
 
 Stage 8C calendar intelligence is code-complete and has received a bugfix pass. It is not live-approved yet.
 
@@ -143,41 +143,41 @@ Stop before next feature stage if:
 3. Run regression QA.
 4. Implement dedicated Date-Time Reminders & Push Notifications stage before Version 1.0 release.
 
-## Bug 5 — applyBadges stale badge cleanup (found during Step 7 verification)
+## Bug 5 â applyBadges stale badge cleanup (found during Step 7 verification)
 - **Symptom**: After deleting all calendar events, blocked/advisory badges remained on Planning rows
 - **Root cause**: `stage8c_applyBadges()` early-returned when `state.taEvents` was empty without cleaning up existing DOM badges; per-row guard `if(tr.querySelector('.ta-evt-badge'))return` also prevented re-processing
 - **Fix**: Inserted cleanup block (remove all `.ta-evt-badge` spans + strip `ta-evt-blocked/ta-evt-advisory` classes) before early-return; badge guard now harmless
-- **Commits**: app.js `500e3969`, sw.js `e2e7b31d` (v83→v84)
+- **Commits**: app.js `500e3969`, sw.js `e2e7b31d` (v83âv84)
 
-## Bug 5b — applyBadges cleanup selector too narrow (found during Bug 5 regression test)
+## Bug 5b â applyBadges cleanup selector too narrow (found during Bug 5 regression test)
 - **Symptom**: After deleting all events, one `ta-evt-blocked` row persisted in `#planningTables`
-- **Root cause**: Cleanup selector was scoped to `#dashboardRows tr.ta-evt-blocked` — missed rows in `#planningTables`
+- **Root cause**: Cleanup selector was scoped to `#dashboardRows tr.ta-evt-blocked` â missed rows in `#planningTables`
 - **Fix**: Broadened selector to `tr.ta-evt-blocked,tr.ta-evt-advisory` (no container restriction)
-- **Commits**: app.js `bf4fd67f`, sw.js `e18e9a4f` (v84→v85)
+- **Commits**: app.js `bf4fd67f`, sw.js `e18e9a4f` (v84âv85)
 
-## Stage 8C Live Verification — COMPLETE
+## Stage 8C Live Verification â COMPLETE
 **Result**: PASS WITH BUGS FOUND AND FIXED
 **Final cache version**: talk-arrangements-v85-stage-8c-bugfix
 **Date**: 2026-06-25
 **All 16 verification steps**: PASS on v85
 
 ### Verification Steps Summary
-1. SW/cache v85 confirmed ✅
-2. BLOCKING event → 2 RED badges on rows ✅
-3. Badge click → conflict modal opens ✅
-4. Modal labels EN ("Restricted date / Understood") ✅
-5. Modal labels ES ("Fecha restringida / Entendido") ✅
-6. ADVISORY event (circuit-overseer) → 2 AMBER badges ✅
-7. Advisory months allow scheduling (not blocked) ✅
-8. Remove BLOCKING event → badges clear ✅ (Bug 5 fix)
-9. Remove ADVISORY event → badges clear ✅
-10. Existing 12-row schedule unchanged ✅
-11. Notes: open modal, save, trigger updates ✅
-12. Cloud backup: "Saved to cloud" toast ✅
-13. Export JSON: date-stamped file triggered ✅
-14. Import JSON: "Backup imported." toast ✅
-15. Mobile: viewport meta + CSS breakpoints correct ✅ (375px live render limited by OS min window size)
-16. Desktop: 4 tabs visible, no h-scroll ✅
+1. SW/cache v85 confirmed â
+2. BLOCKING event â 2 RED badges on rows â
+3. Badge click â conflict modal opens â
+4. Modal labels EN ("Restricted date / Understood") â
+5. Modal labels ES ("Fecha restringida / Entendido") â
+6. ADVISORY event (circuit-overseer) â 2 AMBER badges â
+7. Advisory months allow scheduling (not blocked) â
+8. Remove BLOCKING event â badges clear â (Bug 5 fix)
+9. Remove ADVISORY event â badges clear â
+10. Existing 12-row schedule unchanged â
+11. Notes: open modal, save, trigger updates â
+12. Cloud backup: "Saved to cloud" toast â
+13. Export JSON: date-stamped file triggered â
+14. Import JSON: "Backup imported." toast â
+15. Mobile: viewport meta + CSS breakpoints correct â (375px live render limited by OS min window size)
+16. Desktop: 4 tabs visible, no h-scroll â
 
 ### Pages Deploy Note
 One transient Pages deploy failure occurred (build succeeded, deploy step failed). Re-run resolved it. Root cause: GitHub Pages infra transient; NOT a code issue.
