@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Talk Arrangements Ã¢ÂÂ public talk schedule manager for Spanish-speaking JW congregation." />
+  <meta name="description" content="Talk Arrangements ÃÂ¢ÃÂÃÂ public talk schedule manager for Spanish-speaking JW congregation." />
   <meta name="theme-color" content="#0b0d12" />
 
   <!-- PWA -->
@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Talks" />
 
-  <!-- CSS Ã¢ÂÂ KHub standard layers -->
+  <!-- CSS ÃÂ¢ÃÂÃÂ KHub standard layers -->
   <link rel="stylesheet" href="css/dark-mode.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/responsive.css" />
@@ -83,7 +83,7 @@
        aria-live="polite"
        aria-atomic="true"
        hidden>
-    Update available Ã¢ÂÂ <button class="btn btn-sm btn-secondary"
+    Update available ÃÂ¢ÃÂÃÂ <button class="btn btn-sm btn-secondary"
             onclick="KHub.SW.applyUpdate()">Refresh</button>
   </div>
 
@@ -222,7 +222,7 @@
             <h2 data-i18n="eventsTitle">Events</h2>
             <p data-i18n="eventsHint">Manage congregation events</p>
           </div>
-          <button class="primary" id="addEventBtn">ï¼ <span data-i18n="addEvent">Add Event</span></button>
+          <button class="primary" id="addEventBtn">Ã¯Â¼Â <span data-i18n="addEvent">Add Event</span></button>
         </div>
         <div id="eventsCalendar"></div>
       <div id="eventList"></div>
@@ -266,7 +266,7 @@
   </div>
   </div>
 
-  <!-- Firebase SDK (compat Ã¢ÂÂ no build step required) -->
+  <!-- Firebase SDK (compat ÃÂ¢ÃÂÃÂ no build step required) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -311,7 +311,7 @@
     <div class="modal-box" style="max-width:520px">
       <div class="modal-header">
         <strong id="eventModalTitle" data-i18n="addEvent">Add Event</strong>
-        <button class="icon-btn" id="closeEventModalBtn" aria-label="Close">â</button>
+        <button class="icon-btn" id="closeEventModalBtn" aria-label="Close">Ã¢ÂÂ</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="evIdField">
@@ -322,7 +322,7 @@
         <div class="field-row">
           <label data-i18n="eventType">Event type</label>
           <select id="evTypeField">
-            <option value="">â</option>
+            <option value="">Ã¢ÂÂ</option>
             <option value="circuit-overseer">Circuit Overseer Visit</option>
             <option value="assembly">Assembly</option>
             <option value="convention">Convention</option>
@@ -370,138 +370,3 @@
   </div>
 </body>
 </html>
-    /* ââ Event Manager âââââââââââââââââââââââââââââââââââââââââââ */
-    .event-card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 14px;
-      margin-bottom: 10px;
-    }
-    .event-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .event-type-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border-radius: 999px;
-      padding: 3px 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .event-card-actions {
-      display: flex;
-      gap: 6px;
-    }
-    .event-card-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .event-card-date {
-      font-size: 13px;
-      margin-bottom: 3px;
-    }
-    .event-card-desc {
-      font-size: 13px;
-      margin-top: 4px;
-    }
-    /* Modal shared styles */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.45);
-      z-index: 50;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    .modal-backdrop.open {
-      display: flex;
-    }
-    .modal-box {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: var(--panel-2);
-    }
-    .modal-body {
-      padding: 16px;
-      display: grid;
-      gap: 12px;
-    }
-    .modal-footer {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      border-top: 1px solid var(--line);
-      justify-content: flex-end;
-    }
-    .field-row label {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      margin-bottom: 4px;
-    }
-    .field-row input, .field-row select, .field-row textarea {
-      width: 100%;
-      padding: 8px 10px;
-    }
-    .field-row.two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .field-row.inline-check {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .field-row.inline-check input {
-      width: auto;
-    }
-    .field-row.inline-check label {
-      margin: 0;
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: 14px;
-      color: var(--text);
-    }
-    .color-swatches {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 4px 0;
-    }
-    .color-swatch {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      padding: 0;
-      min-height: 26px;
-      cursor: pointer;
-    }
-    .color-swatch.active {
-      border-color: var(--text);
-    }
-
-  
