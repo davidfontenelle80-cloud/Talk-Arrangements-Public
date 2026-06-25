@@ -1,5 +1,5 @@
 /**
- * app.js — Talk Arrangements
+ * app.js â Talk Arrangements
  * Public talk schedule manager for Spanish-speaking JW congregation.
  */
 
@@ -12,8 +12,8 @@ var APP_KEY="jw-talk-arrangements-v1";
     var STATUS=["not-contacted","message-sent","confirmed","needs-follow-up"];
 
     var T={
-      en:{appTitle:"Talk Arrangements",subtitle:"Congregation public talk arrangements",dashboard:"Dashboard",planning:"Planning",congregations:"Congregations",backup:"Backup",import:"Import",reset:"Reset",dashHint:"Current year at a glance — current month highlighted.",addMonth:"Add Month",yearSchedule:"Year schedule",month:"Month",congregation:"Congregation",statusCol:"Status",fixedCol:"Fixed",notContacted:"Not contacted",messageSentStatus:"Message sent",confirmedStatus:"Confirmed",needsFollowUp:"Needs follow-up",followUpDate:"Follow up by",note:"Note",actions:"Actions",speakerContact:"Speaker contact",planningTitle:"Planning for the next 3 years",planningHint:"Use this for future arrangements and fixed recurring notes.",addYear:"Add Year",congTitle:"Congregation list",congHint:"Edit contact information here; dashboard lookups update immediately.",search:"Search congregations or contacts",addCong:"Add",coordinator:"Coordinator",phone:"Phone",email:"Email",currentMonth:"Current month",copied:"Copied",noContact:"Select a congregation row (◎) to see contact options.",call:"Call",text:"Text",mail:"Email",copy:"Copy",total:"Total",sent:"Sent",confirmedCount:"Confirmed",conWho:"With whom",contact:"Contact",deleteConfirm:"Are you sure you want to delete this?",restored:"Starter data restored.",imported:"Backup imported.",saved:"Saved.",exported:"Backup downloaded.",invalidBackup:"This backup file could not be read.",print:"Print",createNextYear:"Next Year",confirmCreateYear:"Archive {year} and create template for {next}?",yearCreated:"{year} schedule created + {prev} archived",templates:"Message template",openSms:"Send SMS",openEmail:"Send Email",copyMsg:"Copy message",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Print list",shareContact:"Share contact",privateData:"Contacts loaded",publicData:"Public version — no contacts",conflictWarnings:"{n} issue(s)",duplicateCong:"{c} scheduled twice within 6 months ({m1} & {m2})",missingFixed:"Fixed congregation not scheduled: {c}",dupMonth:"Month {m} appears more than once",nothingToCopy:"Nothing to copy",settingsTitle:"Settings & Profile",profileName:"Your name",profileCong:"Your congregation",profilePhone:"Your phone (for messages)",privacyNote:"Your data is saved on this device and can sync through cloud backup when enabled.",save:"Save",cancel:"Cancel",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",yearChangePrompt:"It is now {year}. Roll over the schedule?",archiveNote:"Previous schedule archived to Planning.",emailSubject:"Congregation list",listCopied:"List copied — paste into your email"},
-      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos públicos de la congregación",dashboard:"Tablero",planning:"Planificación",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El año actual con el mes presente resaltado.",addMonth:"Añadir mes",yearSchedule:"Programa del año",month:"Mes",congregation:"Congregación",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"Planificación de los próximos 3 años",planningHint:"Use esta sección para arreglos futuros y notas fijas.",addYear:"Añadir año",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aquí; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"Añadir",coordinator:"Coordinador",phone:"Teléfono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (◎) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"¿Desea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"Próximo Año",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Version publica — sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"Congregación fija sin programar: {c}",dupMonth:"El mes {m} aparece mas de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuracion y Perfil",profileName:"Tu nombre",profileCong:"Tu congregación",profilePhone:"Tu teléfono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando esta activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dias",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. ¿Cambiar el programa al nuevo año?",archiveNote:"Programa anterior archivado en Planificación.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada — pégala en tu correo"}
+      en:{appTitle:"Talk Arrangements",subtitle:"Congregation public talk arrangements",dashboard:"Dashboard",planning:"Planning",congregations:"Congregations",backup:"Backup",import:"Import",reset:"Reset",dashHint:"Current year at a glance â current month highlighted.",addMonth:"Add Month",yearSchedule:"Year schedule",month:"Month",congregation:"Congregation",statusCol:"Status",fixedCol:"Fixed",notContacted:"Not contacted",messageSentStatus:"Message sent",confirmedStatus:"Confirmed",needsFollowUp:"Needs follow-up",followUpDate:"Follow up by",note:"Note",actions:"Actions",speakerContact:"Speaker contact",planningTitle:"Planning for the next 3 years",planningHint:"Use this for future arrangements and fixed recurring notes.",addYear:"Add Year",congTitle:"Congregation list",congHint:"Edit contact information here; dashboard lookups update immediately.",search:"Search congregations or contacts",addCong:"Add",coordinator:"Coordinator",phone:"Phone",email:"Email",currentMonth:"Current month",copied:"Copied",noContact:"Select a congregation row (â) to see contact options.",call:"Call",text:"Text",mail:"Email",copy:"Copy",total:"Total",sent:"Sent",confirmedCount:"Confirmed",conWho:"With whom",contact:"Contact",deleteConfirm:"Are you sure you want to delete this?",restored:"Starter data restored.",imported:"Backup imported.",saved:"Saved.",exported:"Backup downloaded.",invalidBackup:"This backup file could not be read.",print:"Print",createNextYear:"Next Year",confirmCreateYear:"Archive {year} and create template for {next}?",yearCreated:"{year} schedule created + {prev} archived",templates:"Message template",openSms:"Send SMS",openEmail:"Send Email",copyMsg:"Copy message",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Print list",shareContact:"Share contact",privateData:"Contacts loaded",publicData:"Public version â no contacts",conflictWarnings:"{n} issue(s)",duplicateCong:"{c} scheduled twice within 6 months ({m1} & {m2})",missingFixed:"Fixed congregation not scheduled: {c}",dupMonth:"Month {m} appears more than once",nothingToCopy:"Nothing to copy",settingsTitle:"Settings & Profile",profileName:"Your name",profileCong:"Your congregation",profilePhone:"Your phone (for messages)",privacyNote:"Your data is saved on this device and can sync through cloud backup when enabled.",save:"Save",cancel:"Cancel",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",yearChangePrompt:"It is now {year}. Roll over the schedule?",archiveNote:"Previous schedule archived to Planning.",emailSubject:"Congregation list",listCopied:"List copied â paste into your email",eventsTitle:"Events",eventsHint:"Manage congregation events",addEvent:"+ Add Event",editEvent:"Edit Event",deleteEvent:"Delete Event",eventTitle:"Title",eventType:"Event type",eventStartDate:"Start date",eventEndDate:"End date",eventAllDay:"All day",eventDescription:"Description",eventNotes:"Notes",eventColor:"Color",eventActive:"Active",noEvents:"No events yet. Tap + Add Event to create one.",confirmDeleteEvent:"Delete this event?"},
+      ,eventsTitle:"Eventos",eventsHint:"Administra eventos de la congregacion",addEvent:"+ Agregar evento",editEvent:"Editar evento",deleteEvent:"Eliminar evento",eventTitle:"Titulo",eventType:"Tipo de evento",eventStartDate:"Fecha de inicio",eventEndDate:"Fecha de fin",eventAllDay:"Todo el dia",eventDescription:"Descripcion",eventNotes:"Notas",eventColor:"Color",eventActive:"Activo",noEvents:"Sin eventos aun. Toca + Agregar evento para crear uno.",confirmDeleteEvent:"Eliminar este evento?"es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos pÃºblicos de la congregaciÃ³n",dashboard:"Tablero",planning:"PlanificaciÃ³n",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El aÃ±o actual con el mes presente resaltado.",addMonth:"AÃ±adir mes",yearSchedule:"Programa del aÃ±o",month:"Mes",congregation:"CongregaciÃ³n",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"PlanificaciÃ³n de los prÃ³ximos 3 aÃ±os",planningHint:"Use esta secciÃ³n para arreglos futuros y notas fijas.",addYear:"AÃ±adir aÃ±o",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aquÃ­; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"AÃ±adir",coordinator:"Coordinador",phone:"TelÃ©fono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (â) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"Â¿Desea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"PrÃ³ximo AÃ±o",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Version publica â sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"CongregaciÃ³n fija sin programar: {c}",dupMonth:"El mes {m} aparece mas de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuracion y Perfil",profileName:"Tu nombre",profileCong:"Tu congregaciÃ³n",profilePhone:"Tu telÃ©fono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando esta activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dias",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. Â¿Cambiar el programa al nuevo aÃ±o?",archiveNote:"Programa anterior archivado en PlanificaciÃ³n.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada â pÃ©gala en tu correo"}
     };
 
     var starter={
@@ -26,11 +26,25 @@ var APP_KEY="jw-talk-arrangements-v1";
         {year:2028,rows:[[0,"Highland Spanish Waterbury",""],[1,"West Danbury Spanish",""],[2,"Cedar Spanish Branford",""],[3,"South Springfield Spanish","Arreglo fijo"],[4,"East Danbury Spanish",""],[5,"Torringford Spanish","Arreglo fijo"],[6,"Bridgeport West Spanish",""],[7,"New London Spanish","Arreglo fijo"],[8,"North Spanish New Britain","Arreglo fijo"],[9,"Meriden Spanish","Arreglo fijo, hasta 2029"],[10,"Feeding Hills",""],[11,"South Spanish Hartford",""]]},
         {year:2029,rows:Array.from({length:12},function(_,i){return[i,"",""];})}
       ].map(function(y){return{year:y.year,rows:y.rows.map(function(r){return{id:crypto.randomUUID(),month:r[0],congregation:r[1],contact:"",confirmed:false,note:r[2]};})}}),
-      congregations:["Bridgeport West Spanish","Bristol Spanish","Cedar Spanish Branford","Central Spanish New Haven","East Danbury Spanish","East Hartford","East Spanish Bridgeport","East Spanish Hartford","East Spanish Norwalk","Feeding Hills","Hartford Norte","Highland Spanish Waterbury","Lakewood Spanish Waterbury","Leominster MA","Meriden Spanish","New London Spanish","North Spanish Hartford","North Spanish New Britain","Parker Spanish - Massachusetts","Shelton","South Spanish Danbury","South Spanish Hartford","South Spanish Holyoke","South Spanish New Britain","South Springfield Spanish","Stamford","Torringford Spanish","West Danbury Spanish","Woodin Hill Spanish - Hamden CT","Local"].map(function(n){return{id:crypto.randomUUID(),name:n,coordinator:"",phone:"",email:"",note:"",isFixed:false};})
+      congregations:["Bridgeport West Spanish","Bristol Spanish","Cedar Spanish Branford","Central Spanish New Haven","East Danbury Spanish","East Hartford","East Spanish Bridgeport","East Spanish Hartford","East Spanish Norwalk","Feeding Hills","Hartford Norte","Highland Spanish Waterbury","Lakewood Spanish Waterbury","Leominster MA","Meriden Spanish","New London Spanish","North Spanish Hartford","North Spanish New Britain","Parker Spanish - Massachusetts","Shelton","South Spanish Danbury","South Spanish Hartford","South Spanish Holyoke","South Spanish New Britain","South Springfield Spanish","Stamford","Torringford Spanish","West Danbury Spanish","Woodin Hill Spanish - Hamden CT","Local"].map(function(n){return{id:crypto.randomUUID(),name:n,coordinator:"",phone:"",email:"",note:"",isFixed:false};}),
+      taEvents:[]
     };
 
     // Preset fixed congregations in starter
-    var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Spanish","New London Spanish","North Spanish New Britain"];
+    
+    // ── Event Types ──────────────────────────────────────────────────────────────
+    var EVENT_TYPES=[
+      {id:'circuit-overseer',label:{en:'Circuit Overseer Visit',es:'Visita del Superintendente'},icon:'👔',color:'#6366f1'},
+      {id:'assembly',label:{en:'Assembly',es:'Asamblea'},icon:'🏟️',color:'#10b981'},
+      {id:'convention',label:{en:'Convention',es:'Convención'},icon:'🌐',color:'#3b82f6'},
+      {id:'special-talk',label:{en:'Special Talk',es:'Discurso Especial'},icon:'🎤',color:'#f59e0b'},
+      {id:'memorial',label:{en:'Memorial',es:'Conmemoración'},icon:'🕯️',color:'#8b5cf6'},
+      {id:'holiday-blackout',label:{en:'Holiday / Blackout',es:'Feriado / Fecha Bloqueada'},icon:'🚫',color:'#ef4444'},
+      {id:'local-event',label:{en:'Local Congregation Event',es:'Evento Congregacional'},icon:'🏠',color:'#14b8a6'},
+      {id:'custom',label:{en:'Custom Event',es:'Evento Personalizado'},icon:'📌',color:'#f97316'}
+    ];
+
+var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Spanish","New London Spanish","North Spanish New Britain"];
     starter.congregations.forEach(function(c){if(FIXED_NAMES.indexOf(c.name)!==-1)c.isFixed=true;});
 
     function migrateRow(row){
@@ -39,7 +53,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       return row;
     }
     function migrateCong(c){if(c.isFixed===undefined)c.isFixed=false;return c;}
-    // ── Contact picker helpers ─────────────────────────────────────────────────
+    // ââ Contact picker helpers âââââââââââââââââââââââââââââââââââââââââââââââââ
     function getAvailableYears(planningData){
       var years=[];
       (planningData||[]).forEach(function(y){if(y.rows&&y.rows.some(function(r){return String(r.congregation||"").trim();}))years.push(+y.year);});
@@ -97,8 +111,8 @@ var APP_KEY="jw-talk-arrangements-v1";
         var contactName=row.contact||"";
         if(!contactName){var cObj=findCong(cname);if(cObj)contactName=cObj.coordinator||"";}
         var greeting=buildGreeting(treatment,contactName,nameFormat);
-        var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregación "+p.congregation:"")+".":" ";
-        return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregación "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
+        var from=p.name?"Le escribe "+p.name+(p.congregation?" de la CongregaciÃ³n "+p.congregation:"")+".":" ";
+        return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso publico del mes de "+m+" con la congregaciÃ³n "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
       }
       var enTreatment=getTreatmentForRow(row.id);
       var enFmt=state.contactNameFormat||"none";
@@ -160,13 +174,15 @@ var APP_KEY="jw-talk-arrangements-v1";
         merged.contactPickerYear=null;
         merged.contactPickerMonth=null;
         merged.contactPickerIdx=0;
+        
+        if(!Array.isArray(merged.taEvents))merged.taEvents=[];
         return merged;
       }catch(e){var s2=cloneStarter();s2.schedule=s2.schedule.map(migrateRow);return s2;}
     }
     function saveState(){state.updatedAt=new Date().toISOString();localStorage.setItem(APP_KEY,JSON.stringify(state));}
     var state=loadState();
 
-    // ── i18n ────────────────────────────────────────────────────────────────────
+    // ââ i18n ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function tt(k){return(T[state.language]||T.en)[k]||T.en[k]||k;}
     function tf(k,v){var s=tt(k);if(v)Object.keys(v).forEach(function(i){s=s.replace("{"+i+"}",v[i]);});return s;}
     function months(){return state.language==="es"?MEs:MEn;}
@@ -179,7 +195,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       return mode==="light"?"light":"dark";
     }
 
-    // ── Utilities ────────────────────────────────────────────────────────────────
+    // ââ Utilities ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function norm(v){return String(v||"").toLowerCase().replace(/\s+/g," ").trim();}
     function findCong(name){var k=norm(name).replace("newlondon","new london");return state.congregations.find(function(c){return norm(c.name).replace("newlondon","new london")===k;});}
     function fixedCongs(){return state.congregations.filter(function(c){return c.isFixed;});}
@@ -196,7 +212,7 @@ var APP_KEY="jw-talk-arrangements-v1";
     function mailH(email,cong,body){
       if(!email||String(email).toUpperCase()==="N/A")return"";
       var subj=encodeURIComponent(state.language==="es"?"Arreglo de discurso publico":"Public talk arrangement");
-      var b=encodeURIComponent(body||(state.language==="es"?"Saludos,\n\nQueria comunicarme sobre el arreglo con "+(cong||"su congregación")+".":" Hello,\n\nI wanted to reach out about the arrangement with "+(cong||"your congregation")+"."));
+      var b=encodeURIComponent(body||(state.language==="es"?"Saludos,\n\nQueria comunicarme sobre el arreglo con "+(cong||"su congregaciÃ³n")+".":" Hello,\n\nI wanted to reach out about the arrangement with "+(cong||"your congregation")+"."));
       return"https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(email)+"&su="+subj+"&body="+b;
     }
     function fuClass(d){if(!d)return"";var diff=(new Date(d+"T00:00:00")-today)/86400000;return diff<0?"fu-overdue":diff<=7?"fu-soon":"";}
@@ -218,22 +234,22 @@ var APP_KEY="jw-talk-arrangements-v1";
     function monthList(list){return list.map(function(i){return months()[+i];}).join(", ");}
     function planningAuditHtml(year){
       var a=planningYearAudit(year);
-      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"Año completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregación.":"All 12 months have congregations.")+'</span></div>';
+      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"AÃ±o completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregaciÃ³n.":"All 12 months have congregations.")+'</span></div>';
       var items=[];
       if(a.missingMonths.length)items.push((state.language==="es"?"Faltan meses: ":"Missing months: ")+monthList(a.missingMonths));
-      if(a.blankCongs.length)items.push((state.language==="es"?"Falta congregación: ":"Missing congregation: ")+monthList(a.blankCongs));
+      if(a.blankCongs.length)items.push((state.language==="es"?"Falta congregaciÃ³n: ":"Missing congregation: ")+monthList(a.blankCongs));
       if(a.duplicateMonths.length)items.push((state.language==="es"?"Mes duplicado: ":"Duplicate month: ")+monthList(a.duplicateMonths));
-      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar año":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
+      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar aÃ±o":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
     }
 
-    // ── Message template ─────────────────────────────────────────────────────────
+    // ââ Message template âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     // Single source of truth: delegates to buildContactMessage so both the dashboard
     // card and the planning picker always produce identical formatted messages.
     function buildTmpl(row,congName){
       return buildContactMessage(row,congName);
     }
 
-    // ── Greeting ──────────────────────────────────────────────────────────────────
+    // ââ Greeting ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderGreeting(){
       var el=document.getElementById("greeting");
       var p=state.profile||{};
@@ -243,7 +259,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       el.textContent=greet+", "+p.name+" \uD83D\uDC4B";
     }
 
-    // ── Warnings ──────────────────────────────────────────────────────────────────
+    // ââ Warnings ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     var bannerDismissed=false;
     function computeWarnings(){
       var w=[];
@@ -293,7 +309,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       body.innerHTML=w.map(function(x){return'<div class="conflict-item">&bull; '+esc(x)+'</div>';}).join("");
     }
 
-    // ── Data badge ────────────────────────────────────────────────────────────────
+    // ââ Data badge ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderDataBadge(){
       var badge=document.getElementById("dataBadge");
       var n=state.congregations.filter(function(c){return(c.phone&&c.phone.trim())||(c.email&&c.email.trim());}).length;
@@ -301,7 +317,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       badge.textContent=(n>5?"\uD83D\uDCCB ":"\u26A0 ")+tt(n>5?"privateData":"publicData");
     }
 
-    // ── Dashboard ─────────────────────────────────────────────────────────────────
+    // ââ Dashboard âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderDashboard(){
       var sorted=state.schedule.slice().sort(function(a,b){return+a.month-+b.month;});
       var tbody=document.getElementById("dashboardRows");
@@ -325,9 +341,9 @@ var APP_KEY="jw-talk-arrangements-v1";
       renderContact(sel);renderKpis();renderConflicts();renderDataBadge();
     }
 
-    // ── Planning contact picker + card (combined, rendered into planningContactCard) ──
+    // ââ Planning contact picker + card (combined, rendered into planningContactCard) ââ
     function renderContactPicker(){
-      // No-op stub — renderPlanningContact now owns the picker UI inside planningContactCard.
+      // No-op stub â renderPlanningContact now owns the picker UI inside planningContactCard.
       // Called from renderAll for compatibility; actual work done in renderPlanningContact.
       renderPlanningContact();
     }
@@ -337,7 +353,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       if(!card)return;
       var isEs=state.language==="es";
 
-      // ── Resolve which row to show ─────────────────────────────────────────────
+      // ââ Resolve which row to show âââââââââââââââââââââââââââââââââââââââââââââ
       var year=state.contactPickerYear;
       var month=state.contactPickerMonth;
       var availYears=getAvailableYears(state.planning);
@@ -370,9 +386,9 @@ var APP_KEY="jw-talk-arrangements-v1";
           var yearOnlyOpts=availYears.map(function(y){return'<option value="'+y+'"'+(+y===+year?' selected':'')+'>'+y+'</option>';}).join("");
           card.innerHTML=
             '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:0.85em;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:8px;">'+
-            '<label style="color:var(--muted)">'+(isEs?"Año":"Year")+': <select class="picker-sel" id="pYear">'+yearOnlyOpts+'</select></label>'+
+            '<label style="color:var(--muted)">'+(isEs?"AÃ±o":"Year")+': <select class="picker-sel" id="pYear">'+yearOnlyOpts+'</select></label>'+
             '</div>'+
-            '<div class="empty">'+(isEs?"No hay arreglos para este año.":"No arrangements for this year.")+'</div>';
+            '<div class="empty">'+(isEs?"No hay arreglos para este aÃ±o.":"No arrangements for this year.")+'</div>';
           document.getElementById("pYear").addEventListener("change",function(){
             state.contactPickerYear=+this.value;state.contactPickerMonth=null;state.contactPickerIdx=0;
             saveState();renderPlanningContact();
@@ -395,11 +411,11 @@ var APP_KEY="jw-talk-arrangements-v1";
       state.contactPickerIdx=idx;
       var arr=arrangements[idx];
 
-      // ── Build picker selectors ────────────────────────────────────────────────
+      // ââ Build picker selectors ââââââââââââââââââââââââââââââââââââââââââââââââ
       var yearOpts=availYears.map(function(y){return'<option value="'+y+'"'+(+y===+year?' selected':'')+'>'+y+'</option>';}).join("");
       var monthOpts=availMonths.map(function(m){return'<option value="'+m+'"'+(+m===+month?' selected':'')+'>'+months()[m]+'</option>';}).join("");
       var arrOpts=arrangements.length>1?arrangements.map(function(a,i){
-        var lbl=(a.congregation||"")+(a.contact?" — "+a.contact:"");
+        var lbl=(a.congregation||"")+(a.contact?" â "+a.contact:"");
         return'<option value="'+i+'"'+(i===idx?' selected':'')+'>'+esc(lbl)+'</option>';
       }).join(""):"";
       var currentTreatment=getTreatmentForRow(arr.id);
@@ -409,7 +425,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       var nameFormats=[["none",isEs?"Sin nombre":"No name"],["first",isEs?"Nombre":"First name"],["last",isEs?"Apellido":"Last name"],["full",isEs?"Nombre completo":"Full name"]];
       var nameFmtOpts=nameFormats.map(function(f){return'<option value="'+f[0]+'"'+(f[0]===currentNameFormat?' selected':'')+'>'+f[1]+'</option>';}).join("");
 
-      // ── Build contact data ────────────────────────────────────────────────────
+      // ââ Build contact data ââââââââââââââââââââââââââââââââââââââââââââââââââââ
       var c=findCong(arr.congregation);
       var cname=arr.congregation||"";
       var cphone=c?c.phone:"";
@@ -427,11 +443,11 @@ var APP_KEY="jw-talk-arrangements-v1";
       function lbtn(lbl,href,disabled){return disabled||!href?'<button disabled>'+lbl+'</button>':'<a href="'+esc(href)+'" class="link-btn" target="_blank" rel="noopener">'+lbl+'</a>';}
       function wbtn(lbl,href){return'<button data-wa-href="'+esc(href)+'">'+lbl+'</button>';}
 
-      // ── Render all into the card div ──────────────────────────────────────────
+      // ââ Render all into the card div ââââââââââââââââââââââââââââââââââââââââââ
       card.innerHTML=
         // Picker row
         '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:0.85em;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:10px;">'+
-        '<label style="color:var(--muted)">'+(isEs?"Año":"Year")+': <select class="picker-sel" id="pYear">'+yearOpts+'</select></label>'+
+        '<label style="color:var(--muted)">'+(isEs?"AÃ±o":"Year")+': <select class="picker-sel" id="pYear">'+yearOpts+'</select></label>'+
         '<label style="color:var(--muted)">'+(isEs?"Mes":"Month")+': <select class="picker-sel" id="pMonth">'+monthOpts+'</select></label>'+
         (arrangements.length>1?'<label style="color:var(--muted)">'+(isEs?"Contacto":"Contact")+': <select class="picker-sel" id="pArr">'+arrOpts+'</select></label>':"")+
         '<label style="color:var(--muted)">'+(isEs?"Trato":"Greeting")+': <select class="picker-sel" id="pTreat">'+treatOpts+'</select></label>'+
@@ -440,8 +456,8 @@ var APP_KEY="jw-talk-arrangements-v1";
         // Contact info
         '<div><div class="contact-name">'+esc(cname)+fixedTag+'</div>'+(coord?'<div class="muted">'+esc(coord)+'</div>':'')+'</div>'+
         '<div class="contact-meta">'+
-        '<div>'+tt("phone")+': <strong>'+(cphone?esc(cphone):"—")+'</strong></div>'+
-        '<div>'+tt("email")+': <strong>'+(cemail?esc(cemail):"—")+'</strong></div>'+
+        '<div>'+tt("phone")+': <strong>'+(cphone?esc(cphone):"â")+'</strong></div>'+
+        '<div>'+tt("email")+': <strong>'+(cemail?esc(cemail):"â")+'</strong></div>'+
         '</div>'+
         '<div style="margin:6px 0 4px;font-size:0.82em;color:var(--muted)">'+(isEs?"Estado":"Status")+':</div>'+
         '<select id="pStatus" class="status-select s-'+currentStatus+'" style="margin-bottom:8px;">'+statusOpts+'</select>'+
@@ -455,7 +471,7 @@ var APP_KEY="jw-talk-arrangements-v1";
         wbtn("&#129302; "+tt("whatsapp"),waH(cphone,msg))+
         '</div></div>';
 
-      // ── Wire picker events (fresh elements, no stacking) ──────────────────────
+      // ââ Wire picker events (fresh elements, no stacking) ââââââââââââââââââââââ
       document.getElementById("pYear").addEventListener("change",function(){
         state.contactPickerYear=+this.value;state.contactPickerMonth=null;state.contactPickerIdx=0;
         saveState();renderPlanningContact();
@@ -485,7 +501,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       });
     }
 
-    // ── Contact card ──────────────────────────────────────────────────────────────
+    // ââ Contact card ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderContact(row){
       var card=document.getElementById("contactCard");
       document.getElementById("selectedMonthLabel").textContent=row?months()[row.month]:"";
@@ -501,7 +517,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       var fixedTag=c.isFixed?'<span class="fixed-badge">FIJO</span>':"";
       card.innerHTML=
         '<div><div class="contact-name">'+esc(c.name)+fixedTag+'</div><div class="muted">'+esc(c.coordinator||"")+'</div></div>'+
-        '<div class="contact-meta"><div>'+tt("phone")+': <strong>'+esc(c.phone||"—")+'</strong></div><div>'+tt("email")+': <strong>'+esc(c.email||"—")+'</strong></div>'+(c.note?'<div>'+tt("note")+': '+esc(c.note)+'</div>':'')+'</div>'+
+        '<div class="contact-meta"><div>'+tt("phone")+': <strong>'+esc(c.phone||"â")+'</strong></div><div>'+tt("email")+': <strong>'+esc(c.email||"â")+'</strong></div>'+(c.note?'<div>'+tt("note")+': '+esc(c.note)+'</div>':'')+'</div>'+
         '<div class="action-row no-print">'+lbtn("&#9742; "+tt("call"),call,!call)+lbtn("&#128172; "+tt("text"),sms,!sms)+lbtn("&#9993; "+tt("mail"),mailBase,!mailBase)+'<button data-copy="'+esc(c.phone||"")+'">&#10697; '+tt("phone")+'</button><button data-copy="'+esc(c.email||"")+'">&#10697; '+tt("email")+'</button>'+'<button class="share-contact-btn" data-share-info="'+esc(info)+'">&#129302; '+tt("shareContact")+'</button>'+'</div>'+
         '<div class="no-print"><div class="template-label">'+tt("templates")+'</div><div class="template-box">'+esc(msg)+'</div>'+
         '<div class="action-row" style="margin-top:8px">'+(smsBody?lbtn("&#128241; "+tt("openSms"),smsBody,false):"")+
@@ -514,7 +530,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       document.getElementById("kpiBox").innerHTML=[[tot,tt("total")],[sent,tt("sent")],[conf,tt("confirmedCount")]].map(function(x){return'<div class="kpi"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>';}).join("");
     }
 
-    // ── Planning ──────────────────────────────────────────────────────────────────
+    // ââ Planning ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderPlanning(){
       var host=document.getElementById("planningTables");
       host.innerHTML=state.planning.map(function(year){
@@ -538,7 +554,7 @@ var APP_KEY="jw-talk-arrangements-v1";
     }
     function lookupCoord(name){var c=findCong(name);return c?c.coordinator:"";}
 
-    // ── Congregations ─────────────────────────────────────────────────────────────
+    // ââ Congregations âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderCongregations(){
       var filter=norm(document.getElementById("searchBox").value);
       var rows=state.congregations.filter(function(c){return!filter||[c.name,c.coordinator,c.phone,c.email,c.note].some(function(v){return norm(v).includes(filter);});}).sort(function(a,b){return a.name.localeCompare(b.name);});
@@ -554,7 +570,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       }).join("")||'<tr><td colspan="7"><div class="empty">'+tt("noContact")+'</div></td></tr>';
     }
 
-    // ── Toast ──────────────────────────────────────────────────────────────────────
+    // ââ Toast ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(function(){el.classList.remove("show");},2600);}
     function safeCopy(txt){
       function ok(){toast(tt("copied")+(txt?": "+String(txt).slice(0,60):""));}
@@ -572,7 +588,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       else legacy();
     }
 
-    // ── renderAll ──────────────────────────────────────────────────────────────────
+    // ââ renderAll ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function renderAll(){
       var paintTheme=resolvePaintTheme();
       document.documentElement.dataset.theme=paintTheme;
@@ -594,7 +610,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();
     }
 
-    // ── Rollover ──────────────────────────────────────────────────────────────────
+    // ââ Rollover ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     // Advances the schedule exactly one year. Archives the outgoing year to Planning,
     // copies the matching Planning year fully into the dashboard (congregation, note,
     // confirmed -> status), fills blank months from fixed congregations, falls back
@@ -631,11 +647,11 @@ var APP_KEY="jw-talk-arrangements-v1";
       showConfirm(tf("confirmCreateYear",{year:prev,next:next}),function(){
         performRollover();
         saveState();renderAll();
-        toast(tf("yearCreated",{year:next,prev:prev})+" ✓");
+        toast(tf("yearCreated",{year:next,prev:prev})+" â");
       });
     }
 
-    // ── Export ────────────────────────────────────────────────────────────────────
+    // ââ Export ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function downloadBackup(){
       var blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
       var url=URL.createObjectURL(blob);
@@ -646,7 +662,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       toast(tt("exported"));
     }
 
-    // ── Share congregation list ────────────────────────────────────────────────────
+    // ââ Share congregation list ââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function buildCongList(sep){
       return state.congregations.filter(function(c){return c.name;}).sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(c){
         var l=(c.isFixed?"[FIJO] ":"")+c.name;
@@ -657,7 +673,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       }).join("\n\n");
     }
 
-    // ── Settings modal ─────────────────────────────────────────────────────────────
+    // ââ Settings modal âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
     function openSettings(){
       var p=state.profile||{};
       document.getElementById("profileNameInput").value=p.name||"";
@@ -674,7 +690,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       saveState();closeSettings();renderGreeting();toast(tt("saved"));
     }
 
-    // ── Custom confirm dialog ─────────────────────────────────────────────
+    // ââ Custom confirm dialog âââââââââââââââââââââââââââââââââââââââââââââ
     function showConfirm(msg, onOk, onCancel) {
       document.getElementById("confirmMsg").textContent = msg;
       document.getElementById("confirmOkBtn").textContent = state.language==="es"?"Confirmar":"Confirm";
@@ -691,7 +707,105 @@ var APP_KEY="jw-talk-arrangements-v1";
       };
     }
 
-    // ── Wire events ────────────────────────────────────────────────────────────────
+    // ââ Wire events ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+    // ── Events ────────────────────────────────────────────────────────────────────
+    function renderEvents(){
+      var list=document.getElementById('eventList');
+      if(!list)return;
+      var events=(state.taEvents||[]).filter(function(e){return e.active!==false;}).slice().sort(function(a,b){return(a.startDate||'').localeCompare(b.startDate||'');});
+      if(!events.length){
+        list.innerHTML='<div class="empty">'+tt('noEvents')+'</div>';
+        return;
+      }
+      var isEs=state.language==='es';
+      list.innerHTML=events.map(function(ev){
+        var et=EVENT_TYPES.find(function(t){return t.id===ev.type;})||{icon:'📌',color:'#888',label:{en:'Event',es:'Evento'}};
+        var dateStr=ev.startDate||(isEs?'Sin fecha':'No date');
+        if(ev.endDate&&ev.endDate!==ev.startDate)dateStr+=' — '+ev.endDate;
+        return '<div class="event-card" data-event-id="'+esc(ev.id)+'">'
+          +'<div class="event-card-header">'
+          +'<span class="event-type-badge" style="background:'+et.color+'22;color:'+et.color+';border:1px solid '+et.color+'44">'+et.icon+' '+esc(et.label[state.language]||et.label.en)+'</span>'
+          +'<div class="event-card-actions">'
+          +'<button class="icon-btn" data-event-action="edit" data-event-id="'+esc(ev.id)+'" title="'+tt('editEvent')+'">✏️</button>'
+          +'<button class="icon-btn danger" data-event-action="delete" data-event-id="'+esc(ev.id)+'" title="'+tt('deleteEvent')+'">✕</button>'
+          +'</div></div>'
+          +'<div class="event-card-title">'+esc(ev.title||'')+'</div>'
+          +'<div class="event-card-date muted">'+esc(dateStr)+'</div>'
+          +(ev.description?'<div class="event-card-desc muted">'+esc(ev.description)+'</div>':'')
+          +'</div>';
+      }).join('');
+    }
+
+    function openEventModal(evId){
+      var isEs=state.language==='es';
+      var ev=evId?(state.taEvents||[]).find(function(e){return e.id===evId;}):null;
+      var modal=document.getElementById('eventModal');
+      if(!modal)return;
+      document.getElementById('eventModalTitle').textContent=ev?tt('editEvent'):tt('addEvent');
+      document.getElementById('evIdField').value=ev?ev.id:'';
+      document.getElementById('evTitleField').value=ev?ev.title||'':'';
+      document.getElementById('evTypeField').value=ev?ev.type||'':'';
+      document.getElementById('evStartField').value=ev?ev.startDate||'':'';
+      document.getElementById('evEndField').value=ev?ev.endDate||'':'';
+      document.getElementById('evAllDayField').checked=ev?ev.allDay!==false:true;
+      document.getElementById('evDescField').value=ev?ev.description||'':'';
+      document.getElementById('evNotesField').value=ev?ev.notes||'':'';
+      document.getElementById('evActiveField').checked=ev?ev.active!==false:true;
+      updateEventTypeColor();
+      modal.classList.add('open');
+    }
+
+    function updateEventTypeColor(){
+      var typeVal=document.getElementById('evTypeField').value;
+      var et=EVENT_TYPES.find(function(t){return t.id===typeVal;});
+      var swatches=document.getElementById('evColorSwatches');
+      if(!swatches)return;
+      swatches.innerHTML=EVENT_TYPES.map(function(t){
+        return '<button type="button" class="color-swatch'+(typeVal===t.id?' active':'')+'" style="background:'+t.color+'" data-color="'+t.color+'" data-type-id="'+t.id+'" title="'+t.label.en+'"></button>';
+      }).join('');
+      if(et){var ci=document.getElementById('evColorInput');if(ci)ci.value=et.color;}
+    }
+
+    function closeEventModal(){
+      var modal=document.getElementById('eventModal');
+      if(modal)modal.classList.remove('open');
+    }
+
+    function saveEvent(){
+      var titleEl=document.getElementById('evTitleField');
+      var title=(titleEl?titleEl.value:'').trim();
+      if(!title){toast(state.language==='es'?'El título es requerido':'Title is required');return;}
+      var idVal=document.getElementById('evIdField').value;
+      var startDate=document.getElementById('evStartField').value;
+      var endDate=document.getElementById('evEndField').value||startDate;
+      var typeVal=document.getElementById('evTypeField').value;
+      var et=EVENT_TYPES.find(function(t){return t.id===typeVal;})||EVENT_TYPES[EVENT_TYPES.length-1];
+      var now=Date.now();
+      if(idVal){
+        var ev=(state.taEvents||[]).find(function(e){return e.id===idVal;});
+        if(ev){
+          ev.title=title;ev.type=typeVal;ev.startDate=startDate;ev.endDate=endDate;
+          ev.allDay=document.getElementById('evAllDayField').checked;
+          ev.description=document.getElementById('evDescField').value;
+          ev.notes=document.getElementById('evNotesField').value;
+          ev.color=document.getElementById('evColorInput').value||et.color;
+          ev.icon=et.icon;ev.active=document.getElementById('evActiveField').checked;ev.updatedAt=now;
+        }
+      }else{
+        if(!state.taEvents)state.taEvents=[];
+        state.taEvents.push({id:'evt-'+now,title:title,type:typeVal,description:document.getElementById('evDescField').value,startDate:startDate,endDate:endDate,allDay:document.getElementById('evAllDayField').checked,recurring:false,recurrenceRule:'',congregationScope:'all',color:document.getElementById('evColorInput').value||et.color,icon:et.icon,active:document.getElementById('evActiveField').checked,notes:document.getElementById('evNotesField').value,createdAt:now,updatedAt:now});
+      }
+      saveState();closeEventModal();renderEvents();toast(tt('saved'));
+    }
+
+    function deleteEvent(evId){
+      showConfirm(tt('confirmDeleteEvent'),function(){
+        state.taEvents=(state.taEvents||[]).filter(function(e){return e.id!==evId;});
+        saveState();renderEvents();toast(tt('deleteEvent'));
+      });
+    }
+
     function wireEvents(){
       // Tabs
       document.querySelectorAll("[data-tab]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-tab]").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");document.querySelectorAll("main > section").forEach(function(s){s.hidden=s.id!==btn.dataset.tab;});});});
@@ -794,7 +908,7 @@ var APP_KEY="jw-talk-arrangements-v1";
       });
       document.getElementById("resetBtn").addEventListener("click",function(){showConfirm(tt("deleteConfirm"),function(){state=cloneStarter();state.schedule=state.schedule.map(migrateRow);saveState();renderAll();toast(tt("restored"));});});
 
-      // ── Cloud backup ────────────────────────────────────────────────────
+      // ââ Cloud backup ââââââââââââââââââââââââââââââââââââââââââââââââââââ
       (function(){
         var APP_ID="talk-arrangements";
         var KEYS=["jw-talk-arrangements-v1"];
@@ -873,7 +987,7 @@ var APP_KEY="jw-talk-arrangements-v1";
           if(settingsCloudSaveBtn)settingsCloudSaveBtn.disabled=true;
           if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.disabled=true;
         }
-      })();      // ──────────────────────────────────────────────────────────────
+      })();      // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 
       // Add month
@@ -902,18 +1016,37 @@ var APP_KEY="jw-talk-arrangements-v1";
       document.getElementById("conflictToggle").addEventListener("click",function(){document.getElementById("conflictBody").classList.toggle("open");});
       document.getElementById("conflictDismiss").addEventListener("click",function(){bannerDismissed=true;document.getElementById("conflictBanner").style.display="none";});
       document.getElementById("conflictLabel").addEventListener("click",function(){document.getElementById("conflictBody").classList.toggle("open");});
+
+      // Events tab
+      document.getElementById('addEventBtn').addEventListener('click',function(){openEventModal(null);});
+      document.getElementById('saveEventBtn').addEventListener('click',saveEvent);
+      document.getElementById('closeEventModalBtn').addEventListener('click',closeEventModal);
+      document.getElementById('eventModal').addEventListener('click',function(e){if(e.target===this)closeEventModal();});
+      document.getElementById('evTypeField').addEventListener('change',updateEventTypeColor);
+      document.getElementById('evStartField').addEventListener('change',function(){var ef=document.getElementById('evEndField');if(ef&&!ef.value)ef.value=this.value;});
+      document.getElementById('eventList').addEventListener('click',function(e){
+        var btn=e.target.closest('[data-event-action]');if(!btn)return;
+        var eid=btn.dataset.eventId;
+        if(btn.dataset.eventAction==='edit')openEventModal(eid);
+        if(btn.dataset.eventAction==='delete')deleteEvent(eid);
+      });
+      document.getElementById('evColorSwatches').addEventListener('click',function(e){
+        var sw=e.target.closest('.color-swatch');if(!sw)return;
+        var ci=document.getElementById('evColorInput');if(ci)ci.value=sw.dataset.color;
+        document.querySelectorAll('.color-swatch').forEach(function(s){s.classList.toggle('active',s===sw);});
+      });
     }
 
     wireEvents();
     renderAll();
 
-    // ── Auto-detect new year on load ───────────────────────────────────────────────
+    // ââ Auto-detect new year on load âââââââââââââââââââââââââââââââââââââââââââââââ
     if(thisYear>state.currentYear){
       var _rolledFrom=state.currentYear;
       var _guard=0;
       while(state.currentYear<thisYear&&_guard<50){performRollover();_guard++;}
       saveState();renderAll();
-      setTimeout(function(){toast(tf("yearCreated",{year:state.currentYear,prev:_rolledFrom})+" ✓ "+tt("archiveNote"));},600);
+      setTimeout(function(){toast(tf("yearCreated",{year:state.currentYear,prev:_rolledFrom})+" â "+tt("archiveNote"));},600);
     }
 
     // Cloud sync: once signed in, pull newer cloud data on open/resume and push local changes shortly after edits.
