@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-25
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-8c-live-approved
-next_stage: stage-9-reminders
-cache_version: talk-arrangements-v85-stage-8c-bugfix
+current_stage: stage-9-reminders-blocked-requires-changes
+next_stage: stage-9-reminders-repair
+cache_version: talk-arrangements-v86-stage-9-reminders
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -17,41 +17,59 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Current Status
 
+Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v86, but live testing found blockers.
+
+## Stage 9 Live Testing Findings
+
+### Blocking Issue 1 — UI text mojibake / encoding corruption
+- Live app displays corrupted strings such as `pÃ...` in Spanish headings, tabs, button labels, and descriptions.
+- Repo inspection confirms mojibake in `js/app.js` translation strings.
+- Emergency helper patch added in `js/i18n.js` to define corrected visible strings after app load.
+- Commit: 4fa3a76f
+- This is a temporary mitigation. A proper follow-up should repair `js/app.js` source encoding directly.
+
+### Blocking Issue 2 — `sanitizeInlineArg` missing
+- Live error: `ReferenceError: Can't find variable: sanitizeInlineArg` at app.js:1267:43.
+- Cause: `renderReminders()` calls `sanitizeInlineArg(rem.id)` but no global function existed.
+- Emergency helper patch added global `window.sanitizeInlineArg` in `js/i18n.js`, which loads before `js/app.js`.
+- Commit: 4fa3a76f
+
+### Blocking Issue 3 — reminders do not notify when app is closed
+- Current Stage 9 implementation uses in-page `setTimeout()` and `new Notification()` from `js/app.js`.
+- This can only work while the app/page is open and active.
+- It cannot guarantee notifications while the installed PWA/Safari is closed or suspended.
+- This does not satisfy David's Version 1.0 requirement: notification must fire on the selected date/time even with the app closed.
+- Required: redesign using real Web Push/service-worker push architecture or clearly document platform limits before approval.
+
+### Cache / deployment note
+- Current `sw.js` still reports `talk-arrangements-v86-stage-9-reminders`.
+- Cache bump to v87 was attempted but blocked by tooling. Worker should bump cache in next repair.
+
 ## Stage 8C Bugs Found & Fixed (Live Verification 2026-06-25)
 
-### Bug 1 â Double-comma SyntaxError (CRITICAL)
+### Bug 1 — Double-comma SyntaxError (CRITICAL)
 - **Symptom**: App crashed on load with `Uncaught SyntaxError: Unexpected token ','  at app.js:16:7`
 - **Root cause**: Stage 8C appended Spanish event translation keys as top-level properties of the T translations object with a leading comma.
 - **Fix**: Moved orphaned ES keys into the `es:{}` block before its closing `}`
 - **Commit**: 22ab9768
 
-### Bug 2 â Stale Event Manager CSS injected after </html> (HIGH)
+### Bug 2 — Stale Event Manager CSS injected after </html> (HIGH)
 - **Symptom**: Raw CSS text rendered visibly in page body below the error modal
 - **Root cause**: Stage 8C cleanup moved Event Manager CSS into `css/components.css` but forgot to remove the original CSS block from `index.html`
 - **Fix**: Stripped everything after `</html>` in index.html
 - **Commit**: 3e11133e
 
-### Bug 3 â Event modal HTML placed after script tag (HIGH)
+### Bug 3 — Event modal HTML placed after script tag (HIGH)
 - **Symptom**: `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')` at app.js:1172:46 on every page load.
 - **Root cause**: Stage 8C added the #eventModal div AFTER the `<script src="js/app.js">` tag. The app has no DOMContentLoaded wrapper; wiring runs at parse time.
 - **Fix**: Moved the #eventModal block to before the script tag.
 - **Commit**: 1c63a7b1
 
-### Bug 4 â stage8c_applyBadges() not called after saveEvent/deleteEvent (HIGH)
+### Bug 4 — stage8c_applyBadges() not called after saveEvent/deleteEvent (HIGH)
 - **Symptom**: After adding a BLOCKING or ADVISORY event, badges did NOT appear on Planning rows until page refresh.
 - **Root cause**: saveEvent and deleteEvent both called renderEvents() but did NOT call stage8c_applyBadges().
 - **Fix**: Added stage8c_applyBadges() after renderEvents() in both saveEvent and deleteEvent.
 - **Commit**: 360575fb
-
-### Cache bumps
-- v80-stage-8c-cleanup â v81-stage-8c-bugfix â Commit: 9dc00618
-- v81-stage-8c-bugfix â v82-stage-8c-bugfix â Commit: 630b8a1e
-- v82-stage-8c-bugfix â v83-stage-8c-bugfix â Commit: d7797aee
-
-Stage 8C calendar intelligence is code-complete and has received a bugfix pass. It is not live-approved yet.
-
-Current deployment/cache:
-- talk-arrangements-v83-stage-8c-bugfix
 
 ## Version 1.0 Reminder / Push Notification Requirement
 
@@ -70,114 +88,40 @@ Required reminder design:
 - Android/PWA behavior should be tested where applicable.
 - Time-zone safe scheduling is required.
 
-Suggested future stage placement:
-- Finish Stage 8C hotfix/live verification first.
-- Complete regression QA.
-- Then implement a dedicated Stage 9 or Stage 10: Date-Time Reminders & Push Notifications.
-- Do not release Version 1.0 until date/time reminders and push notifications are implemented and verified.
-
 ## Completed Stages / Batches
 
 - Stage 4C / Fixed Arrangement Conflict Workflow: COMPLETE
 - Stage 5A / Planning and Mobile UX: COMPLETE
-- Stage 5B / Notes Foundation: CODE IMPLEMENTED, LIVE TESTING IN PROGRESS
+- Stage 5B / Notes Foundation: CODE IMPLEMENTED
 - Stage 6 / UX Polish: COMPLETE
-- Stage 8A / Calendar Event Foundation: CODE IMPLEMENTED
-- Stage 8B / Calendar Rendering & Dashboard Integration: CODE COMPLETE, NOT LIVE-APPROVED YET
-- Stage 8C / Calendar Intelligence: CODE COMPLETE, BUGFIX PASS IN PROGRESS, NOT LIVE-APPROVED YET
-
-## Stage 8C Summary
-
-- Blocking event types: assembly, convention, holiday-blackout, memorial.
-- Advisory event types: circuit-overseer, special-talk, local-event, custom.
-- Badges are injected into Dashboard and Planning rows.
-- Clicking badges opens existing confirm modal as an information modal.
-- No automatic rescheduling.
-- No Firebase changes.
-- No cloud backup changes.
-- No export/import schema changes.
+- Stage 8A / Calendar Event Foundation: COMPLETE
+- Stage 8B / Calendar Rendering & Dashboard Integration: COMPLETE
+- Stage 8C / Calendar Intelligence: LIVE APPROVED
+- Stage 9 / Date-Time Reminders: REQUIRES CHANGES / BLOCKED
 
 ## Cache History
 
 - v77: Stage 8A calendar event foundation
 - v78: Stage 8B calendar rendering & dashboard integration
 - v79: Stage 8C calendar intelligence
-- v80: Stage 8C cleanup cache and stylesheet stabilization
-- v81-v83: Stage 8C bugfix passes
+- v80-v85: Stage 8C bugfix/live approval series
+- v86: Stage 9 reminders implementation with blockers
 
-## Verification Checklist Pending David
+## Required Next Repair
 
-- [ ] Hard refresh / clear cache and confirm v83 loads.
-- [ ] Event Manager still opens.
-- [ ] Calendar tab renders.
-- [ ] Upcoming Events widget renders.
-- [ ] Blocking event produces red badge and red-tinted row.
-- [ ] Advisory event produces amber badge and amber-tinted row.
-- [ ] Badge click opens explanation modal.
-- [ ] Dashboard still renders.
-- [ ] Planning still renders.
-- [ ] Notes still work.
-- [ ] Cloud save/restore still works.
-- [ ] Export/import still works.
-- [ ] EN/ES still works.
-- [ ] Light/dark still works.
-
-## Risks
-
-- Stage 8C is not live-approved until David tests on device.
-- Reminder/push notification implementation must account for iOS/PWA limitations and permission behavior.
+1. Properly repair `js/app.js` encoding/translation strings, not only patch after load.
+2. Fix or remove reliance on `sanitizeInlineArg` in app.js, or keep a well-documented global helper.
+3. Decide notification architecture:
+   - If true closed-app notifications are required, implement real Web Push/service-worker push with backend/scheduled trigger support.
+   - If no backend is being added, clearly document that reminders only fire while the app is open/active and do not approve as meeting Version 1.0 push requirement.
+4. Bump service worker cache after repair.
+5. Re-test mobile, desktop, EN/ES, calendar, reminders, cloud backup, export/import.
 
 ## Stop Conditions
 
-Stop before next feature stage if:
-- Calendar grid causes overflow on mobile.
-- Upcoming widget breaks Dashboard layout.
-- Event badges appear on wrong rows or wrong months.
-- Any existing arrangement, notes, or guardrail feature regresses.
-- Date-time reminders cannot be implemented safely without clear notification permission handling.
-
-## Next Actions
-
-1. David live-tests v83.
-2. Approve or repair Stage 8C.
-3. Run regression QA.
-4. Implement dedicated Date-Time Reminders & Push Notifications stage before Version 1.0 release.
-
-## Bug 5 â applyBadges stale badge cleanup (found during Step 7 verification)
-- **Symptom**: After deleting all calendar events, blocked/advisory badges remained on Planning rows
-- **Root cause**: `stage8c_applyBadges()` early-returned when `state.taEvents` was empty without cleaning up existing DOM badges; per-row guard `if(tr.querySelector('.ta-evt-badge'))return` also prevented re-processing
-- **Fix**: Inserted cleanup block (remove all `.ta-evt-badge` spans + strip `ta-evt-blocked/ta-evt-advisory` classes) before early-return; badge guard now harmless
-- **Commits**: app.js `500e3969`, sw.js `e2e7b31d` (v83âv84)
-
-## Bug 5b â applyBadges cleanup selector too narrow (found during Bug 5 regression test)
-- **Symptom**: After deleting all events, one `ta-evt-blocked` row persisted in `#planningTables`
-- **Root cause**: Cleanup selector was scoped to `#dashboardRows tr.ta-evt-blocked` â missed rows in `#planningTables`
-- **Fix**: Broadened selector to `tr.ta-evt-blocked,tr.ta-evt-advisory` (no container restriction)
-- **Commits**: app.js `bf4fd67f`, sw.js `e18e9a4f` (v84âv85)
-
-## Stage 8C Live Verification â COMPLETE
-**Result**: PASS WITH BUGS FOUND AND FIXED
-**Final cache version**: talk-arrangements-v85-stage-8c-bugfix
-**Date**: 2026-06-25
-**All 16 verification steps**: PASS on v85
-
-### Verification Steps Summary
-1. SW/cache v85 confirmed â
-2. BLOCKING event â 2 RED badges on rows â
-3. Badge click â conflict modal opens â
-4. Modal labels EN ("Restricted date / Understood") â
-5. Modal labels ES ("Fecha restringida / Entendido") â
-6. ADVISORY event (circuit-overseer) â 2 AMBER badges â
-7. Advisory months allow scheduling (not blocked) â
-8. Remove BLOCKING event â badges clear â (Bug 5 fix)
-9. Remove ADVISORY event â badges clear â
-10. Existing 12-row schedule unchanged â
-11. Notes: open modal, save, trigger updates â
-12. Cloud backup: "Saved to cloud" toast â
-13. Export JSON: date-stamped file triggered â
-14. Import JSON: "Backup imported." toast â
-15. Mobile: viewport meta + CSS breakpoints correct â (375px live render limited by OS min window size)
-16. Desktop: 4 tabs visible, no h-scroll â
-
-### Pages Deploy Note
-One transient Pages deploy failure occurred (build succeeded, deploy step failed). Re-run resolved it. Root cause: GitHub Pages infra transient; NOT a code issue.
+Stop before Release Candidate if:
+- App still shows mojibake.
+- Reminder tab throws JS errors.
+- Calendar/Event button actions do not respond.
+- Notifications do not meet the agreed Version 1.0 requirement.
+- Any cloud/export/import regression appears.
