@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v85-stage-8c-bugfix';
+const CACHE_VERSION = 'talk-arrangements-v86-stage-9-reminders';
 
 const PRECACHE_URLS = [
   './',
@@ -71,4 +71,9 @@ self.addEventListener('fetch', event => {
       return fetch(event.request).catch(() => caches.match('./'));
     })
   );
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(clients.openWindow('/Talk-Arrangements-Public/'));
 });

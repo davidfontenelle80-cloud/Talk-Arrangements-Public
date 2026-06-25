@@ -12,8 +12,8 @@ var APP_KEY="jw-talk-arrangements-v1";
     var STATUS=["not-contacted","message-sent","confirmed","needs-follow-up"];
 
     var T={
-      en:{appTitle:"Talk Arrangements",subtitle:"Congregation public talk arrangements",dashboard:"Dashboard",planning:"Planning",congregations:"Congregations",backup:"Backup",import:"Import",reset:"Reset",dashHint:"Current year at a glance ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ current month highlighted.",addMonth:"Add Month",yearSchedule:"Year schedule",month:"Month",congregation:"Congregation",statusCol:"Status",fixedCol:"Fixed",notContacted:"Not contacted",messageSentStatus:"Message sent",confirmedStatus:"Confirmed",needsFollowUp:"Needs follow-up",followUpDate:"Follow up by",note:"Note",actions:"Actions",speakerContact:"Speaker contact",planningTitle:"Planning for the next 3 years",planningHint:"Use this for future arrangements and fixed recurring notes.",addYear:"Add Year",congTitle:"Congregation list",congHint:"Edit contact information here; dashboard lookups update immediately.",search:"Search congregations or contacts",addCong:"Add",coordinator:"Coordinator",phone:"Phone",email:"Email",currentMonth:"Current month",copied:"Copied",noContact:"Select a congregation row (ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ) to see contact options.",call:"Call",text:"Text",mail:"Email",copy:"Copy",total:"Total",sent:"Sent",confirmedCount:"Confirmed",conWho:"With whom",contact:"Contact",deleteConfirm:"Are you sure you want to delete this?",restored:"Starter data restored.",imported:"Backup imported.",saved:"Saved.",exported:"Backup downloaded.",invalidBackup:"This backup file could not be read.",print:"Print",createNextYear:"Next Year",confirmCreateYear:"Archive {year} and create template for {next}?",yearCreated:"{year} schedule created + {prev} archived",templates:"Message template",openSms:"Send SMS",openEmail:"Send Email",copyMsg:"Copy message",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Print list",shareContact:"Share contact",privateData:"Contacts loaded",publicData:"Public version ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no contacts",conflictWarnings:"{n} issue(s)",duplicateCong:"{c} scheduled twice within 6 months ({m1} & {m2})",missingFixed:"Fixed congregation not scheduled: {c}",dupMonth:"Month {m} appears more than once",nothingToCopy:"Nothing to copy",settingsTitle:"Settings & Profile",profileName:"Your name",profileCong:"Your congregation",profilePhone:"Your phone (for messages)",privacyNote:"Your data is saved on this device and can sync through cloud backup when enabled.",save:"Save",cancel:"Cancel",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",yearChangePrompt:"It is now {year}. Roll over the schedule?",archiveNote:"Previous schedule archived to Planning.",emailSubject:"Congregation list",listCopied:"List copied ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ paste into your email",eventsTitle:"Events",eventsHint:"Manage congregation events",addEvent:"+ Add Event",editEvent:"Edit Event",deleteEvent:"Delete Event",eventTitle:"Title",eventType:"Event type",eventStartDate:"Start date",eventEndDate:"End date",eventAllDay:"All day",eventDescription:"Description",eventNotes:"Notes",eventColor:"Color",eventActive:"Active",noEvents:"No events yet. Tap + Add Event to create one.",confirmDeleteEvent:"Delete this event?"},
-      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos pÃÂÃÂÃÂÃÂºblicos de la congregaciÃÂÃÂÃÂÃÂ³n",dashboard:"Tablero",planning:"PlanificaciÃÂÃÂÃÂÃÂ³n",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El aÃÂÃÂÃÂÃÂ±o actual con el mes presente resaltado.",addMonth:"AÃÂÃÂÃÂÃÂ±adir mes",yearSchedule:"Programa del aÃÂÃÂÃÂÃÂ±o",month:"Mes",congregation:"CongregaciÃÂÃÂÃÂÃÂ³n",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"PlanificaciÃÂÃÂÃÂÃÂ³n de los prÃÂÃÂÃÂÃÂ³ximos 3 aÃÂÃÂÃÂÃÂ±os",planningHint:"Use esta secciÃÂÃÂÃÂÃÂ³n para arreglos futuros y notas fijas.",addYear:"AÃÂÃÂÃÂÃÂ±adir aÃÂÃÂÃÂÃÂ±o",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aquÃÂÃÂÃÂÃÂ­; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"AÃÂÃÂÃÂÃÂ±adir",coordinator:"Coordinador",phone:"TelÃÂÃÂÃÂÃÂ©fono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"ÃÂÃÂÃÂÃÂ¿Desea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"PrÃÂÃÂÃÂÃÂ³ximo AÃÂÃÂÃÂÃÂ±o",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Version publica ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"CongregaciÃÂÃÂÃÂÃÂ³n fija sin programar: {c}",dupMonth:"El mes {m} aparece mas de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuracion y Perfil",profileName:"Tu nombre",profileCong:"Tu congregaciÃÂÃÂÃÂÃÂ³n",profilePhone:"Tu telÃÂÃÂÃÂÃÂ©fono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando esta activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dias",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. ÃÂÃÂÃÂÃÂ¿Cambiar el programa al nuevo aÃÂÃÂÃÂÃÂ±o?",archiveNote:"Programa anterior archivado en PlanificaciÃÂÃÂÃÂÃÂ³n.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ pÃÂÃÂÃÂÃÂ©gala en tu correo",eventsTitle:"Eventos",eventsHint:"Administra eventos de la congregacion",addEvent:"+ Agregar evento",editEvent:"Editar evento",deleteEvent:"Eliminar evento",eventTitle:"Titulo",eventType:"Tipo de evento",eventStartDate:"Fecha de inicio",eventEndDate:"Fecha de fin",eventAllDay:"Todo el dia",eventDescription:"Descripcion",eventNotes:"Notas",eventColor:"Color",eventActive:"Activo",noEvents:"Sin eventos aun. Toca + Agregar evento para crear uno.",confirmDeleteEvent:"Eliminar este evento?"}
+      en:{appTitle:"Talk Arrangements",subtitle:"Congregation public talk arrangements",dashboard:"Dashboard",planning:"Planning",congregations:"Congregations",backup:"Backup",import:"Import",reset:"Reset",dashHint:"Current year at a glance ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ current month highlighted.",addMonth:"Add Month",yearSchedule:"Year schedule",month:"Month",congregation:"Congregation",statusCol:"Status",fixedCol:"Fixed",notContacted:"Not contacted",messageSentStatus:"Message sent",confirmedStatus:"Confirmed",needsFollowUp:"Needs follow-up",followUpDate:"Follow up by",note:"Note",actions:"Actions",speakerContact:"Speaker contact",planningTitle:"Planning for the next 3 years",planningHint:"Use this for future arrangements and fixed recurring notes.",addYear:"Add Year",congTitle:"Congregation list",congHint:"Edit contact information here; dashboard lookups update immediately.",search:"Search congregations or contacts",addCong:"Add",coordinator:"Coordinator",phone:"Phone",email:"Email",currentMonth:"Current month",copied:"Copied",noContact:"Select a congregation row (ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ) to see contact options.",call:"Call",text:"Text",mail:"Email",copy:"Copy",total:"Total",sent:"Sent",confirmedCount:"Confirmed",conWho:"With whom",contact:"Contact",deleteConfirm:"Are you sure you want to delete this?",restored:"Starter data restored.",imported:"Backup imported.",saved:"Saved.",exported:"Backup downloaded.",invalidBackup:"This backup file could not be read.",print:"Print",createNextYear:"Next Year",confirmCreateYear:"Archive {year} and create template for {next}?",yearCreated:"{year} schedule created + {prev} archived",templates:"Message template",openSms:"Send SMS",openEmail:"Send Email",copyMsg:"Copy message",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Print list",shareContact:"Share contact",privateData:"Contacts loaded",publicData:"Public version ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no contacts",conflictWarnings:"{n} issue(s)",duplicateCong:"{c} scheduled twice within 6 months ({m1} & {m2})",missingFixed:"Fixed congregation not scheduled: {c}",dupMonth:"Month {m} appears more than once",nothingToCopy:"Nothing to copy",settingsTitle:"Settings & Profile",profileName:"Your name",profileCong:"Your congregation",profilePhone:"Your phone (for messages)",privacyNote:"Your data is saved on this device and can sync through cloud backup when enabled.",save:"Save",cancel:"Cancel",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",yearChangePrompt:"It is now {year}. Roll over the schedule?",archiveNote:"Previous schedule archived to Planning.",emailSubject:"Congregation list",listCopied:"List copied ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ paste into your email",eventsTitle:"Events",eventsHint:"Manage congregation events",addEvent:"+ Add Event",editEvent:"Edit Event",deleteEvent:"Delete Event",eventTitle:"Title",eventType:"Event type",eventStartDate:"Start date",eventEndDate:"End date",eventAllDay:"All day",eventDescription:"Description",eventNotes:"Notes",eventColor:"Color",eventActive:"Active",noEvents:"No events yet. Tap + Add Event to create one.",confirmDeleteEvent:"Delete this event?","reminders.tab":"Reminders","reminders.addReminder":"Add Reminder","reminders.editReminder":"Edit Reminder","reminders.title":"Title","reminders.note":"Note","reminders.date":"Date","reminders.time":"Time","reminders.noReminders":"No reminders yet","reminders.save":"Save","reminders.cancel":"Cancel","reminders.deleteReminder":"Delete","reminders.notifAllow":"Allow Notifications","reminders.notifEnabled":"Notifications enabled","reminders.notifDenied":"Notifications denied","reminders.notifUnsupported":"Notifications not supported on this device","reminders.iosBanner":"To receive reminders, add this app to your Home Screen"},
+      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos pÃÂÃÂÃÂÃÂºblicos de la congregaciÃÂÃÂÃÂÃÂ³n",dashboard:"Tablero",planning:"PlanificaciÃÂÃÂÃÂÃÂ³n",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El aÃÂÃÂÃÂÃÂ±o actual con el mes presente resaltado.",addMonth:"AÃÂÃÂÃÂÃÂ±adir mes",yearSchedule:"Programa del aÃÂÃÂÃÂÃÂ±o",month:"Mes",congregation:"CongregaciÃÂÃÂÃÂÃÂ³n",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"PlanificaciÃÂÃÂÃÂÃÂ³n de los prÃÂÃÂÃÂÃÂ³ximos 3 aÃÂÃÂÃÂÃÂ±os",planningHint:"Use esta secciÃÂÃÂÃÂÃÂ³n para arreglos futuros y notas fijas.",addYear:"AÃÂÃÂÃÂÃÂ±adir aÃÂÃÂÃÂÃÂ±o",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aquÃÂÃÂÃÂÃÂ­; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"AÃÂÃÂÃÂÃÂ±adir",coordinator:"Coordinador",phone:"TelÃÂÃÂÃÂÃÂ©fono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"ÃÂÃÂÃÂÃÂ¿Desea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"PrÃÂÃÂÃÂÃÂ³ximo AÃÂÃÂÃÂÃÂ±o",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Version publica ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"CongregaciÃÂÃÂÃÂÃÂ³n fija sin programar: {c}",dupMonth:"El mes {m} aparece mas de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuracion y Perfil",profileName:"Tu nombre",profileCong:"Tu congregaciÃÂÃÂÃÂÃÂ³n",profilePhone:"Tu telÃÂÃÂÃÂÃÂ©fono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando esta activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dias",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. ÃÂÃÂÃÂÃÂ¿Cambiar el programa al nuevo aÃÂÃÂÃÂÃÂ±o?",archiveNote:"Programa anterior archivado en PlanificaciÃÂÃÂÃÂÃÂ³n.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ pÃÂÃÂÃÂÃÂ©gala en tu correo",eventsTitle:"Eventos",eventsHint:"Administra eventos de la congregacion",addEvent:"+ Agregar evento",editEvent:"Editar evento",deleteEvent:"Eliminar evento",eventTitle:"Titulo",eventType:"Tipo de evento",eventStartDate:"Fecha de inicio",eventEndDate:"Fecha de fin",eventAllDay:"Todo el dia",eventDescription:"Descripcion",eventNotes:"Notas",eventColor:"Color",eventActive:"Activo",noEvents:"Sin eventos aun. Toca + Agregar evento para crear uno.",confirmDeleteEvent:"Eliminar este evento?","reminders.tab":"Recordatorios","reminders.addReminder":"Agregar Recordatorio","reminders.editReminder":"Editar Recordatorio","reminders.title":"Título","reminders.note":"Nota","reminders.date":"Fecha","reminders.time":"Hora","reminders.noReminders":"Sin recordatorios aún","reminders.save":"Guardar","reminders.cancel":"Cancelar","reminders.deleteReminder":"Eliminar","reminders.notifAllow":"Permitir Notificaciones","reminders.notifEnabled":"Notificaciones activas","reminders.notifDenied":"Notificaciones denegadas","reminders.notifUnsupported":"Notificaciones no disponibles en este dispositivo","reminders.iosBanner":"Para recibir recordatorios, agrega esta app a tu pantalla de inicio"}
     };
 
     var starter={
@@ -27,7 +27,8 @@ var APP_KEY="jw-talk-arrangements-v1";
         {year:2029,rows:Array.from({length:12},function(_,i){return[i,"",""];})}
       ].map(function(y){return{year:y.year,rows:y.rows.map(function(r){return{id:crypto.randomUUID(),month:r[0],congregation:r[1],contact:"",confirmed:false,note:r[2]};})}}),
       congregations:["Bridgeport West Spanish","Bristol Spanish","Cedar Spanish Branford","Central Spanish New Haven","East Danbury Spanish","East Hartford","East Spanish Bridgeport","East Spanish Hartford","East Spanish Norwalk","Feeding Hills","Hartford Norte","Highland Spanish Waterbury","Lakewood Spanish Waterbury","Leominster MA","Meriden Spanish","New London Spanish","North Spanish Hartford","North Spanish New Britain","Parker Spanish - Massachusetts","Shelton","South Spanish Danbury","South Spanish Hartford","South Spanish Holyoke","South Spanish New Britain","South Springfield Spanish","Stamford","Torringford Spanish","West Danbury Spanish","Woodin Hill Spanish - Hamden CT","Local"].map(function(n){return{id:crypto.randomUUID(),name:n,coordinator:"",phone:"",email:"",note:"",isFixed:false};}),
-      taEvents:[]
+      taEvents:[],
+      taReminders:[]
     };
 
     // Preset fixed congregations in starter
@@ -176,6 +177,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         merged.contactPickerIdx=0;
         
         if(!Array.isArray(merged.taEvents))merged.taEvents=[];
+        if(!Array.isArray(merged.taReminders))merged.taReminders=[];
         return merged;
       }catch(e){var s2=cloneStarter();s2.schedule=s2.schedule.map(migrateRow);return s2;}
     }
@@ -607,7 +609,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       document.getElementById("printDate").textContent=new Date().toLocaleDateString();
       document.querySelectorAll("[data-lang]").forEach(function(b){b.classList.toggle("active",b.dataset.lang===state.language);});
       document.querySelectorAll("[data-theme-pick]").forEach(function(b){b.classList.toggle("active",b.dataset.themePick===state.theme);});
-      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderEvents();renderCalendar();renderUpcomingEvents();
+      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderEvents();renderCalendar();renderUpcomingEvents();renderReminders();
     }
 
     // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Rollover ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
@@ -1187,8 +1189,179 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
     }
 
+    // ─── Stage 9: Reminders ────────────────────────────────────────────────
+    var reminderTimers = new Map();
+
+    function scheduleReminder(rem) {
+      if (!rem || !rem.active || !rem.reminderDateTime) return;
+      var now = Date.now();
+      var fireAt = new Date(rem.reminderDateTime).getTime();
+      var delay = fireAt - now;
+      if (delay <= 0) return;
+      if (reminderTimers.has(rem.id)) {
+        clearTimeout(reminderTimers.get(rem.id));
+        reminderTimers.delete(rem.id);
+      }
+      var tid = setTimeout(function () {
+        reminderTimers.delete(rem.id);
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          new Notification(rem.title || tt('reminders.tab'), {
+            body: rem.note || '',
+            icon: '/Talk-Arrangements-Public/icons/icon-192.png'
+          });
+        }
+      }, delay);
+      reminderTimers.set(rem.id, tid);
+    }
+
+    function cancelReminder(id) {
+      if (reminderTimers.has(id)) {
+        clearTimeout(reminderTimers.get(id));
+        reminderTimers.delete(id);
+      }
+    }
+
+    function scheduleAllReminders() {
+      var rems = state.taReminders || [];
+      rems.forEach(function (r) { scheduleReminder(r); });
+    }
+
+    function requestNotifPermission() {
+      if (typeof Notification === 'undefined') { renderReminders(); return; }
+      Notification.requestPermission().then(function (perm) {
+        renderReminders();
+        if (perm === 'granted') scheduleAllReminders();
+      });
+    }
+
+    function renderReminders() {
+      var el = document.getElementById('reminders');
+      if (!el) return;
+      var rems = (state.taReminders || []).slice().sort(function (a, b) {
+        return (a.reminderDateTime || '') < (b.reminderDateTime || '') ? -1 : 1;
+      });
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      var notifSupported = typeof Notification !== 'undefined';
+      var notifPerm = notifSupported ? Notification.permission : 'unsupported';
+      var notifHtml = '';
+      if (isIOS) {
+        notifHtml = '<div class="ta-reminder-ios-banner">' + tt('reminders.iosBanner') + '</div>';
+      } else if (!notifSupported) {
+        notifHtml = '<div class="ta-reminder-status ta-reminder-denied">' + tt('reminders.notifUnsupported') + '</div>';
+      } else if (notifPerm === 'default') {
+        notifHtml = '<button class="btn btn-primary ta-reminder-notif-btn" onclick="requestNotifPermission()">' + tt('reminders.notifAllow') + '</button>';
+      } else if (notifPerm === 'granted') {
+        notifHtml = '<div class="ta-reminder-status ta-reminder-granted">✓ ' + tt('reminders.notifEnabled') + '</div>';
+      } else {
+        notifHtml = '<div class="ta-reminder-status ta-reminder-denied">' + tt('reminders.notifDenied') + '</div>';
+      }
+      var listHtml = rems.length === 0
+        ? '<p class="ta-empty-msg">' + tt('reminders.noReminders') + '</p>'
+        : rems.map(function (rem) {
+            var dt = rem.reminderDateTime ? new Date(rem.reminderDateTime) : null;
+            var dtStr = dt ? dt.toLocaleString() : '';
+            var now = new Date();
+            var cls = 'ta-reminder-card';
+            if (dt && dt < now) cls += ' ta-reminder-overdue';
+            else if (dt) cls += ' ta-reminder-upcoming';
+            var safeId = sanitizeInlineArg(rem.id);
+            return '<div class="' + cls + '">'
+              + '<div class="ta-reminder-card-title">' + escHtml(rem.title || '') + '</div>'
+              + (rem.note ? '<div class="ta-reminder-card-note">' + escHtml(rem.note) + '</div>' : '')
+              + '<div class="ta-reminder-card-time">🕔 ' + escHtml(dtStr) + '</div>'
+              + '<div class="ta-reminder-card-actions">'
+              + '<button class="btn btn-sm" onclick="openReminderModal(\'' + safeId + '\')">✎</button>'
+              + '<button class="btn btn-sm btn-danger" onclick="deleteReminderById(\'' + safeId + '\')">🗑</button>'
+              + '</div></div>';
+          }).join('');
+      el.innerHTML = '<div class="ta-reminders-header">'
+        + '<h2>' + tt('reminders.tab') + '</h2>'
+        + '<button class="btn btn-primary" onclick="openReminderModal()">＋ ' + tt('reminders.addReminder') + '</button>'
+        + '</div>'
+        + '<div class="ta-reminder-notif-wrap">' + notifHtml + '</div>'
+        + '<div class="ta-reminders-list">' + listHtml + '</div>';
+    }
+
+    function openReminderModal(remId) {
+      var rem = remId ? (state.taReminders || []).find(function (r) { return r.id === remId; }) : null;
+      var modal = document.getElementById('reminderModal');
+      if (!modal) return;
+      var titleEl = document.getElementById('reminderModalTitle');
+      if (titleEl) titleEl.textContent = rem ? tt('reminders.editReminder') : tt('reminders.addReminder');
+      var idEl = document.getElementById('reminderIdField');
+      if (idEl) idEl.value = rem ? rem.id : '';
+      var tEl = document.getElementById('reminderTitleField');
+      if (tEl) tEl.value = rem ? (rem.title || '') : '';
+      var nEl = document.getElementById('reminderNoteField');
+      if (nEl) nEl.value = rem ? (rem.note || '') : '';
+      var dEl = document.getElementById('reminderDateField');
+      var timeEl = document.getElementById('reminderTimeField');
+      if (rem && rem.reminderDateTime) {
+        var dt = new Date(rem.reminderDateTime);
+        if (dEl) dEl.value = dt.toISOString().slice(0, 10);
+        if (timeEl) timeEl.value = dt.toTimeString().slice(0, 5);
+      } else {
+        if (dEl) dEl.value = '';
+        if (timeEl) timeEl.value = '';
+      }
+      var delBtn = document.getElementById('reminderDeleteModalBtn');
+      if (delBtn) delBtn.style.display = rem ? '' : 'none';
+      modal.style.display = 'flex';
+    }
+
+    function saveReminder() {
+      var idEl = document.getElementById('reminderIdField');
+      var tEl = document.getElementById('reminderTitleField');
+      var nEl = document.getElementById('reminderNoteField');
+      var dEl = document.getElementById('reminderDateField');
+      var timeEl = document.getElementById('reminderTimeField');
+      var id = idEl ? idEl.value : '';
+      var title = tEl ? tEl.value.trim() : '';
+      var note = nEl ? nEl.value.trim() : '';
+      var dateVal = dEl ? dEl.value : '';
+      var timeVal = (timeEl && timeEl.value) ? timeEl.value : '09:00';
+      if (!title || !dateVal) return;
+      var reminderDateTime = dateVal + 'T' + timeVal + ':00';
+      var now2 = new Date().toISOString();
+      if (!Array.isArray(state.taReminders)) state.taReminders = [];
+      if (id) {
+        var idx2 = state.taReminders.findIndex(function (r) { return r.id === id; });
+        if (idx2 > -1) {
+          cancelReminder(id);
+          state.taReminders[idx2].title = title;
+          state.taReminders[idx2].note = note;
+          state.taReminders[idx2].reminderDateTime = reminderDateTime;
+          state.taReminders[idx2].updatedAt = now2;
+          state.taReminders[idx2].active = true;
+          scheduleReminder(state.taReminders[idx2]);
+        }
+      } else {
+        var newRem = { id: 'tar-' + Date.now(), title: title, note: note, reminderDateTime: reminderDateTime, attachedType: null, attachedId: null, active: true, createdAt: now2, updatedAt: now2 };
+        state.taReminders.push(newRem);
+        scheduleReminder(newRem);
+      }
+      saveState();
+      closeReminderModal();
+      renderReminders();
+    }
+
+    function deleteReminderById(id) {
+      if (!id) return;
+      cancelReminder(id);
+      state.taReminders = (state.taReminders || []).filter(function (r) { return r.id !== id; });
+      saveState();
+      renderReminders();
+    }
+
+    function closeReminderModal() {
+      var modal = document.getElementById('reminderModal');
+      if (modal) modal.style.display = 'none';
+    }
+    // ─── End Stage 9 ──────────────────────────────────────────────────
+
     wireEvents();
     renderAll();
+    scheduleAllReminders();
 
     // ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Auto-detect new year on load ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
     if(thisYear>state.currentYear){
