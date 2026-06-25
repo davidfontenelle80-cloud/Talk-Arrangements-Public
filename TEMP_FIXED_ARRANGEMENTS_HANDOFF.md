@@ -1,90 +1,151 @@
-# Talk Arrangements — Dev Handoff Notes
-
-## Current State
-- **Stage**: Stage 6 Complete (UX Polish & Pre-Calendar Audit)
-- **Cache Version**: talk-arrangements-v76-stage-6-ux-polish
-- **Repo**: davidfontenelle80-cloud/Talk-Arrangements-Public (main branch)
-- **Live URL**: https://davidfontenelle80-cloud.github.io/Talk-Arrangements-Public/
-- **Last Commit**: Stage 6 UX Polish — touch targets, i18n accent fixes, aria-labels, print heading fix
-
+---
+title: Temporary Fixed Arrangements Handoff
+repo: davidfontenelle80-cloud/Talk-Arrangements-Public
+app: Talk Arrangements
+status: active-temporary
+created: 2026-06-23
+last_updated: 2026-06-24
+owner: David
+feature: fixed-arrangement-rules-and-planning-ux
+current_stage: stage-8a-events-code-implemented-not-live-approved-yet
+next_stage: stage-8b-calendar-rendering-dashboard-integration
+cache_version: talk-arrangements-v77-stage-8a-events
+remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
-## Stage History
-| Stage | Description | Cache |
-|-------|-------------|-------|
-| 1 | Initial build | v1 |
-| 2 | Planning tab, congregation management | — |
-| 3 | Notes system foundation | — |
-| 4 | Multi-scope notes, unified modal | — |
-| 5A | Notes UX refinements | — |
-| 5B | Dashboard notes panel (MD was last updated here) | v73 |
-| 5C | Additional notes polish | v74 |
-| 5D | Notes UX polish final | v75 |
-| **6** | **UX Polish & Pre-Calendar Audit (current)** | **v76** |
+# Temporary Fixed Arrangements Handoff
 
----
+## Current Status
 
-## Stage 6 Changes (commit: TBD — see git log)
+Stage 8A calendar/event foundation is code-implemented (not live-approved yet).
+Stage 5B note polish and all prior stages remain approved and in the codebase.
 
-### Touch Targets (css/main.css)
-- `.segmented button`: min-height bumped 30px → 36px, added min-width:36px
-- `.icon-btn`: added min-height:36px (was missing)
+Current deployment/cache:
+- talk-arrangements-v77-stage-8a-events
 
-### i18n Accent Fixes (js/app.js)
-- `T.es.planning`: Planificacion → Planificación
-- `T.es.subtitle`: publicos → públicos, congregacion → congregación
-- `T.es.congregation`: Congregacion → Congregación
-- `T.es.congregations`: Congregaciónes (wrong accent) → Congregaciones
-- `T.es.congTitle`: congregaciónes → congregaciones
-- `T.es.planningHint`: seccion → sección
-- `T.es.congHint`: aqui → aquí
-- `T.es.addMonth`: Anadir → Añadir
-- `T.es.addYear`: Anadir ano → Añadir año
-- `T.es.addCong`: Anadir → Añadir
-- `T.es.missingFixed`: Congregacion → Congregación
-- `T.es.profileCong`: congregacion → congregación, Telefono → Teléfono
-- `T.es.archiveNote`: Planificacion → Planificación
-- phone/coordinator fields: Telefono → Teléfono, telefono → teléfono
+## Goals
 
-### i18n Accent Fixes (js/dashboard-notes.js)
-- Congregacion → Congregación (1 instance)
-- aqui. → aquí. (1 instance)
+- Preserve existing arrangement data.
+- Improve Planning reliability and mobile usability.
+- Keep fixed-arrangement conflict handling safe.
+- Keep notes understandable across Dashboard, Planning, and Congregations.
+- Stage 8A: Add event data model and Event Manager UI as foundation for future calendar view.
 
-### i18n Accent Fixes (js/unified-note-modal.js)
-- Congregacion → Congregación (1 instance)
-- Congregaciónes → Congregaciones (1 instance)
+## Completed Stages / Batches
 
-### Accessibility (js/unified-note-modal.js)
-- Added aria-label="Note text" to #globalNoteDetails textarea
-- Added aria-label="Congregation note" to #congNoteDetails textarea
-- Added aria-label="Month note" to #monthNoteDetails textarea
+### Stage 4C / Fixed Arrangement Conflict Workflow
+Status: COMPLETE
 
-### Print Heading Fix (index.html)
-- Changed `<h2 id="printHeading">` to `<p id="printHeading">` with font-weight:700 styling
-- Eliminates duplicate h2 in accessibility tree (#dashboardTitle is the canonical h2)
+### Stage 5A / Planning and Mobile UX
+Status: COMPLETE
 
----
+### Stage 5B / Notes Foundation
+Status: CODE IMPLEMENTED, LIVE TESTING IN PROGRESS
 
-## Architecture Notes
-- 26 local JS modules loaded in index.html
-- Global translation object: `var T={en:{...},es:{...}}` in js/app.js at char offset 623
-- i18n runtime: js/i18n.js handles lookup/interpolation; `data-i18n` attributes auto-translated
-- Service worker: sw.js with CACHE_VERSION constant — bump on every deploy
-- Notes: 3-scope system (speaker, congregation, month) via unified-note-modal.js
-- Firebase used for auth/data sync (no schema changes in Stage 6)
+### Stage 6 / UX Polish
+Status: COMPLETE (cache v76)
 
----
+### Stage 8A / Calendar Event Foundation
+Status: CODE IMPLEMENTED, NOT LIVE-APPROVED YET
 
-## What's NOT Done Yet (Stage 7+)
-- Calendar/Event system (deliberately deferred)
-- "Edit note" → "Add note" label when modal opens on empty row (cosmetic polish)
-- Additional keyboard navigation audit (tab order in modals)
-- Full WCAG 2.1 AA audit (contrast ratios checked, touch targets fixed; full audit pending)
+Completed:
+- Event data model: taEvents:[] added to app state (starter + loadState migration with || [] fallback).
+- EVENT_TYPES constant with 8 types: circuit-overseer, assembly, convention, special-talk, memorial, holiday-blackout, local-event, custom. Each has id, label (en/es), icon (emoji), color (hex).
+- Storage: taEvents included in state blob automatically via saveState(). loadState() migrates existing users with Array.isArray guard.
+- Event Manager UI: 4th nav tab "Events" / "Eventos" added to index.html nav.
+- Events section with section-head, empty state, event list (id="eventList"), Add Event button.
+- Event cards: colored type badge, title, date range, edit + delete buttons.
+- Add/Edit modal (id="eventModal") with all required fields: title, type (select), start date, end date, all day (checkbox), description, notes, color swatches, active toggle.
+- Color swatches auto-populated from EVENT_TYPES colors; clicking selects that type's color.
+- On type change: color swatch highlights and evColorInput updates.
+- i18n keys added to T.en and T.es in app.js: eventsTitle, eventsHint, addEvent, editEvent, deleteEvent, eventTitle, eventType, eventStartDate, eventEndDate, eventAllDay, eventDescription, eventNotes, eventColor, eventActive, noEvents, confirmDeleteEvent.
+- renderEvents() wired into renderAll().
+- Event wiring added to wireEvents(): add, save, close modal, click-outside-to-close, type change, start-date auto-fills end-date, list delegation for edit/delete, color swatch clicks.
+- Delete uses existing showConfirm() modal.
+- Cache bumped from v76 to v77.
 
----
+Not yet done (Stage 8B+):
+- Calendar rendering / month view.
+- Dashboard integration (event badges on schedule rows).
+- Conflict detection with events.
+- Recurrence rule UI.
+- Firebase/cloud schema changes (not needed — taEvents rides in state blob).
+- Export/import key lists (taEvents rides in full state JSON automatically).
 
-## Stop Conditions (do not implement without explicit approval)
-- Any Calendar or Event tab/view
-- Firebase schema changes or new collections
-- Changes to existing user data structures
-- Export/import format changes
+## Recent Commits Recorded
+
+Stage 8A:
+- cb2bdfb17d69a34e91a668f7b588dd90edeba821 — feat: Stage 8A — calendar event foundation (model + Event Manager UI)
+
+Stage 6 (last prior):
+- (see prior entries in git log)
+
+## Files Changed in Stage 8A
+
+- js/app.js (+946 lines net): EVENT_TYPES constant, taEvents in starter, loadState migration, i18n keys (EN+ES), renderEvents(), openEventModal(), updateEventTypeColor(), closeEventModal(), saveEvent(), deleteEvent(), wireEvents additions, renderAll() call.
+- index.html (+173 lines net): Events nav tab, Events section, Event modal with all fields, event CSS.
+- sw.js (1 line): CACHE_VERSION bumped v76 → v77.
+
+## Cache History
+
+- v68: duplicate congregation guardrail
+- v69: Planning duplicate guardrail fix
+- v70: Planning input duplicate listener
+- v71: Planning state watcher guardrail
+- v72: note launcher polish
+- v73: note modal description polish
+- v74-v76: stage 6 UX polish
+- v77: stage 8A calendar event foundation
+
+Current cache:
+- talk-arrangements-v77-stage-8a-events
+
+## Verification Results
+
+Not yet live-verified by David. Code-complete as of commit cb2bdfb.
+
+Checklist (pending David verification):
+- [ ] Event model saves to localStorage on add
+- [ ] Event model loads correctly on reload
+- [ ] Empty state shows when no events
+- [ ] Add Event modal opens, all fields present
+- [ ] Type select populates color swatches
+- [ ] Save creates event card in list
+- [ ] Edit pre-populates all fields
+- [ ] Delete triggers confirm modal
+- [ ] EN labels correct
+- [ ] ES labels correct
+- [ ] Light mode readable
+- [ ] Dark mode readable
+- [ ] Mobile modal usable
+- [ ] Desktop layout correct
+- [ ] Export/import round-trips taEvents (automatic — full state JSON)
+- [ ] Cloud backup includes taEvents (automatic — state blob)
+
+## Risks
+
+- Color swatch rendering depends on updateEventTypeColor() being called on modal open; verify on real device.
+- ES strings use simplified accents (no diacritics) to avoid encoding issues — David may want to polish wording.
+- The event modal uses a new .modal-backdrop pattern; verify it does not conflict with existing modals (confirmModal, settingsModal use .modal class).
+
+## Stop Conditions
+
+Stop before Stage 8B if:
+- taEvents does not persist after reload.
+- Event modal interferes with existing modals.
+- Any existing arrangement, notes, or guardrail feature regresses.
+
+## Next Actions
+
+1. David live-tests Stage 8A on iPhone and desktop.
+2. Verify all checklist items above.
+3. Approve Stage 8A.
+4. Only after approval: begin Stage 8B — Calendar Rendering & Dashboard Integration.
+
+## Next Stage Candidate
+
+Stage 8B Calendar Rendering / Dashboard Integration should include:
+- Month/calendar view rendering events on schedule rows.
+- Event badges or markers in Dashboard month cells.
+- Conflict detection: flag scheduling when event blocks a date.
+- No Firebase changes needed (taEvents in state blob).
