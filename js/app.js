@@ -1352,7 +1352,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function stage8c_applyBadges(){
       // Clear existing badges and row classes before re-applying
       document.querySelectorAll('.ta-evt-badge').forEach(function(b){ b.remove(); });
-      document.querySelectorAll('#dashboardRows tr.ta-evt-blocked,#dashboardRows tr.ta-evt-advisory').forEach(function(r){ r.classList.remove('ta-evt-blocked','ta-evt-advisory'); });
+      document.querySelectorAll('tr.ta-evt-blocked,tr.ta-evt-advisory').forEach(function(r){ r.classList.remove('ta-evt-blocked','ta-evt-advisory'); });
       if(!state.taEvents||!state.taEvents.length)return;
       // Dashboard rows
       document.querySelectorAll('#dashboardRows tr[data-id]').forEach(function(tr){
