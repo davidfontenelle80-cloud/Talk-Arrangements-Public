@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v79-stage-8c-intelligence';
+const CACHE_VERSION = 'talk-arrangements-v80-stage-8c-cleanup';
 
 const PRECACHE_URLS = [
   './',
@@ -65,29 +65,10 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
-
-  const isAppShell = PRECACHE_URLS.some(path => new URL(path, self.location.href).pathname === url.pathname);
-  if (!isAppShell) return;
-
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const cloned = response.clone();
-          caches.open(CACHE_VERSION).then(cache => cache.put(event.request, cloned));
-        }
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).catch(() => caches.match('./'));
+    })
   );
-});
-
-self.addEventListener('message', event => {
-  if (!event.data) return;
-
-  if (event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
