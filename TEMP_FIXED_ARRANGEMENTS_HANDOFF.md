@@ -17,24 +17,54 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Current Status
 
-Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v86, but live testing found blockers.
+Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v86, but live testing found blockers. Supervisor applied a limited emergency repair pass, but Stage 9 is still not approved.
+
+## Supervisor Emergency Repair Pass
+
+Commit: `8212e551`
+
+File changed:
+- `js/i18n.js`
+
+What was repaired safely:
+- Added global `window.escHtml` fallback to stop the live `ReferenceError: Can't find variable: escHtml` from crashing the Reminder tab.
+- Kept/verified global `window.sanitizeInlineArg` fallback for reminder inline actions.
+- Added a DOM cleanup pass to remove visible raw text nodes caused by malformed `index.html`, including `<`, `/main>`, and `</main>`.
+- Added emergency mobile nav layout CSS injection so the 5-tab row scrolls horizontally instead of overlapping on iPhone.
+
+Important limitations:
+- `index.html` is still malformed in source and needs a proper markup repair.
+- `js/app.js` still contains mojibake in source strings and needs a proper encoding/string cleanup.
+- Service worker cache was not bumped by this supervisor pass because the tool blocked `sw.js` writes; Codex must bump cache in the proper repair.
+- Closed-app notifications are still not solved; current reminder architecture is in-app timer based.
 
 ## Stage 9 Live Testing Findings
 
 ### Blocking Issue 1 — UI text mojibake / encoding corruption
 - Live app displays corrupted strings such as `pÃ...` in Spanish headings, tabs, button labels, and descriptions.
-- Repo inspection confirms mojibake in `js/app.js` translation strings.
-- Emergency helper patch added in `js/i18n.js` to define corrected visible strings after app load.
-- Commit: 4fa3a76f
-- This is a temporary mitigation. A proper follow-up should repair `js/app.js` source encoding directly.
+- Repo inspection confirms mojibake in `js/app.js` translation strings and some `index.html` static text.
+- Emergency helper patch in `js/i18n.js` only mitigates part of the problem.
+- Proper follow-up must repair `js/app.js` and `index.html` source directly.
 
-### Blocking Issue 2 — `sanitizeInlineArg` missing
-- Live error: `ReferenceError: Can't find variable: sanitizeInlineArg` at app.js:1267:43.
-- Cause: `renderReminders()` calls `sanitizeInlineArg(rem.id)` but no global function existed.
-- Emergency helper patch added global `window.sanitizeInlineArg` in `js/i18n.js`, which loads before `js/app.js`.
-- Commit: 4fa3a76f
+### Blocking Issue 2 — missing helper functions
+- Live errors observed:
+  - `ReferenceError: Can't find variable: sanitizeInlineArg`
+  - `ReferenceError: Can't find variable: escHtml`
+- Emergency fallback helpers were added in `js/i18n.js` because it loads before `js/app.js`.
+- Proper follow-up should define helpers in `js/app.js` near common utilities or avoid inline onclick strings.
 
-### Blocking Issue 3 — reminders do not notify when app is closed
+### Blocking Issue 3 — malformed `index.html`
+- Repo inspection shows malformed markup near Events/Reminders:
+  - stray `<`
+  - visible `/main>` instead of proper `</main>`
+- Emergency DOM cleanup removes visible raw text after load, but source must be fixed.
+
+### Blocking Issue 4 — mobile 5-tab overlap
+- Stage 9 added a fifth tab, Reminders/Recordatorios.
+- Mobile nav labels overlap in the live app.
+- Emergency injected CSS makes nav horizontally scrollable, but source CSS should be fixed permanently.
+
+### Blocking Issue 5 — reminders do not notify when app is closed
 - Current Stage 9 implementation uses in-page `setTimeout()` and `new Notification()` from `js/app.js`.
 - This can only work while the app/page is open and active.
 - It cannot guarantee notifications while the installed PWA/Safari is closed or suspended.
@@ -43,7 +73,7 @@ Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v8
 
 ### Cache / deployment note
 - Current `sw.js` still reports `talk-arrangements-v86-stage-9-reminders`.
-- Cache bump to v87 was attempted but blocked by tooling. Worker should bump cache in next repair.
+- Cache bump to v87 was attempted but blocked by tooling. Codex should bump cache in next repair.
 
 ## Stage 8C Bugs Found & Fixed (Live Verification 2026-06-25)
 
@@ -97,7 +127,7 @@ Required reminder design:
 - Stage 8A / Calendar Event Foundation: COMPLETE
 - Stage 8B / Calendar Rendering & Dashboard Integration: COMPLETE
 - Stage 8C / Calendar Intelligence: LIVE APPROVED
-- Stage 9 / Date-Time Reminders: REPAIR COMPLETE — READY FOR RE-TEST
+- Stage 9 / Date-Time Reminders: BLOCKED / REQUIRES CHANGES
 
 ## Cache History
 
@@ -106,17 +136,18 @@ Required reminder design:
 - v79: Stage 8C calendar intelligence
 - v80-v85: Stage 8C bugfix/live approval series
 - v86: Stage 9 reminders implementation with blockers
-- v87: Stage 9 repair (mojibake fix, sanitizeInlineArg in app.js, honest in-app-only labels)
 
 ## Required Next Repair
 
-1. Properly repair `js/app.js` encoding/translation strings, not only patch after load.
-2. Fix or remove reliance on `sanitizeInlineArg` in app.js, or keep a well-documented global helper.
-3. Decide notification architecture:
+1. Properly repair `index.html` malformed Events/Reminders/main markup.
+2. Properly repair `js/app.js` encoding/translation strings, not only patch after load.
+3. Define `escHtml` and `sanitizeInlineArg` in `js/app.js` or remove inline onclick usage.
+4. Permanently fix the 5-tab mobile nav in CSS/source files.
+5. Decide notification architecture:
    - If true closed-app notifications are required, implement real Web Push/service-worker push with backend/scheduled trigger support.
    - If no backend is being added, clearly document that reminders only fire while the app is open/active and do not approve as meeting Version 1.0 push requirement.
-4. Bump service worker cache after repair.
-5. Re-test mobile, desktop, EN/ES, calendar, reminders, cloud backup, export/import.
+6. Bump service worker cache after repair.
+7. Re-test mobile, desktop, EN/ES, calendar, reminders, cloud backup, export/import.
 
 ## Stop Conditions
 
@@ -124,41 +155,6 @@ Stop before Release Candidate if:
 - App still shows mojibake.
 - Reminder tab throws JS errors.
 - Calendar/Event button actions do not respond.
+- Mobile tabs overlap.
 - Notifications do not meet the agreed Version 1.0 requirement.
 - Any cloud/export/import regression appears.
-
----
-
-## Stage 9 Repair — 2026-06-25 (commit 02161168dbc5)
-
-### What Was Fixed
-
-| Bug | Fix Applied |
-|-----|------------|
-| Mojibake in T.en / T.es | 4-level latin-1→utf-8 decode applied to entire T block; all non-ASCII re-encoded as \\uXXXX escapes |
-| `ReferenceError: sanitizeInlineArg` | `function sanitizeInlineArg()` added directly to app.js body (before renderReminders) |
-| Closed-app notifications mislabeled | `reminders.inAppOnly` i18n key added; renderReminders now shows ⚠️ in-app-only notice |
-| i18n.js runtime string-patch hack | Removed `patchTalkArrangementStrings()` and its `setInterval` loop; kept belt-and-suspenders `window.sanitizeInlineArg` fallback |
-| Service worker cache stale | Bumped v86 → v87-stage-9-repair |
-
-### Files Changed
-
-- `js/app.js` — mojibake fixed, sanitizeInlineArg defined, reminders.inAppOnly added to T.en + T.es, renderReminders updated
-- `js/i18n.js` — removed Stage 9 emergency string-patch hack, kept sanitizeInlineArg global fallback
-- `sw.js` — CACHE_VERSION bumped to `talk-arrangements-v87-stage-9-repair`
-
-### Notification Architecture Decision
-
-**In-app reminders only (setTimeout-based).** The app must be open and active for reminders to fire. True closed-app push notifications require a backend VAPID/Web Push server — not implemented. The UI now honestly labels this with ⚠️ and `reminders.inAppOnly` in both EN and ES.
-
-Deferred to future stage: backend push notifications (VAPID key pair, push subscription storage, server-side trigger).
-
-### Remaining Risk
-
-- The comment section of app.js still contains decorative box-drawing characters in mojibake form (cosmetic only — not user-visible strings).
-- iOS "Add to Home Screen" banner still needed for best reminder experience on Safari/iOS.
-- Full re-test checklist (EN/ES, calendar, reminders, cloud backup, export/import) should be run before Version 1.0 release candidate.
-
-### Updated Stage Status
-
-- Stage 9 / Date-Time Reminders: **REPAIR COMPLETE — READY FOR RE-TEST**
