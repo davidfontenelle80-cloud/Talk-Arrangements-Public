@@ -19,6 +19,13 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v86, but live testing found blockers. Codex completed a Stage 9 regression repair in commit `c61357b`, but Stage 9 is still not approved because true closed-app reminders require backend/Web Push scheduling that is not present in this repo.
 
+Update after David live test on 2026-06-26:
+- Live app still shows old Stage 9 failures: `escHtml` error, visible `</main>`, mojibake in Events, and imperfect mobile tabs.
+- Local `main` is ahead of the local `origin/main` tracking ref by `c61357b` and `f9dd9cc`; these commits were not confirmed pushed when this note was added.
+- Before new feature work, push local commits to `origin/main` and verify GitHub Pages/service-worker cache activation.
+- After deployment gap is resolved, complete the requested Stage 9 UI polish sweep and inspect/adapt the NoClip push notification architecture.
+- Do not start Release Candidate or Stage 10.
+
 Approval classification: `BLOCKED`
 
 Deployment classification: code implemented, not live approved
