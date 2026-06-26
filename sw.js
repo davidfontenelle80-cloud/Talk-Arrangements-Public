@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v89-remote-emergency-repair';
+const CACHE_VERSION = 'talk-arrangements-v90-remote-emergency-repair';
 
 const PRECACHE_URLS = [
   './',
