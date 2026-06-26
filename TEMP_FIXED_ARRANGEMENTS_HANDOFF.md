@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9-regression-repair-code-implemented-blocked-on-closed-app-notifications
-next_stage: stage-9-notification-architecture-decision
-cache_version: talk-arrangements-v88-stage-9-regression-repair
+current_stage: stage-9-final-repair-polish-and-push-architecture-in-progress
+next_stage: stage-9-live-verification-after-final-repair
+cache_version: talk-arrangements-v90-remote-emergency-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -33,6 +33,30 @@ Deployment classification: code implemented, not live approved
 Cache before repair: `talk-arrangements-v87-stage-9-repair`
 
 Cache after repair: `talk-arrangements-v88-stage-9-regression-repair`
+
+## Stage 9 Final Repair / Live Gap Update (2026-06-26)
+
+David's live iPhone test still shows visible Stage 9 blockers after the local v88 repair:
+- Raw broken markup is still visible on the live site.
+- Live Reminder tab can still hit `ReferenceError: Can't find variable: escHtml`.
+- Live Events/Planning/Message text still shows source mojibake/gibberish.
+- Five-tab mobile navigation still needs a polished, intentional horizontal scroll treatment.
+- Planning, Congregations, message/contact actions, Events, and Reminders need an iPhone polish sweep.
+- True closed-app push reminders still need a NoClip-style Web Push architecture or a documented backend credential blocker.
+
+Remote/live source comparison:
+- Local `main` contains commits `c61357b`, `f9dd9cc`, and `70eec14`.
+- Direct `git push origin main` failed because GitHub rejected the local credentials.
+- GitHub remote `sw.js` reports `talk-arrangements-v90-remote-emergency-repair`.
+- Remote `index.html`, `js/app.js`, `js/i18n.js`, and `TEMP_FIXED_ARRANGEMENTS_HANDOFF.md` are still behind the intended source-level repair and retain emergency/runtime mitigation patterns.
+
+Required repair target:
+- Apply final source-level repairs locally.
+- Bump cache to `talk-arrangements-v91-stage-9-final-repair`.
+- Add safe push-notification frontend/service-worker architecture copied from the NoClip pattern, without committing private secrets.
+- If Talk Arrangements Cloudflare Worker URL, VAPID public key, or Worker secrets are missing, document the exact Cloudflare configuration required and keep closed-app reminders blocked.
+- Deploy using GitHub API updates if direct git push remains unavailable.
+- Do not start Release Candidate or Stage 10.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
