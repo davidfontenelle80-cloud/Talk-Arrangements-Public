@@ -4,12 +4,12 @@ repo: davidfontenelle80-cloud/Talk-Arrangements-Public
 app: Talk Arrangements
 status: active-temporary
 created: 2026-06-23
-last_updated: 2026-06-25
+last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9-reminders-blocked-requires-changes
-next_stage: stage-9-reminders-repair
-cache_version: talk-arrangements-v86-stage-9-reminders
+current_stage: stage-9-regression-repair-code-implemented-blocked-on-closed-app-notifications
+next_stage: stage-9-notification-architecture-decision
+cache_version: talk-arrangements-v88-stage-9-regression-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -17,7 +17,79 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Current Status
 
-Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v86, but live testing found blockers. Supervisor applied a limited emergency repair pass, but Stage 9 is still not approved.
+Stage 8C was live-approved at v85. Stage 9 reminders were then implemented at v86, but live testing found blockers. Codex completed a Stage 9 regression repair in commit `c61357b`, but Stage 9 is still not approved because true closed-app reminders require backend/Web Push scheduling that is not present in this repo.
+
+Approval classification: `BLOCKED`
+
+Deployment classification: code implemented, not live approved
+
+Cache before repair: `talk-arrangements-v87-stage-9-repair`
+
+Cache after repair: `talk-arrangements-v88-stage-9-regression-repair`
+
+## Stage 9 Regression Repair (2026-06-26)
+
+Repair commit: `c61357b`
+
+Files changed:
+- `index.html`
+- `js/app.js`
+- `js/i18n.js`
+- `css/main.css`
+- `css/components.css`
+- `sw.js`
+
+Bugs fixed:
+- Repaired malformed Events/Reminders/main markup in `index.html`; no stray `<` or visible `/main>`.
+- Added common `escHtml()` and `sanitizeInlineArg()` helpers in `js/app.js` before renderers use them.
+- Repaired source mojibake in `index.html`, `js/app.js`, and `css/components.css`.
+- Moved the mobile 5-tab nav fix into `css/main.css`.
+- Removed emergency helper, DOM cleanup, and injected nav CSS patches from `js/i18n.js`.
+- Fixed calendar refresh after event save/delete by re-rendering the calendar and upcoming-events widget.
+- Fixed reminder edit date/time behavior to use local date values instead of UTC `toISOString()` date extraction.
+- Bumped service worker cache to `talk-arrangements-v88-stage-9-regression-repair`.
+
+Tests run locally against `127.0.0.1` static test origin:
+- App booted with no console errors.
+- No visible raw `<`, `/main>`, or `</main>` text.
+- No mojibake detected in visible ES or EN text.
+- Dashboard, Planning, Congregations, Events, and Reminders tabs rendered.
+- Events calendar rendered; previous month and next month buttons worked.
+- Event type filter worked.
+- Add Event opened modal.
+- Save Event added event to list, calendar cell, and upcoming widget.
+- Event persisted after reload.
+- Event day details opened from the calendar.
+- Delete Event removed event from list and calendar.
+- Reminder tab rendered without `escHtml` or `sanitizeInlineArg` errors.
+- Add Reminder opened modal.
+- Reminder title, note, date, and time fields worked.
+- Reminder saved and appeared in the list.
+- Reminder persisted after reload.
+- Reminder edit worked without shifting a late-night date to the next day.
+- Reminder delete worked.
+- Permission UI did not crash; local browser showed notifications denied.
+- Mobile iPhone-width EN/ES nav had `overflow-x:auto`, no tab-label overlap, and no mojibake.
+- Settings/cloud backup controls rendered with no console errors.
+
+Not fully verified locally:
+- Export JSON download event timed out in the browser harness for the Blob URL, though source wiring for toolbar and settings export remains present.
+- Import JSON file-picker flow was not completed in the browser harness.
+- Cloud backup was not live-authenticated or written to Firebase; only controls/no-error rendering was verified.
+- Live GitHub Pages deployment was not verified.
+
+Notification architecture result:
+- Current reminders are in-app reminders only. They use in-page timers and `Notification` while the app/page is active.
+- True closed-app notification delivery is not implementable with this static-only repo alone. It requires a service worker push architecture plus push subscription, VAPID/public key setup, backend or scheduled cloud trigger, notification click handling, and iOS PWA testing.
+- Because David's Version 1.0 requirement is exact date/time reminders that fire even when the app is closed, Stage 9 remains `BLOCKED`.
+
+Remaining risks:
+- Export/import and cloud backup need live browser/account verification before approval.
+- Closed-app reminders need an architecture decision and backend/cloud scheduling plan.
+- David still needs to live-test and approve before any Release Candidate work.
+
+Recommended next stage:
+- Stage 9 notification architecture decision and live verification. Do not start Release Candidate or Stage 10.
 
 ## Supervisor Emergency Repair Pass
 
@@ -33,10 +105,19 @@ What was repaired safely:
 - Added emergency mobile nav layout CSS injection so the 5-tab row scrolls horizontally instead of overlapping on iPhone.
 
 Important limitations:
-- `index.html` is still malformed in source and needs a proper markup repair.
-- `js/app.js` still contains mojibake in source strings and needs a proper encoding/string cleanup.
-- Service worker cache was not bumped by this supervisor pass because the tool blocked `sw.js` writes; Codex must bump cache in the proper repair.
+- These emergency source blockers were repaired in commit `c61357b`.
 - Closed-app notifications are still not solved; current reminder architecture is in-app timer based.
+
+## Repo Comparison Before Stage 9 Regression Repair (2026-06-26)
+
+Current repo differs from the previous handoff in these ways:
+- `sw.js` cache is already `talk-arrangements-v87-stage-9-repair`, not `talk-arrangements-v86-stage-9-reminders`.
+- `js/app.js` contains a local `sanitizeInlineArg()` near reminder rendering, but it is not defined once near common utilities.
+- `js/app.js` still calls `escHtml()` from reminder rendering without a proper source definition.
+- `index.html` still contains malformed source near Events/Reminders with a visible `/main>` text node.
+- `js/i18n.js` still contains emergency fallback helpers, DOM cleanup, and injected mobile nav CSS.
+- Mojibake remains in `index.html`, `js/app.js`, and `css/components.css`.
+- Stage 9 remains blocked and requires regression repair; do not advance to Release Candidate.
 
 ## Stage 9 Live Testing Findings
 
@@ -72,8 +153,8 @@ Important limitations:
 - Required: redesign using real Web Push/service-worker push architecture or clearly document platform limits before approval.
 
 ### Cache / deployment note
-- Current `sw.js` still reports `talk-arrangements-v86-stage-9-reminders`.
-- Cache bump to v87 was attempted but blocked by tooling. Codex should bump cache in next repair.
+- Current `sw.js` reports `talk-arrangements-v88-stage-9-regression-repair`.
+- This code has not been live-approved.
 
 ## Stage 8C Bugs Found & Fixed (Live Verification 2026-06-25)
 
@@ -127,7 +208,7 @@ Required reminder design:
 - Stage 8A / Calendar Event Foundation: COMPLETE
 - Stage 8B / Calendar Rendering & Dashboard Integration: COMPLETE
 - Stage 8C / Calendar Intelligence: LIVE APPROVED
-- Stage 9 / Date-Time Reminders: BLOCKED / REQUIRES CHANGES
+- Stage 9 / Date-Time Reminders: CODE REPAIRED LOCALLY / BLOCKED ON CLOSED-APP NOTIFICATIONS
 
 ## Cache History
 
@@ -136,18 +217,15 @@ Required reminder design:
 - v79: Stage 8C calendar intelligence
 - v80-v85: Stage 8C bugfix/live approval series
 - v86: Stage 9 reminders implementation with blockers
+- v87-stage-9-repair: partial Stage 9 repair in repo history, still blocked by malformed HTML, mojibake, temporary emergency patches, missing common `escHtml()`, and closed-app notification architecture gap
+- v88-stage-9-regression-repair: Codex regression repair commit `c61357b`; source regressions locally repaired, Stage 9 still blocked on true closed-app notification architecture
 
 ## Required Next Repair
 
-1. Properly repair `index.html` malformed Events/Reminders/main markup.
-2. Properly repair `js/app.js` encoding/translation strings, not only patch after load.
-3. Define `escHtml` and `sanitizeInlineArg` in `js/app.js` or remove inline onclick usage.
-4. Permanently fix the 5-tab mobile nav in CSS/source files.
-5. Decide notification architecture:
-   - If true closed-app notifications are required, implement real Web Push/service-worker push with backend/scheduled trigger support.
-   - If no backend is being added, clearly document that reminders only fire while the app is open/active and do not approve as meeting Version 1.0 push requirement.
-6. Bump service worker cache after repair.
-7. Re-test mobile, desktop, EN/ES, calendar, reminders, cloud backup, export/import.
+1. Decide and implement the real closed-app notification architecture, or formally reduce Stage 9 scope to in-app-only reminders.
+2. Live-test deployed v88 on David's target device(s).
+3. Verify export JSON, import JSON, and cloud backup on the live app/account.
+4. Only after David live-approves Stage 9 should Release Candidate work begin.
 
 ## Stop Conditions
 
