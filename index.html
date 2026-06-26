@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Talk Arrangements ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ public talk schedule manager for Spanish-speaking JW congregation." />
+  <meta name="description" content="Talk Arrangements — public talk schedule manager for Spanish-speaking JW congregation." />
   <meta name="theme-color" content="#0b0d12" />
 
   <!-- PWA -->
@@ -15,7 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Talks" />
 
-  <!-- CSS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ KHub standard layers -->
+  <!-- CSS — KHub standard layers -->
   <link rel="stylesheet" href="css/dark-mode.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/responsive.css" />
@@ -83,7 +83,7 @@
        aria-live="polite"
        aria-atomic="true"
        hidden>
-    Update available ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ <button class="btn btn-sm btn-secondary"
+    Update available — <button class="btn btn-sm btn-secondary"
             onclick="KHub.SW.applyUpdate()">Refresh</button>
   </div>
 
@@ -223,14 +223,14 @@
             <h2 data-i18n="eventsTitle">Events</h2>
             <p data-i18n="eventsHint">Manage congregation events</p>
           </div>
-          <button class="primary" id="addEventBtn">ÃÂ¯ÃÂ¼ÃÂ <span data-i18n="addEvent">Add Event</span></button>
+          <button class="primary" id="addEventBtn">＋ <span data-i18n="addEvent">Add Event</span></button>
         </div>
         <div id="eventsCalendar"></div>
-      <div id="eventList"></div>
+        <div id="eventList"></div>
       </section>
-<
+
       <section id="reminders" hidden></section>
-/main>
+    </main>
   </div>
   <!-- Custom Confirm Dialog -->
   <div class="confirm-bg no-print" id="confirmModal">
@@ -269,7 +269,7 @@
   </div>
   </div>
 
-  <!-- Firebase SDK (compat ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ no build step required) -->
+  <!-- Firebase SDK (compat — no build step required) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -291,7 +291,7 @@
     <div class="modal-box" style="max-width:520px">
       <div class="modal-header">
         <strong id="eventModalTitle" data-i18n="addEvent">Add Event</strong>
-        <button class="icon-btn" id="closeEventModalBtn" aria-label="Close">ÃÂ¢ÃÂÃÂ</button>
+        <button class="icon-btn" id="closeEventModalBtn" aria-label="Close">✕</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="evIdField">
@@ -302,7 +302,7 @@
         <div class="field-row">
           <label data-i18n="eventType">Event type</label>
           <select id="evTypeField">
-            <option value="">ÃÂ¢ÃÂÃÂ</option>
+            <option value="">—</option>
             <option value="circuit-overseer">Circuit Overseer Visit</option>
             <option value="assembly">Assembly</option>
             <option value="convention">Convention</option>

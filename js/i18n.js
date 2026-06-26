@@ -150,83 +150,8 @@
     get current() { return current; },
   };
 
-  // Stage 9 emergency helpers. app.js is legacy non-module code and currently
-  // calls these helpers from reminder renderers.
-  window.escHtml = window.escHtml || function escHtml(value) {
-    return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  };
-
-  window.sanitizeInlineArg = window.sanitizeInlineArg || function sanitizeInlineArg(value) {
-    return String(value == null ? '' : value)
-      .replace(/\\/g, '\\\\')
-      .replace(/'/g, "\\'")
-      .replace(/\r/g, '')
-      .replace(/\n/g, '\\n');
-  };
-
-  function removeBrokenRawMainTextNodes() {
-    // Stage 9 left malformed HTML around Events/Reminders. Until index.html is
-    // fully repaired, remove visible raw text nodes like '<' and '/main>'.
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    const toRemove = [];
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const text = (node.nodeValue || '').trim();
-      if (text === '<' || text === '/main>' || text === '</main>') toRemove.push(node);
-    }
-    toRemove.forEach(node => node.parentNode && node.parentNode.removeChild(node));
-  }
-
-  function installStage9EmergencyLayoutStyle() {
-    if (document.getElementById('stage9-emergency-layout-style')) return;
-    const style = document.createElement('style');
-    style.id = 'stage9-emergency-layout-style';
-    style.textContent = `
-      nav.no-print {
-        display: flex;
-        gap: 14px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        white-space: nowrap;
-        padding: 8px 0 10px;
-        scroll-snap-type: x proximity;
-      }
-      nav.no-print button {
-        flex: 0 0 auto;
-        min-width: max-content;
-        padding-left: 8px;
-        padding-right: 8px;
-        scroll-snap-align: start;
-      }
-      @media (max-width: 720px) {
-        nav.no-print { gap: 18px; }
-        nav.no-print button { font-size: 0.92rem; }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function stage9EmergencyDomPass() {
-    removeBrokenRawMainTextNodes();
-    installStage9EmergencyLayoutStyle();
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     applyLang(current);
     document.getElementById('lang-toggle')?.addEventListener('click', toggle);
-    stage9EmergencyDomPass();
-    // Re-run a few times because app.js re-renders sections after load.
-    let tries = 0;
-    const timer = setInterval(() => {
-      tries += 1;
-      stage9EmergencyDomPass();
-      if (tries >= 10) clearInterval(timer);
-    }, 250);
   });
 })();
