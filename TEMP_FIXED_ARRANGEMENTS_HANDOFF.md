@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9-final-repair-polish-and-push-architecture-in-progress
-next_stage: stage-9-live-verification-after-final-repair
-cache_version: talk-arrangements-v90-remote-emergency-repair
+current_stage: stage-9-final-repair-polish-and-push-architecture-code-implemented
+next_stage: stage-9-live-verification-and-cloudflare-push-configuration
+cache_version: talk-arrangements-v91-stage-9-final-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -57,6 +57,74 @@ Required repair target:
 - If Talk Arrangements Cloudflare Worker URL, VAPID public key, or Worker secrets are missing, document the exact Cloudflare configuration required and keep closed-app reminders blocked.
 - Deploy using GitHub API updates if direct git push remains unavailable.
 - Do not start Release Candidate or Stage 10.
+
+## Stage 9 Final Repair / Polish / Push Architecture (2026-06-26)
+
+Implementation commit: pending at time of this note.
+
+Files changed:
+- `index.html`
+- `js/app.js`
+- `js/push.js`
+- `css/main.css`
+- `sw.js`
+- `TEMP_FIXED_ARRANGEMENTS_HANDOFF.md`
+
+Cache before final repair:
+- Remote/live emergency cache: `talk-arrangements-v90-remote-emergency-repair`
+- Previous local repair cache: `talk-arrangements-v88-stage-9-regression-repair`
+
+Cache after final repair:
+- `talk-arrangements-v91-stage-9-final-repair`
+
+Bugs fixed in source:
+- Kept malformed Events/Reminders/main markup repaired in `index.html`.
+- Added `js/push.js` before `js/app.js` in load order.
+- Kept common `escHtml()` and `sanitizeInlineArg()` helpers in `js/app.js`.
+- Removed Reminder tab inline action string injection for list/add/permission actions; list actions now use delegated `data-reminder-action` handlers.
+- Replaced tiny event edit/delete icon buttons with readable text buttons.
+- Replaced calendar month arrow source characters with HTML entities and added aria labels.
+- Spanish weekday labels now render as `DOM`, `LUN`, `MAR`, `MIÉ`, `JUE`, `VIE`, `SÁB`.
+- Escaped calendar detail text.
+- Styled Reminder cards, Reminder callouts, Event cards, calendar cells, contact/template areas, tables, and mobile tabs.
+- Bumped service worker cache and added `push` plus improved `notificationclick` handling.
+
+Push architecture result:
+- `js/push.js` implements the safe NoClip-style frontend pattern: `subscribe`, `diagnose`, `sendTestPush`, `syncReminder`, and `clearReminder`.
+- `sw.js` implements `push` event handling with `self.registration.showNotification()` and notification click handling that opens/focuses the app.
+- Reminder save/delete now call `TalkPush.syncReminder()` and `TalkPush.clearReminder()` when push is configured.
+- No private Worker secret, VAPID private key, or shared auth secret was committed.
+- Closed-app push is still blocked until David provides and deploys the Talk Arrangements Cloudflare Worker setup.
+
+Cloudflare configuration required for true closed-app reminders:
+- Deploy a Talk Arrangements Worker URL, for example `https://talk-arrangements-push.<account>.workers.dev`.
+- Generate a Talk Arrangements VAPID key pair.
+- Put the VAPID public key in safe frontend config as `window.TALK_ARRANGEMENTS_PUSH_CONFIG.vapidPublicKey`.
+- Put the VAPID private key only in Cloudflare Worker environment variables.
+- Configure Worker environment variables for VAPID subject/contact email and any server-side auth/shared secret if the Worker design requires one.
+- Configure durable storage for subscriptions and scheduled reminders, such as KV, D1, or Durable Objects.
+- Add a scheduled Worker trigger/cron to find due reminders and send Web Push at the selected date/time.
+- Implement/verify Worker endpoints: `POST /api/subscribe`, `POST /api/reminders`, `DELETE /api/reminders/:sourceType/:sourceId`, and optional `POST /api/test-push`.
+- Add CORS allowlist for the GitHub Pages origin.
+
+Tests run:
+- Source scan found no `Ã`, `Â`, replacement-character, visible `/main>`, or old Reminder inline-handler markers in the edited source set.
+- Verified Events/Reminders/main source structure: `<section id="events">`, `<section id="reminders">`, and proper `</main>`.
+- JavaScript syntax parsed successfully for `js/app.js`, `js/push.js`, and `sw.js` using Node VM parser in the local runtime.
+- Verified `sw.js` cache string is `talk-arrangements-v91-stage-9-final-repair` and precaches `./js/push.js`.
+
+Testing not completed:
+- In-app Browser blocked `127.0.0.1`, `localhost`, and `file://` app loads in this session, so interactive local UI testing, screenshots, export/import flows, and calendar/reminder CRUD were not browser-verified after this final polish pass.
+- Direct `git push origin main` previously failed due rejected GitHub credentials. Deployment must use GitHub API updates or corrected credentials.
+- Cloud backup was not live-authenticated or written to Firebase.
+- Push test and closed-app notification delivery were not verified because Talk Arrangements Worker URL and VAPID public key are not configured.
+
+Approval classification: `BLOCKED`
+
+Deployment classification: code implemented locally, not live approved
+
+Recommended next stage:
+- Deploy v91 to `origin/main`, verify GitHub Pages/service-worker activation live, then configure and test the Talk Arrangements Cloudflare Worker push backend. Do not start Release Candidate or Stage 10.
 
 ## Stage 9 Regression Repair (2026-06-26)
 

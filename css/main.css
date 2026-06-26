@@ -236,6 +236,121 @@ button:active:not(:disabled),a.link-btn:active{transform:scale(0.96);}
 button,.link-btn{transition:background var(--transition),border-color var(--transition),
   color var(--transition),transform var(--transition-spring);}
 
+/* Stage 9 final mobile polish */
+nav.no-print{
+  padding:0 2px 4px;
+  scrollbar-width:thin;
+  scrollbar-color:color-mix(in srgb,var(--accent) 70%,transparent) transparent;
+}
+nav.no-print::-webkit-scrollbar{height:6px;}
+nav.no-print::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--accent) 65%,transparent);border-radius:999px;}
+nav.no-print button{
+  border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+  line-height:1.2;
+  min-height:44px;
+}
+nav.no-print button.active{
+  background:color-mix(in srgb,var(--accent) 14%,transparent);
+  box-shadow:inset 0 -3px 0 var(--accent);
+}
+#planningTables .table-wrap,
+#congregations .table-wrap,
+#dashboard .table-wrap{padding-bottom:8px;}
+#planningTables table{min-width:920px;}
+#planningTables th:nth-child(2),#planningTables td:nth-child(2){min-width:240px;}
+#planningTables th:nth-child(3),#planningTables td:nth-child(3){min-width:190px;}
+#planningTables th:nth-child(5),#planningTables td:nth-child(5){min-width:170px;}
+#planningTables td,
+#congregations td,
+#dashboard td{height:48px;}
+#planningTables td input,
+#planningTables td select,
+#planningTables td textarea,
+#congregations td input,
+#congregations td select,
+#congregations td textarea{min-height:40px;}
+#congregations .field-cell input{min-width:150px;}
+#congregations th:nth-child(1),#congregations td:nth-child(1){min-width:250px;}
+#congregations th:nth-child(3),#congregations td:nth-child(3){min-width:220px;}
+#congregations th:nth-child(4),#congregations td:nth-child(4){min-width:200px;}
+#congregations th:nth-child(5),#congregations td:nth-child(5){min-width:250px;}
+.contact-card{gap:14px;}
+.action-row button,
+.contact-card button,
+.copy-field-btn,
+.icon-btn,
+.event-card-actions button,
+.ta-reminder-card-actions button,
+.ta-reminder-push-actions button,
+.ta-reminder-modal-actions button{min-height:44px;min-width:44px;}
+.action-row button,
+.event-card-actions button,
+.ta-reminder-card-actions button{padding-inline:14px;}
+.icon-btn.action-text{width:auto;min-width:76px;padding:0 12px;font-size:13px;font-weight:700;}
+.template-box{padding:14px 16px;font-size:14px;line-height:1.6;}
+.event-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  background:var(--panel);
+  padding:12px;
+  margin:10px 0;
+}
+.event-card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.event-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.event-card-title{font-size:16px;font-weight:800;margin-top:10px;}
+.empty,.ta-empty-msg,.up-empty{padding:18px;color:var(--muted);}
+.cal-wrap{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:12px;margin-bottom:14px;}
+.cal-tb{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.cal-nav{gap:10px;}
+.cal-step{font-size:24px;font-weight:800;line-height:1;}
+.cal-ml{font-weight:800;font-size:17px;min-width:170px;text-align:center;}
+.cal-filter-sel{min-height:42px;min-width:min(240px,100%);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(38px,1fr));gap:4px;}
+.cal-hdr{font-size:12px;font-weight:800;color:var(--muted);text-align:center;padding:7px 2px;}
+.cal-day{min-height:48px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-2);padding:6px;display:grid;align-content:start;gap:5px;}
+.cal-empty{opacity:.45;}
+.cal-today{outline:2px solid var(--accent);}
+.cal-has-ev{cursor:pointer;background:color-mix(in srgb,var(--accent) 10%,var(--panel-2));}
+.cal-dn{font-weight:700;}
+.cal-badges{display:flex;gap:4px;flex-wrap:wrap;}
+.cal-badge{display:inline-block;width:9px;height:9px;border-radius:999px;}
+.cal-det-panel{margin-top:10px;}
+.cal-det-inner{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-2);padding:12px;position:relative;}
+.cal-det-cls{position:absolute;right:8px;top:8px;}
+.cal-det-card{padding:8px 46px 8px 0;border-bottom:1px solid var(--line);}
+.cal-det-card:last-child{border-bottom:0;}
+.cal-det-title{font-weight:800;margin-top:3px;}
+.ta-reminders-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.ta-reminder-inapp-notice,
+.ta-reminder-push-card,
+.ta-reminder-status,
+.ta-reminder-ios-banner{
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  background:var(--panel-2);
+  padding:12px 14px;
+  margin:10px 0;
+}
+.ta-reminder-inapp-notice{border-color:var(--warn);color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--panel));}
+.ta-reminder-push-card{display:grid;gap:7px;}
+.ta-reminder-push-card span{color:var(--muted);line-height:1.45;}
+.ta-reminder-push-ready{border-color:var(--ok);}
+.ta-reminder-push-blocked{border-color:var(--warn);}
+.ta-reminder-push-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.ta-reminders-list{display:grid;gap:10px;}
+.ta-reminder-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  background:var(--panel);
+  padding:14px;
+  display:grid;
+  gap:8px;
+}
+.ta-reminder-card-title{font-weight:800;font-size:16px;}
+.ta-reminder-card-note{color:var(--muted);white-space:pre-wrap;line-height:1.45;}
+.ta-reminder-card-time{font-weight:700;color:var(--accent);}
+.ta-reminder-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
 /* ── Tabular numeric values ── */
 .kpi-val,.num,.tabular,.progress-val{
   font-family:var(--font-mono);
@@ -245,6 +360,18 @@ button,.link-btn{transition:background var(--transition),border-color var(--tran
 /* ── iOS input zoom fix (KHub house rule): inputs under 16px make
    Safari zoom on focus and stay zoomed. 16px under 680px. ── */
 @media(max-width:680px){
+  nav.no-print{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;gap:10px;}
+  nav.no-print button{min-width:auto;padding-inline:13px;font-size:14px;}
+  .section-head{align-items:flex-start;}
+  .list-tools{width:100%;}
+  .search{width:100%;}
+  .contact-card{padding:16px;}
+  .action-row{gap:10px;}
+  .cal-grid{gap:3px;}
+  .cal-day{min-height:44px;padding:5px;}
+  .cal-ml{min-width:140px;font-size:15px;}
+  .event-card-actions,.ta-reminder-card-actions{width:100%;}
+  .event-card-actions button,.ta-reminder-card-actions button{flex:1 1 auto;}
   input,select,textarea,
   td input,td select,td textarea,
   .modal label input{font-size:16px;}

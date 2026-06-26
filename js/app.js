@@ -737,8 +737,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           +'<div class="event-card-header">'
           +'<span class="event-type-badge" style="background:'+et.color+'22;color:'+et.color+';border:1px solid '+et.color+'44">'+et.icon+' '+esc(et.label[state.language]||et.label.en)+'</span>'
           +'<div class="event-card-actions">'
-          +'<button class="icon-btn" data-event-action="edit" data-event-id="'+esc(ev.id)+'" title="'+tt('editEvent')+'">✏️</button>'
-          +'<button class="icon-btn danger" data-event-action="delete" data-event-id="'+esc(ev.id)+'" title="'+tt('deleteEvent')+'">✕</button>'
+          +'<button class="icon-btn action-text" data-event-action="edit" data-event-id="'+esc(ev.id)+'" title="'+tt('editEvent')+'">'+tt('editEvent')+'</button>'
+          +'<button class="icon-btn action-text danger" data-event-action="delete" data-event-id="'+esc(ev.id)+'" title="'+tt('deleteEvent')+'">'+tt('deleteEvent')+'</button>'
           +'</div></div>'
           +'<div class="event-card-title">'+esc(ev.title||'')+'</div>'
           +'<div class="event-card-date muted">'+esc(dateStr)+'</div>'
@@ -835,7 +835,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var mn=isEs?MNes[mo]:MN[mo];
       var firstDay=new Date(yr,mo,1).getDay();
       var dim=new Date(yr,mo+1,0).getDate();
-      var DH=isEs?['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      var DH=isEs?['DOM','LUN','MAR','MI\u00c9','JUE','VIE','S\u00c1B']:['SUN','MON','TUE','WED','THU','FRI','SAT'];
       var hdr=DH.map(function(d){return '<div class="cal-hdr">'+d+'</div>';}).join('');
       var cells='';
       for(var i=0;i<firstDay;i++)cells+='<div class="cal-day cal-empty"></div>';
@@ -851,7 +851,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var bdg=dayEvs.map(function(e){
           var et=EVENT_TYPES.find(function(t){return t.id===e.type;});
           var col=e.color||(et?et.color:'#888');
-          return '<span class="cal-badge" style="background:'+col+'" title="'+e.title.replace(/"/g,'&quot;')+'"></span>';
+          return '<span class="cal-badge" style="background:'+col+'" title="'+esc(e.title||'')+'"></span>';
         }).join('');
         cells+='<div class="cal-day'+(isTd?' cal-today':'')+(dayEvs.length?' cal-has-ev':'')+'" data-date="'+ds+'">'+
           '<span class="cal-dn">'+d+'</span>'+
@@ -866,9 +866,9 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         '<div class="cal-wrap no-print">'+
           '<div class="cal-tb">'+
             '<div class="cal-nav">'+
-              '<button class="icon-btn" id="calPrev">‹</button>'+
+              '<button class="icon-btn cal-step" id="calPrev" aria-label="'+(isEs?'Mes anterior':'Previous month')+'">&lsaquo;</button>'+
               '<span class="cal-ml">'+mn+' '+yr+'</span>'+
-              '<button class="icon-btn" id="calNext">›</button>'+
+              '<button class="icon-btn cal-step" id="calNext" aria-label="'+(isEs?'Mes siguiente':'Next month')+'">&rsaquo;</button>'+
             '</div>'+
             '<select id="calTF" class="cal-filter-sel">'+typeOpts+'</select>'+
           '</div>'+
@@ -895,7 +895,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           });
           var det=document.getElementById('calDet');if(!det)return;
           det.hidden=false;
-          det.innerHTML='<div class="cal-det-inner"><button class="icon-btn cal-det-cls" id="calDetCls">✕</button>'+
+          det.innerHTML='<div class="cal-det-inner"><button class="icon-btn cal-det-cls" id="calDetCls" aria-label="'+(isEs?'Cerrar':'Close')+'">&times;</button>'+
             devs.map(function(e){
               var et=EVENT_TYPES.find(function(t){return t.id===e.type;});
               var col=e.color||(et?et.color:'#888');
@@ -903,9 +903,9 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
               var ico=et?et.icon:'📅';
               return '<div class="cal-det-card">'+
                 '<div class="cal-det-type" style="color:'+col+'">'+ico+' '+lbl+'</div>'+
-                '<div class="cal-det-title">'+e.title+'</div>'+
-                '<div class="cal-det-dates">'+e.startDate+(e.endDate&&e.endDate!==e.startDate?' – '+e.endDate:'')+'</div>'+
-                (e.description?'<div class="cal-det-desc">'+e.description+'</div>':'')+
+                '<div class="cal-det-title">'+esc(e.title||'')+'</div>'+
+                '<div class="cal-det-dates">'+esc(e.startDate+(e.endDate&&e.endDate!==e.startDate?' - '+e.endDate:''))+'</div>'+
+                (e.description?'<div class="cal-det-desc">'+esc(e.description)+'</div>':'')+
                 '</div>';
             }).join('')+'</div>';
           document.getElementById('calDetCls').addEventListener('click',function(){det.hidden=true;});
@@ -1195,10 +1195,86 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var ci=document.getElementById('evColorInput');if(ci)ci.value=sw.dataset.color;
         document.querySelectorAll('.color-swatch').forEach(function(s){s.classList.toggle('active',s===sw);});
       });
+      var remSection=document.getElementById('reminders');
+      if(remSection)remSection.addEventListener('click',function(e){
+        var btn=e.target.closest('[data-reminder-action]');
+        if(!btn)return;
+        var action=btn.dataset.reminderAction;
+        var rid=btn.dataset.reminderId||'';
+        if(action==='add')openReminderModal();
+        if(action==='edit')openReminderModal(rid);
+        if(action==='delete')deleteReminderById(rid);
+        if(action==='permission')requestNotifPermission();
+        if(action==='test-push')testTalkPush(btn);
+        if(action==='diagnose-push')diagnoseTalkPush();
+      });
+      document.body.addEventListener('click',function(e){
+        if(e.target.id==='reminderSaveBtn')saveReminder();
+        if(e.target.id==='reminderCancelBtn')closeReminderModal();
+        if(e.target.id==='reminderDeleteModalBtn'){
+          deleteReminderById(document.getElementById('reminderIdField').value);
+          closeReminderModal();
+        }
+      });
     }
 
     // ─── Stage 9: Reminders ────────────────────────────────────────────────
     var reminderTimers = new Map();
+
+    function reminderText(en, es) {
+      return state.language === 'es' ? es : en;
+    }
+
+    function reminderPushConfigured() {
+      return !!(window.TalkPush && typeof window.TalkPush.isConfigured === 'function' && window.TalkPush.isConfigured());
+    }
+
+    function reminderFireAtIso(rem) {
+      if (!rem || !rem.reminderDateTime) return '';
+      var dt = new Date(rem.reminderDateTime);
+      return isNaN(dt.getTime()) ? '' : dt.toISOString();
+    }
+
+    function syncPushReminder(rem) {
+      if (!reminderPushConfigured() || !rem || !rem.id) return;
+      window.TalkPush.syncReminder('talk-reminder', rem.id, rem.title || tt('reminders.tab'), rem.note || '', reminderFireAtIso(rem))
+        .catch(function (err) { console.warn('[TalkPush] reminder sync failed', err); });
+    }
+
+    function clearPushReminder(id) {
+      if (!reminderPushConfigured() || !id) return;
+      window.TalkPush.clearReminder('talk-reminder', id)
+        .catch(function (err) { console.warn('[TalkPush] reminder clear failed', err); });
+    }
+
+    function testTalkPush(btn) {
+      if (!window.TalkPush || typeof window.TalkPush.sendTestPush !== 'function') {
+        toast(reminderText('Background push is not available.', 'Las notificaciones en segundo plano no están disponibles.'));
+        return;
+      }
+      if (!reminderPushConfigured()) {
+        toast(reminderText('Background push needs Cloudflare setup.', 'Las notificaciones en segundo plano necesitan configuración de Cloudflare.'));
+        return;
+      }
+      if (btn) btn.disabled = true;
+      window.TalkPush.sendTestPush()
+        .then(function () { toast(reminderText('Test push sent.', 'Notificación de prueba enviada.')); })
+        .catch(function (err) { toast((err && err.message) || reminderText('Test push failed.', 'Falló la prueba de notificación.')); })
+        .finally(function () { if (btn) btn.disabled = false; });
+    }
+
+    function diagnoseTalkPush() {
+      if (!window.TalkPush || typeof window.TalkPush.diagnose !== 'function') {
+        toast(reminderText('Background push is not available.', 'Las notificaciones en segundo plano no están disponibles.'));
+        return;
+      }
+      window.TalkPush.diagnose().then(function (d) {
+        var msg = reminderText('Push diagnosis', 'Diagnóstico de notificaciones') + ': '
+          + (d.configured ? reminderText('configured', 'configurado') : reminderText('missing Cloudflare/VAPID config', 'falta configuración Cloudflare/VAPID'));
+        toast(msg);
+        console.info('[TalkPush] diagnosis', d);
+      });
+    }
 
     function scheduleReminder(rem) {
       if (!rem || !rem.active || !rem.reminderDateTime) return;
@@ -1237,6 +1313,9 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function requestNotifPermission() {
       if (typeof Notification === 'undefined') { renderReminders(); return; }
       Notification.requestPermission().then(function (perm) {
+        if (perm === 'granted' && reminderPushConfigured()) {
+          window.TalkPush.subscribe().catch(function (err) { console.warn('[TalkPush] subscribe failed', err); });
+        }
         renderReminders();
         if (perm === 'granted') scheduleAllReminders();
       });
@@ -1258,12 +1337,26 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       } else if (!notifSupported) {
         notifHtml = '<div class="ta-reminder-status ta-reminder-denied">' + tt('reminders.notifUnsupported') + '</div>';
       } else if (notifPerm === 'default') {
-        notifHtml = '<button class="btn btn-primary ta-reminder-notif-btn" onclick="requestNotifPermission()">' + tt('reminders.notifAllow') + '</button>';
+        notifHtml = '<button class="btn btn-primary ta-reminder-notif-btn" data-reminder-action="permission">' + tt('reminders.notifAllow') + '</button>';
       } else if (notifPerm === 'granted') {
         notifHtml = '<div class="ta-reminder-status ta-reminder-granted">✓ ' + tt('reminders.notifEnabled') + '</div>';
       } else {
         notifHtml = '<div class="ta-reminder-status ta-reminder-denied">' + tt('reminders.notifDenied') + '</div>';
       }
+      var pushReady = reminderPushConfigured();
+      var pushHtml = pushReady
+        ? '<div class="ta-reminder-push-card ta-reminder-push-ready">'
+          + '<strong>' + reminderText('Background push configured', 'Notificaciones en segundo plano configuradas') + '</strong>'
+          + '<span>' + reminderText('Saved reminders sync to the push worker for closed-app delivery.', 'Los recordatorios guardados se sincronizan con el Worker para avisos con la app cerrada.') + '</span>'
+          + '<div class="ta-reminder-push-actions">'
+          + '<button class="btn btn-sm" data-reminder-action="test-push">' + reminderText('Test Push', 'Probar') + '</button>'
+          + '<button class="btn btn-sm" data-reminder-action="diagnose-push">' + reminderText('Diagnose', 'Diagnóstico') + '</button>'
+          + '</div></div>'
+        : '<div class="ta-reminder-push-card ta-reminder-push-blocked">'
+          + '<strong>' + reminderText('Background push not configured', 'Notificaciones en segundo plano no configuradas') + '</strong>'
+          + '<span>' + reminderText('Current reminders are saved and work while the app is open. Closed-app delivery needs a Cloudflare Worker URL and VAPID public key.', 'Los recordatorios se guardan y funcionan mientras la app está abierta. Para avisos con la app cerrada se necesita URL de Cloudflare Worker y clave pública VAPID.') + '</span>'
+          + '<button class="btn btn-sm" data-reminder-action="diagnose-push">' + reminderText('Diagnose', 'Diagnóstico') + '</button>'
+          + '</div>';
       var listHtml = rems.length === 0
         ? '<p class="ta-empty-msg">' + tt('reminders.noReminders') + '</p>'
         : rems.map(function (rem) {
@@ -1273,22 +1366,22 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
             var cls = 'ta-reminder-card';
             if (dt && dt < now) cls += ' ta-reminder-overdue';
             else if (dt) cls += ' ta-reminder-upcoming';
-            var safeId = sanitizeInlineArg(rem.id);
             return '<div class="' + cls + '">'
               + '<div class="ta-reminder-card-title">' + escHtml(rem.title || '') + '</div>'
               + (rem.note ? '<div class="ta-reminder-card-note">' + escHtml(rem.note) + '</div>' : '')
-              + '<div class="ta-reminder-card-time">🕔 ' + escHtml(dtStr) + '</div>'
+              + '<div class="ta-reminder-card-time">' + escHtml(dtStr) + '</div>'
               + '<div class="ta-reminder-card-actions">'
-              + '<button class="btn btn-sm" onclick="openReminderModal(\'' + safeId + '\')">✎</button>'
-              + '<button class="btn btn-sm btn-danger" onclick="deleteReminderById(\'' + safeId + '\')">🗑</button>'
+              + '<button class="btn btn-sm" data-reminder-action="edit" data-reminder-id="' + escHtml(rem.id) + '">' + tt('reminders.editReminder') + '</button>'
+              + '<button class="btn btn-sm btn-danger" data-reminder-action="delete" data-reminder-id="' + escHtml(rem.id) + '">' + tt('reminders.deleteReminder') + '</button>'
               + '</div></div>';
           }).join('');
       el.innerHTML = '<div class="ta-reminders-header">'
         + '<h2>' + tt('reminders.tab') + '</h2>'
-        + '<button class="btn btn-primary" onclick="openReminderModal()">＋ ' + tt('reminders.addReminder') + '</button>'
+        + '<button class="btn btn-primary" data-reminder-action="add">+ ' + tt('reminders.addReminder') + '</button>'
         + '</div>'
-        + '<div class="ta-reminder-inapp-notice">\u26a0\ufe0f ' + tt('reminders.inAppOnly') + '</div>'
+        + '<div class="ta-reminder-inapp-notice">' + tt('reminders.inAppOnly') + '</div>'
         + '<div class="ta-reminder-notif-wrap">' + notifHtml + '</div>'
+        + pushHtml
         + '<div class="ta-reminders-list">' + listHtml + '</div>';
     }
 
@@ -1339,6 +1432,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var reminderDateTime = dateVal + 'T' + timeVal + ':00';
       var now2 = new Date().toISOString();
       if (!Array.isArray(state.taReminders)) state.taReminders = [];
+      var savedReminder = null;
       if (id) {
         var idx2 = state.taReminders.findIndex(function (r) { return r.id === id; });
         if (idx2 > -1) {
@@ -1349,13 +1443,16 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           state.taReminders[idx2].updatedAt = now2;
           state.taReminders[idx2].active = true;
           scheduleReminder(state.taReminders[idx2]);
+          savedReminder = state.taReminders[idx2];
         }
       } else {
         var newRem = { id: 'tar-' + Date.now(), title: title, note: note, reminderDateTime: reminderDateTime, attachedType: null, attachedId: null, active: true, createdAt: now2, updatedAt: now2 };
         state.taReminders.push(newRem);
         scheduleReminder(newRem);
+        savedReminder = newRem;
       }
       saveState();
+      syncPushReminder(savedReminder);
       closeReminderModal();
       renderReminders();
     }
@@ -1363,6 +1460,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function deleteReminderById(id) {
       if (!id) return;
       cancelReminder(id);
+      clearPushReminder(id);
       state.taReminders = (state.taReminders || []).filter(function (r) { return r.id !== id; });
       saveState();
       renderReminders();

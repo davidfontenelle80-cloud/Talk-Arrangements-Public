@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v88-stage-9-regression-repair';
+const CACHE_VERSION = 'talk-arrangements-v91-stage-9-final-repair';
 
 const PRECACHE_URLS = [
   './',
@@ -28,6 +28,7 @@ const PRECACHE_URLS = [
   './js/components/card.js',
   './js/components/input.js',
   './js/perf.js',
+  './js/push.js',
   './js/app.js',
   './js/firebase/firebase-config.js',
   './js/firebase/cloud-backup.js',
@@ -75,5 +76,40 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  event.waitUntil(clients.openWindow('/Talk-Arrangements-Public/'));
+  const url = event.notification && event.notification.data && event.notification.data.url
+    ? event.notification.data.url
+    : '/Talk-Arrangements-Public/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if ('focus' in client && client.url.indexOf('/Talk-Arrangements-Public/') !== -1) {
+          return client.focus();
+        }
+      }
+      return clients.openWindow(url);
+    })
+  );
+});
+
+self.addEventListener('push', function(event) {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (err) {
+    data = { title: 'Talk Arrangements', body: event.data ? event.data.text() : '' };
+  }
+  const title = data.title || 'Talk Arrangements';
+  const options = {
+    body: data.body || data.message || '',
+    icon: data.icon || './icons/icon-192.png',
+    badge: data.badge || './icons/icon-192.png',
+    tag: data.tag || data.sourceId || 'talk-arrangements-reminder',
+    data: {
+      url: data.url || '/Talk-Arrangements-Public/',
+      sourceType: data.sourceType || 'talk-reminder',
+      sourceId: data.sourceId || ''
+    },
+    requireInteraction: !!data.requireInteraction
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
 });
