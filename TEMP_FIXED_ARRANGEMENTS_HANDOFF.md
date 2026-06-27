@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9-final-repair-polish-and-push-architecture-code-implemented
-next_stage: stage-9-live-verification-and-cloudflare-push-configuration
+current_stage: stage-9-final-polish-and-push-backend-in-progress
+next_stage: stage-9-live-verification-after-final-polish-and-push-backend
 cache_version: talk-arrangements-v91-stage-9-final-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -60,7 +60,9 @@ Required repair target:
 
 ## Stage 9 Final Repair / Polish / Push Architecture (2026-06-26)
 
-Implementation commit: pending at time of this note.
+Implementation commit: `6a84f0b`
+
+Merge/deployment commit: `7a7bb57`
 
 Files changed:
 - `index.html`
@@ -112,19 +114,46 @@ Tests run:
 - Verified Events/Reminders/main source structure: `<section id="events">`, `<section id="reminders">`, and proper `</main>`.
 - JavaScript syntax parsed successfully for `js/app.js`, `js/push.js`, and `sw.js` using Node VM parser in the local runtime.
 - Verified `sw.js` cache string is `talk-arrangements-v91-stage-9-final-repair` and precaches `./js/push.js`.
+- Merged remote emergency commits `ac99e2d`, `39ef6fa`, and `ed768f2` into local history without keeping the emergency runtime patch in `js/i18n.js`.
+- Pushed `main` to remote commit `7a7bb57`.
+- Live GitHub Pages `sw.js` verified at `talk-arrangements-v91-stage-9-final-repair` with `push` handler and `./js/push.js`.
+- Live `index.html` verified with no standalone malformed `<` or `/main>` lines, and with `js/push.js` loaded before `js/app.js`.
+- Live `js/app.js` verified with `escHtml()`, `sanitizeInlineArg()`, and `TalkPush` hooks.
+- Live `js/i18n.js` verified without `stage9Emergency`, `window.escHtml`, `sanitizeInlineArg`, or `removeBrokenRawMainTextNodes` emergency patches.
+- Live `js/push.js` verified with `window.TalkPush`, no `PUSH_SECRET`, no pasted GitHub token, and missing public Worker/VAPID config clearly detectable.
 
 Testing not completed:
 - In-app Browser blocked `127.0.0.1`, `localhost`, and `file://` app loads in this session, so interactive local UI testing, screenshots, export/import flows, and calendar/reminder CRUD were not browser-verified after this final polish pass.
-- Direct `git push origin main` previously failed due rejected GitHub credentials. Deployment must use GitHub API updates or corrected credentials.
+- Direct `git push origin main` hung on credentials. A direct HTTPS push using David-provided temporary credentials succeeded, and live source checks now show v91.
 - Cloud backup was not live-authenticated or written to Firebase.
 - Push test and closed-app notification delivery were not verified because Talk Arrangements Worker URL and VAPID public key are not configured.
 
 Approval classification: `BLOCKED`
 
-Deployment classification: code implemented locally, not live approved
+Deployment classification: code implemented and pushed to `origin/main`, not live approved
 
 Recommended next stage:
-- Deploy v91 to `origin/main`, verify GitHub Pages/service-worker activation live, then configure and test the Talk Arrangements Cloudflare Worker push backend. Do not start Release Candidate or Stage 10.
+- Live-test v91 on David's devices, then configure and test the Talk Arrangements Cloudflare Worker push backend. Do not start Release Candidate or Stage 10.
+
+## Stage 9 Final Polish + Push Backend Intake (2026-06-26)
+
+Starting repo/MD comparison:
+- Local repo is at merge/deployment commit `7a7bb57` plus an uncommitted handoff update documenting the v91 live-source verification.
+- Live/source cache is still `talk-arrangements-v91-stage-9-final-repair`.
+- Source still needs JW-correct event terminology cleanup in `js/app.js` and `index.html`.
+- Source still uses the candle icon for Memorial/Conmemoración and must change to `🍷` if it renders safely.
+- Push frontend/service-worker architecture exists, but the Talk Arrangements Cloudflare Worker URL and VAPID public key are not configured in frontend source.
+- No Cloudflare Worker files/config are currently present in the repo.
+- True closed-app reminder notifications remain blocked until the Worker, VAPID keys, subscription/reminder storage, scheduled trigger, and CORS are configured and verified.
+
+Required final polish target:
+- Bump cache to `talk-arrangements-v92-stage-9-final-polish-push` unless v92 already exists.
+- Replace event labels with JW-correct EN/ES terminology.
+- Replace Memorial/Conmemoración icon with `🍷` everywhere the event type is rendered from source.
+- Continue mobile polish for planning/congregation table readability, message/contact card spacing, larger edit/delete targets, event dropdown spacing, clean calendar controls/weekdays, and no mojibake.
+- Finish or document the Cloudflare push backend exactly. Do not commit private secrets.
+- If Cloudflare credentials/secrets are missing, stop and list exactly what David must configure.
+- Do not start Release Candidate or Stage 10.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
