@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9a-final-ui-polish-v100-cache-repair-pushed-pending-live-verification
+current_stage: stage-9a-final-ui-polish-v101-app-controls-pushed-pending-live-verification
 next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-ui-polish-live-approved
-cache_version: talk-arrangements-v100-stage-9a-final-ui-polish
+cache_version: talk-arrangements-v101-stage-9a-app-controls-polish
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -17,30 +17,31 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Current Supervisor Status
 
-Stage 9A frontend polish remains the active gate until the latest v100 service-worker cache repair is live verified on device.
+Stage 9A frontend polish remains the active gate until the latest v101 app-controls polish is live verified on device.
 
-Approval classification: `APPROVED WITH OBSERVATIONS` for Stage 9A frontend/UI work already verified at v97/v99; `PENDING LIVE VERIFICATION` for the final v100 cache repair.
+Approval classification: `APPROVED WITH OBSERVATIONS` for Stage 9A frontend/UI work already verified through v100; `PENDING LIVE VERIFICATION` for the final v101 app-controls polish.
 
-Deployment classification: `v100 service-worker cache repair pushed to origin/main; live-device hard refresh/service-worker activation still required`.
+Deployment classification: `v101 service-worker/app-controls polish pushed to origin/main; live-device hard refresh/service-worker activation still required`.
 
-Stage 9B-A Cloudflare push backend scaffold is complete. Stage 9B-B remains blocked until Stage 9A v100 is live verified and Cloudflare credentials/config are available.
+Stage 9B-A Cloudflare push backend scaffold is complete. Stage 9B-B remains blocked until Stage 9A v101 is live verified and Cloudflare credentials/config are available.
 
 Do not start Release Candidate or Stage 10.
 
 ## Verified Repo State
 
-Verified on `origin/main` before the v100 repair:
+Verified on `origin/main` before the v101 repair:
 
 - `index.html` loads `css/main.css?v=stage9a-v99` and `js/app.js?v=stage9a-v97`.
 - Stage 9A dark-calendar CSS is present in `css/main.css`.
 - Stage 9A JW event terminology and Memorial icon fixes are present.
 - Stage 9B-A Cloudflare scaffold files are present.
+- v100 service worker cache repair was pushed and reported by David as working on device.
 
-Additional supervisor commit:
+Additional supervisor commits:
 
-- `006794c` — `sw.js` cache bumped to `talk-arrangements-v100-stage-9a-final-ui-polish` and now network-refreshes `css/main.css` and `js/app.js` requests with `cache: reload` before caching them.
-
-This commit is intended to clear the remaining stale CSS/app-script problem even while `index.html` still contains prior query strings.
+- `006794c` — `sw.js` cache bumped to `talk-arrangements-v100-stage-9a-final-ui-polish` and network-refreshes `css/main.css` and `js/app.js`.
+- `2fc606b` — mobile toolbar label changed from `Tools` to `App Controls` / `Controles de la app`; expanded panel spacing improved; signed-in email normalized into a full-width status card that wraps cleanly.
+- `7c6e52f` — service worker cache bumped to `talk-arrangements-v101-stage-9a-app-controls-polish` and network-refreshes `js/mobile-toolbar.js` in addition to CSS/app script.
 
 ## Stage 9A Completed Work
 
@@ -60,6 +61,9 @@ Stage 9A frontend polish completed:
 - Improved planning/congregation tables with intentional horizontal scrolling and wider readable columns.
 - Improved mobile nav so tabs scroll intentionally with no merged labels.
 - Fixed stale CSS/app-script issue with a service-worker v100 cache repair.
+- Renamed the collapsible mobile header section from `Tools` to `App Controls` / `Controles de la app`.
+- Improved expanded app-controls panel spacing, button wrapping, and vertical rhythm.
+- Replaced the cramped signed-in email button/status with a full-width status card that shows `Signed in` / `Sesión activa` plus the email on a wrapping line.
 
 ## Stage 9A Commit Evidence
 
@@ -76,12 +80,14 @@ Relevant Stage 9A commits reported/verified:
 - `0735874` — preserve mobile calendar cell height.
 - `37c709c` — final polish stylesheet cache-bust.
 - `006794c` — v100 service-worker cache repair.
+- `2fc606b` — app-controls panel/email layout polish.
+- `7c6e52f` — v101 service-worker cache repair for app-controls polish.
 
 ## Stage 9A Verification Needed
 
 Before marking Stage 9A live-approved again, perform a live hard refresh on the GitHub Pages app and verify:
 
-- Service worker activates `talk-arrangements-v100-stage-9a-final-ui-polish`.
+- Service worker activates `talk-arrangements-v101-stage-9a-app-controls-polish`.
 - Dashboard renders.
 - Planning renders.
 - Congregations renders.
@@ -95,11 +101,14 @@ Before marking Stage 9A live-approved again, perform a live hard refresh on the 
 - Calendar previous/next controls work.
 - Calendar filter works.
 - Event modal opens cleanly.
+- App Controls panel opens/closes cleanly on mobile.
+- App Controls panel buttons have readable spacing and do not feel cramped.
+- Signed-in cloud email wraps cleanly and does not overflow off the right side.
 - Import/Export controls remain visible.
 - Cloud Backup controls remain visible.
 - Browser console has no app errors.
 
-If all pass, update this MD to `stage-9a-live-approved-final-ui-polish-v100` and authorize Stage 9B-B.
+If all pass, update this MD to `stage-9a-live-approved-final-ui-polish-v101` and authorize Stage 9B-B.
 
 ## Stage 9B-A Scaffold Completed
 
@@ -168,7 +177,7 @@ Required before continuing Stage 9B-B:
 
 ## Next Authorized Stage
 
-First: live-verify Stage 9A v100 service-worker cache repair.
+First: live-verify Stage 9A v101 app-controls polish.
 
 After Stage 9A is live-approved: `Stage 9B-B — Cloudflare Deploy and WebPush Delivery`.
 
