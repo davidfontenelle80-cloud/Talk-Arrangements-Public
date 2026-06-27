@@ -387,7 +387,7 @@ textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 72%,tra
 /* ── iOS input zoom fix (KHub house rule): inputs under 16px make
    Safari zoom on focus and stay zoomed. 16px under 680px. ── */
 @media(max-width:680px){
-  nav.no-print{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;gap:10px;}
+  nav.no-print{margin-left:0;margin-right:0;padding-left:0;padding-right:16px;gap:10px;}
   nav.no-print button{min-width:auto;padding-inline:13px;font-size:14px;}
   .section-head{align-items:flex-start;}
   .section-head-actions{width:100%;}
