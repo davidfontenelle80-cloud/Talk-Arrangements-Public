@@ -1,0 +1,119 @@
+# Stage 9B — Cloudflare Push Backend Checklist
+
+Status: **Stage 9B-A scaffold completed by supervisor; Stage 9B-B deploy/test remains for Codex.**
+
+Repo: `davidfontenelle80-cloud/Talk-Arrangements-Public`
+
+Live frontend baseline: Stage 9A v97 live-approved.
+
+## Purpose
+
+Implement true closed-app reminder notifications for Talk Arrangements using a NoClip-style Cloudflare Worker + Web Push backend.
+
+This file is the working checklist Codex should update as each item is completed.
+
+---
+
+## Stage 9B-A — Supervisor prep work
+
+- [x] Confirm MD says Stage 9A is live-approved.
+- [x] Confirm next authorized stage is Stage 9B Cloudflare Push Backend.
+- [x] Add this Stage 9B checklist to the repo.
+- [x] Add Cloudflare Worker scaffold path.
+- [x] Add safe Worker endpoint structure with no committed secrets.
+- [x] Add `wrangler.toml.example` with placeholder bindings/secrets only.
+- [x] Add Worker README with Cloudflare setup steps.
+- [x] Update MD with Stage 9B-A status.
+
+## Stage 9B-B — Codex/worker remaining tasks
+
+### Cloudflare project setup
+
+- [ ] Create/confirm Cloudflare Worker name: `talk-arrangements-push`.
+- [ ] Create/confirm Worker URL, for example `https://talk-arrangements-push.<account>.workers.dev`.
+- [ ] Create storage binding:
+  - [ ] KV namespace, or
+  - [ ] D1 database, or
+  - [ ] Durable Object.
+- [ ] Configure scheduled trigger/cron.
+- [ ] Generate VAPID key pair.
+- [ ] Store VAPID public key in frontend-safe config.
+- [ ] Store VAPID private key as Cloudflare secret/env var only.
+- [ ] Store VAPID subject/contact email as Cloudflare env var.
+- [ ] Configure CORS allowlist for `https://davidfontenelle80-cloud.github.io`.
+
+### Backend endpoint implementation
+
+Required endpoints:
+
+- [ ] `OPTIONS *` CORS preflight.
+- [ ] `GET /api/health` returns config/storage status.
+- [ ] `POST /api/subscribe` stores/updates subscription.
+- [ ] `POST /api/reminders` creates/updates scheduled reminder.
+- [ ] `DELETE /api/reminders/:sourceType/:sourceId` removes scheduled reminder.
+- [ ] `POST /api/test-push` sends immediate test notification.
+
+Scheduled behavior:
+
+- [ ] Cron finds due reminders.
+- [ ] Cron sends Web Push for each due reminder.
+- [ ] Successful sends mark reminders as sent or delete them.
+- [ ] Failed sends are recorded and retried safely or marked failed.
+- [ ] Expired/invalid subscriptions are cleaned up on 404/410 from push service.
+
+### Frontend integration
+
+Existing files to inspect:
+
+- `js/push.js`
+- `sw.js`
+- `js/app.js`
+
+Required frontend updates only if needed:
+
+- [ ] Configure `window.TALK_ARRANGEMENTS_PUSH_CONFIG.workerUrl`.
+- [ ] Configure `window.TALK_ARRANGEMENTS_PUSH_CONFIG.vapidPublicKey`.
+- [ ] Verify `TalkPush.subscribe()` calls Worker successfully.
+- [ ] Verify reminder save calls `TalkPush.syncReminder()`.
+- [ ] Verify reminder delete calls `TalkPush.clearReminder()`.
+- [ ] Verify app still works when push is not configured.
+
+### Testing requirements
+
+- [ ] Worker health endpoint works.
+- [ ] CORS preflight works from GitHub Pages origin.
+- [ ] Subscribe stores a push subscription.
+- [ ] Test push is received while app is open.
+- [ ] Test push is received with app closed/phone locked.
+- [ ] Reminder create syncs to backend.
+- [ ] Reminder edit updates backend.
+- [ ] Reminder delete cancels backend reminder.
+- [ ] Scheduled due reminder fires at selected date/time.
+- [ ] Notification tap opens/focuses Talk Arrangements app.
+- [ ] No private secrets appear in repo.
+- [ ] Existing in-app reminder fallback still works.
+- [ ] Cloud backup/export/import unaffected.
+
+---
+
+## Security guardrails
+
+Never commit:
+
+- Cloudflare API token
+- GitHub token
+- VAPID private key
+- shared secret
+- raw production credentials
+
+Allowed in frontend/source:
+
+- public Worker URL
+- VAPID public key
+- non-secret app identifiers
+
+---
+
+## Current blocker
+
+True closed-app notifications cannot be live-approved until a Cloudflare Worker is deployed with storage, VAPID secrets, scheduled trigger, and successful device testing.
