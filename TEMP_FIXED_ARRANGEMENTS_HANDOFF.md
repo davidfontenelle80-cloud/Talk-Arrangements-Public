@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9a-final-ui-polish-dark-calendar
-next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-ui-polish
-cache_version: talk-arrangements-v97-stage-9a-cache-repair
+current_stage: stage-9a-final-ui-polish-v100-cache-repair-pushed-pending-live-verification
+next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-ui-polish-live-approved
+cache_version: talk-arrangements-v100-stage-9a-final-ui-polish
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -17,29 +17,30 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Current Supervisor Status
 
-Stage 9A frontend polish is live-approved with observations.
+Stage 9A frontend polish remains the active gate until the latest v100 service-worker cache repair is live verified on device.
 
-Stage 9B-A Cloudflare push backend scaffold is complete.
+Approval classification: `APPROVED WITH OBSERVATIONS` for Stage 9A frontend/UI work already verified at v97/v99; `PENDING LIVE VERIFICATION` for the final v100 cache repair.
 
-Approval classification: `APPROVED WITH OBSERVATIONS` for Stage 9A frontend/UI.
+Deployment classification: `v100 service-worker cache repair pushed to origin/main; live-device hard refresh/service-worker activation still required`.
 
-Stage 9B-A scaffold classification: `APPROVED WITH OBSERVATIONS` as prep work only.
+Stage 9B-A Cloudflare push backend scaffold is complete. Stage 9B-B remains blocked until Stage 9A v100 is live verified and Cloudflare credentials/config are available.
 
-Deployment classification: `frontend code implemented, pushed, and live-approved at v97; push backend scaffold committed but not deployed/live-approved`.
-
-Stage 9B-B remains the next authorized stage. Do not start Release Candidate or Stage 10 until Stage 9B push backend is deployed and true closed-app notifications are verified.
+Do not start Release Candidate or Stage 10.
 
 ## Verified Repo State
 
-Verified on `origin/main`:
+Verified on `origin/main` before the v100 repair:
 
-- `sw.js` cache version is `talk-arrangements-v97-stage-9a-cache-repair`.
-- `sw.js` precaches `./js/app.js?v=stage9a-v97`.
-- `index.html` loads `js/app.js?v=stage9a-v97`.
-- `index.html` Events modal contains JW-correct English event terms.
-- `js/app.js` contains JW-correct EN/ES event terminology.
-- Memorial/Conmemoración source icon is the wine-glass symbol escape.
-- Congregations table email header uses the app-owned `data-i18n="mail"` key so Spanish renders `Correo`.
+- `index.html` loads `css/main.css?v=stage9a-v99` and `js/app.js?v=stage9a-v97`.
+- Stage 9A dark-calendar CSS is present in `css/main.css`.
+- Stage 9A JW event terminology and Memorial icon fixes are present.
+- Stage 9B-A Cloudflare scaffold files are present.
+
+Additional supervisor commit:
+
+- `006794c` — `sw.js` cache bumped to `talk-arrangements-v100-stage-9a-final-ui-polish` and now network-refreshes `css/main.css` and `js/app.js` requests with `cache: reload` before caching them.
+
+This commit is intended to clear the remaining stale CSS/app-script problem even while `index.html` still contains prior query strings.
 
 ## Stage 9A Completed Work
 
@@ -49,13 +50,56 @@ Stage 9A frontend polish completed:
 - Corrected JW event terminology in English and Spanish.
 - Replaced Memorial/Conmemoración candle icon with wine-glass symbol.
 - Cleaned Add Event duplicate plus label.
-- Fixed stale app-script cache issue with versioned `js/app.js?v=stage9a-v97`.
+- Fixed Spanish Congregations email header to show `Correo`, not generic `EMAIL ADDRESS`.
 - Improved event modal spacing and full-width field layout.
 - Improved calendar controls, weekday labels, dark-mode cells, and event card spacing.
+- Improved dark-mode calendar readability with darker calendar day cards and higher-contrast numbers.
+- Preserved mobile calendar cell height.
 - Improved reminder cards/callout and action-button spacing.
+- Improved note/reminder touch target sizing where available in current CSS.
 - Improved planning/congregation tables with intentional horizontal scrolling and wider readable columns.
 - Improved mobile nav so tabs scroll intentionally with no merged labels.
-- Fixed Spanish Congregations email header to show `Correo`, not generic `EMAIL ADDRESS`.
+- Fixed stale CSS/app-script issue with a service-worker v100 cache repair.
+
+## Stage 9A Commit Evidence
+
+Relevant Stage 9A commits reported/verified:
+
+- `ede374b` — Stage 9A frontend terminology/mobile UI polish.
+- `dc1cb51` — Stage 9A cache bump.
+- `da980f1` — v94 stylesheet cache-bust.
+- `592df28` — Spanish Congregations email header fix.
+- `2f6dc28` — Add Event duplicate-plus label cleanup.
+- `6d36413` — v97 app-script cache repair, pushed and live verified.
+- `c8b7622` — reopen Stage 9A final UI polish.
+- `9741093` — dark calendar readability polish.
+- `0735874` — preserve mobile calendar cell height.
+- `37c709c` — final polish stylesheet cache-bust.
+- `006794c` — v100 service-worker cache repair.
+
+## Stage 9A Verification Needed
+
+Before marking Stage 9A live-approved again, perform a live hard refresh on the GitHub Pages app and verify:
+
+- Service worker activates `talk-arrangements-v100-stage-9a-final-ui-polish`.
+- Dashboard renders.
+- Planning renders.
+- Congregations renders.
+- Events renders.
+- Reminders renders.
+- Settings renders.
+- EN/ES have no visible mojibake.
+- No raw `<`, `/main>`, or `</main>` markup.
+- Dark-mode calendar day cells are dark/readable, not bright white.
+- Calendar numbers are visible in dark mode.
+- Calendar previous/next controls work.
+- Calendar filter works.
+- Event modal opens cleanly.
+- Import/Export controls remain visible.
+- Cloud Backup controls remain visible.
+- Browser console has no app errors.
+
+If all pass, update this MD to `stage-9a-live-approved-final-ui-polish-v100` and authorize Stage 9B-B.
 
 ## Stage 9B-A Scaffold Completed
 
@@ -93,114 +137,22 @@ Important limitation:
 - `sendWebPush()` in `cloudflare/talk-arrangements-push/worker.js` is the main Stage 9B-B implementation gap.
 - True closed-app notifications remain blocked until Cloudflare deployment, VAPID secrets, storage binding, scheduled trigger, and device testing are complete.
 
-## Stage 9A Commit Evidence
+## Stage 9B-B Attempt / Blocker
 
-Stage 9A relevant commits reported/verified:
+Codex merged the supervisor Stage 9B-A scaffold and documented the backend blocker.
 
-- `ede374b` — Stage 9A frontend terminology/mobile UI polish.
-- `dc1cb51` — Stage 9A cache bump.
-- `da980f1` — v94 stylesheet cache-bust.
-- `592df28` — Spanish Congregations email header fix.
-- `2f6dc28` — Add Event duplicate-plus label cleanup.
-- `6d36413` — v97 app-script cache repair, pushed and live verified.
-
-This docs commit supersedes the unpushed local-only MD commit `6b9da5b` reported by the worker.
-
-## Stage 9A Verification Result
-
-Live verification evidence reported:
-
-- No mojibake found in live source or rendered mobile UI.
-- No visible raw `<`, `/main>`, or `</main>` markup.
-- JW terminology verified in EN/ES.
-- Circuit Assembly / Regional Convention translations verified.
-- Memorial icon verified as wine-glass symbol.
-- Congregation tables scroll horizontally.
-- Spanish Congregations header shows `Correo`.
-- Reminder UI spacing/callout verified.
-- Event modal opens cleanly with full-width fields and 44px save/cancel/close controls.
-- Calendar previous/next controls work.
-- Calendar filter works.
-- Weekday labels are clean.
-- Mobile nav scrolls intentionally with no merged labels.
-- Stale CSS/app-script issue reproduced and fixed by versioned app script/cache v97.
-
-Observation:
-
-- Automated screenshot capture failed twice due browser timeout, so screenshots were not captured by the worker harness.
-- True desktop-width browser verification was limited because the in-app browser stayed at 390 CSS px, but source and mobile live verification passed.
-
-## Stage 9B-B Scope / Remaining Work
-
-Stage 9B-B is Cloudflare deployment and real Web Push delivery.
-
-Objective:
-
-- Implement and verify true closed-app reminder notifications using the NoClip-style Cloudflare/Web Push architecture.
-
-Required components:
-
-- Cloudflare Worker URL for Talk Arrangements.
-- VAPID key pair.
-- Frontend-safe VAPID public key.
-- Cloudflare secret/env var for VAPID private key.
-- Cloudflare env var for VAPID subject/contact email.
-- Subscription/reminder storage binding, such as KV, D1, or Durable Object.
-- Scheduled Worker trigger/cron for due reminders.
-- CORS allowlist for `https://davidfontenelle80-cloud.github.io`.
-
-Required Worker endpoints:
-
-- `POST /api/subscribe`
-- `POST /api/reminders`
-- `DELETE /api/reminders/:sourceType/:sourceId`
-- `POST /api/test-push`
-- `GET /api/health`
-
-Security guardrails:
-
-- Do not commit private secrets.
-- Only Worker URL and VAPID public key may be frontend-visible.
-- VAPID private key must stay only in Cloudflare secret/env variables.
-- Any server auth/shared secret must stay only in Cloudflare secret/env variables.
-
-## Stage 9B-B Stop Conditions
-
-Stop and report if:
-
-- Cloudflare credentials are missing.
-- Worker URL cannot be created or verified.
-- VAPID private key would need to be committed to repo.
-- Storage binding cannot be configured.
-- Scheduled trigger cannot be configured.
-- Web Push signing/encryption cannot be completed in Cloudflare Worker runtime.
-- Closed-app notification cannot be verified on device.
-
-## Stage 9B-B Attempt / Blocker (2026-06-27)
-
-Codex merged the supervisor Stage 9B-A scaffold from `origin/main` into the local checkout and resolved the handoff tracker to the Stage 9B-A / Stage 9B-B state before backend work.
-
-Stage 9B-B deployment cannot continue in this environment because Cloudflare credentials and deploy configuration are unavailable.
+Stage 9B-B deployment cannot continue in the current environment because Cloudflare credentials and deploy configuration are unavailable.
 
 Verified missing items:
 
 - `wrangler` is not available on PATH.
 - No local `cloudflare/talk-arrangements-push/wrangler.toml` exists; only `wrangler.toml.example` with placeholders is present.
-- Environment variables are not set for:
-  - `CLOUDFLARE_API_TOKEN`
-  - `CLOUDFLARE_ACCOUNT_ID`
-  - `CF_API_TOKEN`
-  - `VAPID_PUBLIC_KEY`
-  - `VAPID_PRIVATE_KEY`
-  - `VAPID_SUBJECT`
-- No readable local Wrangler/Cloudflare login config was found in the checked locations.
+- Environment variables are not set for Cloudflare auth or VAPID.
 - Worker URL is not available.
 - KV namespace / `PUSH_STORE` binding is not configured.
 - VAPID public key is not available for frontend config.
 - VAPID private key is not available as a Cloudflare secret.
 - Cron trigger is not deployed/configured.
-
-No private secrets were committed. No Cloudflare Worker deploy was attempted because it would require missing Cloudflare authentication and environment configuration.
 
 Required before continuing Stage 9B-B:
 
@@ -214,32 +166,10 @@ Required before continuing Stage 9B-B:
 8. Configure cron trigger.
 9. Provide the public Worker URL and VAPID public key for safe frontend config.
 
-Approval classification: `BLOCKED`
-
-Deployment classification: `not deployed; blocked before implementation/deployment by missing Cloudflare credentials/config`
-
-## Stage 9A Final UI Polish Reopened (2026-06-27)
-
-Supervisor authorized a final frontend-only Stage 9A polish pass before Stage 9B-B deployment work.
-
-Scope:
-
-- Improve dark mode calendar readability with CSS-only changes.
-- Verify final mobile spacing, alignment, touch targets, modal spacing, button sizing, month navigation, dropdown alignment, and event cards.
-- Run a regression sweep for Dashboard, Planning, Congregations, Events, Reminders, Settings, Cloud Backup controls, Import/Export controls, EN/ES switching, light mode, and dark mode.
-
-Guardrails:
-
-- Do not begin Cloudflare Worker deployment.
-- Do not modify Worker files, VAPID, KV, D1, cron, GitHub Actions, Firebase, or push backend logic.
-- Do not start Release Candidate or Stage 10.
-
-Approval classification: `IN PROGRESS`
-
-Deployment classification: `frontend polish pending implementation, commit, push, and live verification`
-
 ## Next Authorized Stage
 
-Next authorized stage after this UI polish pass: `Stage 9B-B — Cloudflare Deploy and WebPush Delivery`
+First: live-verify Stage 9A v100 service-worker cache repair.
+
+After Stage 9A is live-approved: `Stage 9B-B — Cloudflare Deploy and WebPush Delivery`.
 
 Do not start Release Candidate or Stage 10 until Stage 9B-B is complete and live verified.
