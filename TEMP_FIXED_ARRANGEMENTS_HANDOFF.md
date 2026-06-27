@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-9a-final-frontend-polish-code-implemented-pending-live-review
 next_stage: stage-9a-live-verification-then-stage-9b-push-backend
-cache_version: talk-arrangements-v96-stage-9a-live-approved
+cache_version: talk-arrangements-v97-stage-9a-cache-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -217,6 +217,16 @@ Stage 9A v95 browser verification issue found:
 Stage 9A v96 duplicate-plus fix:
 - Changed `addEvent` strings to `Add Event` and `Agregar evento`; the button keeps the standalone plus icon from `index.html`.
 - Bumped service worker cache from `talk-arrangements-v95-stage-9a-live-verification` to `talk-arrangements-v96-stage-9a-live-approved`.
+
+Stage 9A v96 live cache issue found:
+- Live source served the corrected v96 `js/app.js`, but the browser tab still rendered the old `＋ + Agregar evento` label after reload.
+- Cause: an already-installed service worker can continue serving the unversioned `js/app.js` request from its previous cache.
+- Required cache repair: cache-bust the `js/app.js` script URL in `index.html` and bump the service worker cache again so stale clients fetch the corrected app script.
+
+Stage 9A v97 stale app-script cache repair:
+- Changed `index.html` to load `js/app.js?v=stage9a-v97`.
+- Updated `sw.js` precache to cache the same versioned app script URL.
+- Bumped service worker cache from `talk-arrangements-v96-stage-9a-live-approved` to `talk-arrangements-v97-stage-9a-cache-repair`.
 
 ## Stage 9 Regression Repair (2026-06-26)
 

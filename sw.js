@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v96-stage-9a-live-approved';
+const CACHE_VERSION = 'talk-arrangements-v97-stage-9a-cache-repair';
 
 const PRECACHE_URLS = [
   './',
@@ -29,7 +29,7 @@ const PRECACHE_URLS = [
   './js/components/input.js',
   './js/perf.js',
   './js/push.js',
-  './js/app.js',
+  './js/app.js?v=stage9a-v97',
   './js/firebase/firebase-config.js',
   './js/firebase/cloud-backup.js',
 ];
