@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-9a-final-frontend-polish-code-implemented-pending-live-review
 next_stage: stage-9a-live-verification-then-stage-9b-push-backend
-cache_version: talk-arrangements-v94-stage-9a-final-polish
+cache_version: talk-arrangements-v95-stage-9a-live-verification
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -198,6 +198,16 @@ Stage 9A tests still required after deployment:
 - Screenshot review.
 - Live EN/ES review.
 - Live calendar, event, reminder, cloud backup, export/import, and light/dark regression checks.
+
+Stage 9A v94 live verification issue found:
+- Live GitHub Pages served `talk-arrangements-v94-stage-9a-final-polish` and `css/main.css?v=stage9a-v94`.
+- Mobile live DOM checks found no mojibake, no visible malformed main markup, no console errors, correct event terminology, correct Memorial/Conmemoración icon, and intentional horizontal table scrolling.
+- Spanish Congregations table still rendered the email column as `EMAIL ADDRESS` because the static header used the generic `data-i18n="email"` key, which is overwritten by the shared i18n layer.
+- Required source-only fix before Stage 9A live approval: change that header to the app-specific email label key so Spanish renders `Correo`.
+
+Stage 9A v95 live-verification fix:
+- Changed the Congregations email table header from `data-i18n="email"` to the app-owned `data-i18n="mail"` key so EN remains `Email` and ES renders `Correo`.
+- Bumped service worker cache from `talk-arrangements-v94-stage-9a-final-polish` to `talk-arrangements-v95-stage-9a-live-verification`.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
