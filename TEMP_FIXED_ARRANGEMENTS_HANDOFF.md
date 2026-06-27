@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9a-live-approved-final-ui-polish-v101
-next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery
+current_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-active
+next_stage: none-until-stage-9b-b-live-verified
 cache_version: talk-arrangements-v101-stage-9a-app-controls-polish
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -19,11 +19,19 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 Stage 9A frontend polish v101 is live verified and approved.
 
-Approval classification: `APPROVED`
+Stage 9B-A Cloudflare push backend scaffold is complete.
 
-Deployment classification: `DEPLOYED AND LIVE VERIFIED`
+Stage 9B-B Cloudflare Deploy and WebPush Delivery is now the active authorized stage.
 
-Stage 9B-A Cloudflare push backend scaffold is complete. Stage 9B-B is the next authorized stage, pending Cloudflare credentials/config.
+Stage 9B-B status: `ACTIVE - PENDING CLOUDFLARE CONFIGURATION, IMPLEMENTATION, DEPLOYMENT, AND LIVE CLOSED-APP TESTING`
+
+Stage 9A approval classification: `APPROVED`
+
+Stage 9A deployment classification: `DEPLOYED AND LIVE VERIFIED`
+
+Stage 9B-B approval classification: `NOT YET APPROVED`
+
+Stage 9B-B deployment classification: `NOT YET DEPLOYED`
 
 Do not start Release Candidate or Stage 10.
 
@@ -161,7 +169,7 @@ Important limitation:
 - `sendWebPush()` in `cloudflare/talk-arrangements-push/worker.js` is the main Stage 9B-B implementation gap.
 - True closed-app notifications remain blocked until Cloudflare deployment, VAPID secrets, storage binding, scheduled trigger, and device testing are complete.
 
-## Stage 9B-B Attempt / Blocker
+## Stage 9B-B Previous Attempt / Blocker
 
 Codex merged the supervisor Stage 9B-A scaffold and documented the backend blocker.
 
@@ -190,10 +198,36 @@ Required before continuing Stage 9B-B:
 8. Configure cron trigger.
 9. Provide the public Worker URL and VAPID public key for safe frontend config.
 
+## Stage 9B-B Active Scope
+
+Authorized Stage 9B-B work:
+
+- Verify the existing Cloudflare scaffold.
+- Configure or verify Worker URL, `PUSH_STORE` storage binding, VAPID public/private key handling, VAPID subject, CORS allowlist, and cron trigger.
+- Complete real Web Push delivery, including VAPID signing/encryption/delivery, without committing private secrets.
+- Verify Worker endpoints: `GET /api/health`, `POST /api/subscribe`, `POST /api/reminders`, `DELETE /api/reminders/:sourceType/:sourceId`, and `POST /api/test-push`.
+- Verify frontend subscription, reminder create/edit/delete sync, test push, scheduled push, closed-app iPhone delivery, notification tap, no console errors, and no Stage 9A regression.
+
+Stage 9B-B stop conditions:
+
+- Stop if Cloudflare credentials are unavailable.
+- Stop if Worker cannot deploy.
+- Stop if KV binding cannot be created or verified.
+- Stop if VAPID keys cannot be configured securely.
+- Stop if cron trigger cannot be configured.
+- Stop if closed-app notification cannot be tested.
+
+Security rules:
+
+- Never commit VAPID private key, Cloudflare token, GitHub token, shared secret, or private credentials.
+- Frontend may contain only the public Worker URL and VAPID public key.
+
 ## Next Authorized Stage
 
 Stage 9A v101 app-controls polish is live-approved.
 
-Next authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`.
+Current authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`.
+
+Next authorized stage: none until Stage 9B-B is implemented, deployed, and live verified.
 
 Do not start Release Candidate or Stage 10 until Stage 9B-B is complete and live verified.
