@@ -462,6 +462,9 @@ textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 72%,tra
   .action-row{gap:10px;}
   .cal-grid{gap:3px;}
   .cal-day{min-height:44px;padding:5px;}
+  [data-theme="dark"] .cal-day,
+  [data-theme="system"] .cal-day,
+  [data-theme="light"] .cal-day{min-height:44px;}
   .cal-ml{min-width:140px;font-size:15px;}
   .cal-tb{align-items:stretch;}
   .cal-nav{width:100%;justify-content:space-between;}
