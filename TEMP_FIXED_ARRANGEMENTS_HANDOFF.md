@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9b-a-cloudflare-push-scaffold-complete
-next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery
+current_stage: stage-9b-b-blocked-cloudflare-credentials-unavailable
+next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-credentials
 cache_version: talk-arrangements-v97-stage-9a-cache-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -175,6 +175,48 @@ Stop and report if:
 - Scheduled trigger cannot be configured.
 - Web Push signing/encryption cannot be completed in Cloudflare Worker runtime.
 - Closed-app notification cannot be verified on device.
+
+## Stage 9B-B Attempt / Blocker (2026-06-27)
+
+Codex merged the supervisor Stage 9B-A scaffold from `origin/main` into the local checkout and resolved the handoff tracker to the Stage 9B-A / Stage 9B-B state before backend work.
+
+Stage 9B-B deployment cannot continue in this environment because Cloudflare credentials and deploy configuration are unavailable.
+
+Verified missing items:
+
+- `wrangler` is not available on PATH.
+- No local `cloudflare/talk-arrangements-push/wrangler.toml` exists; only `wrangler.toml.example` with placeholders is present.
+- Environment variables are not set for:
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `CF_API_TOKEN`
+  - `VAPID_PUBLIC_KEY`
+  - `VAPID_PRIVATE_KEY`
+  - `VAPID_SUBJECT`
+- No readable local Wrangler/Cloudflare login config was found in the checked locations.
+- Worker URL is not available.
+- KV namespace / `PUSH_STORE` binding is not configured.
+- VAPID public key is not available for frontend config.
+- VAPID private key is not available as a Cloudflare secret.
+- Cron trigger is not deployed/configured.
+
+No private secrets were committed. No Cloudflare Worker deploy was attempted because it would require missing Cloudflare authentication and environment configuration.
+
+Required before continuing Stage 9B-B:
+
+1. Install or make `wrangler` available.
+2. Provide Cloudflare authentication via Wrangler login or `CLOUDFLARE_API_TOKEN`.
+3. Provide `CLOUDFLARE_ACCOUNT_ID` or a deployable `wrangler.toml`.
+4. Create/bind KV namespace `PUSH_STORE`.
+5. Generate VAPID key pair.
+6. Configure `VAPID_PRIVATE_KEY` only as a Cloudflare secret.
+7. Configure `VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, and `ALLOWED_ORIGIN`.
+8. Configure cron trigger.
+9. Provide the public Worker URL and VAPID public key for safe frontend config.
+
+Approval classification: `BLOCKED`
+
+Deployment classification: `not deployed; blocked before implementation/deployment by missing Cloudflare credentials/config`
 
 ## Next Authorized Stage
 
