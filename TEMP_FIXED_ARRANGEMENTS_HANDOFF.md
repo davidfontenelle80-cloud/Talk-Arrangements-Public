@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9a-final-ui-polish-v101-app-controls-pushed-pending-live-verification
-next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-ui-polish-live-approved
+current_stage: stage-9a-live-approved-final-ui-polish-v101
+next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery
 cache_version: talk-arrangements-v101-stage-9a-app-controls-polish
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -17,13 +17,13 @@ remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-span
 
 ## Current Supervisor Status
 
-Stage 9A frontend polish remains the active gate until the latest v101 app-controls polish is live verified on device.
+Stage 9A frontend polish v101 is live verified and approved.
 
-Approval classification: `APPROVED WITH OBSERVATIONS` for Stage 9A frontend/UI work already verified through v100; `PENDING LIVE VERIFICATION` for the final v101 app-controls polish.
+Approval classification: `APPROVED`
 
-Deployment classification: `v101 service-worker/app-controls polish pushed to origin/main; live-device hard refresh/service-worker activation still required`.
+Deployment classification: `DEPLOYED AND LIVE VERIFIED`
 
-Stage 9B-A Cloudflare push backend scaffold is complete. Stage 9B-B remains blocked until Stage 9A v101 is live verified and Cloudflare credentials/config are available.
+Stage 9B-A Cloudflare push backend scaffold is complete. Stage 9B-B is the next authorized stage, pending Cloudflare credentials/config.
 
 Do not start Release Candidate or Stage 10.
 
@@ -83,11 +83,15 @@ Relevant Stage 9A commits reported/verified:
 - `2fc606b` — app-controls panel/email layout polish.
 - `7c6e52f` — v101 service-worker cache repair for app-controls polish.
 
-## Stage 9A Verification Needed
+## Stage 9A v101 Live Verification Result
 
-Before marking Stage 9A live-approved again, perform a live hard refresh on the GitHub Pages app and verify:
+Live URL verified on 2026-06-27:
 
-- Service worker activates `talk-arrangements-v101-stage-9a-app-controls-polish`.
+- `https://davidfontenelle80-cloud.github.io/Talk-Arrangements-Public/`
+
+Verification passed:
+
+- Service worker cache is `talk-arrangements-v101-stage-9a-app-controls-polish`.
 - Dashboard renders.
 - Planning renders.
 - Congregations renders.
@@ -103,12 +107,23 @@ Before marking Stage 9A live-approved again, perform a live hard refresh on the 
 - Event modal opens cleanly.
 - App Controls panel opens/closes cleanly on mobile.
 - App Controls panel buttons have readable spacing and do not feel cramped.
-- Signed-in cloud email wraps cleanly and does not overflow off the right side.
 - Import/Export controls remain visible.
 - Cloud Backup controls remain visible.
 - Browser console has no app errors.
 
-If all pass, update this MD to `stage-9a-live-approved-final-ui-polish-v101` and authorize Stage 9B-B.
+Notes:
+
+- Initial rendered mobile check showed stale `Herramientas` text until a reload activated the v101 service-worker path.
+- After reload, the mobile toolbar showed `Controles de la app` and no stale `Tools` / `Herramientas` label remained.
+- App Controls opened and closed cleanly; visible controls were Backup, Import, Reset, Sign in, Cloud Save, and Cloud Restore.
+- App Controls buttons measured 48px high on the 390px mobile viewport.
+- Signed-in email wrapping styles were verified in deployed `js/mobile-toolbar.js` (`status-email`, `overflow-wrap:anywhere`, `word-break:break-word`); live browser state was signed out, so no signed-in email value was present to overflow.
+- Mobile and desktop sweeps passed in light and dark mode.
+- Dark calendar day cards were dark, calendar numbers were visible, controls aligned, and event filter text was clean in EN/ES.
+
+Approval classification: `APPROVED`
+
+Deployment classification: `DEPLOYED AND LIVE VERIFIED`
 
 ## Stage 9B-A Scaffold Completed
 
@@ -177,8 +192,8 @@ Required before continuing Stage 9B-B:
 
 ## Next Authorized Stage
 
-First: live-verify Stage 9A v101 app-controls polish.
+Stage 9A v101 app-controls polish is live-approved.
 
-After Stage 9A is live-approved: `Stage 9B-B — Cloudflare Deploy and WebPush Delivery`.
+Next authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`.
 
 Do not start Release Candidate or Stage 10 until Stage 9B-B is complete and live verified.
