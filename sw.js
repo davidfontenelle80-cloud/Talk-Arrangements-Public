@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v100-stage-9a-final-ui-polish';
+const CACHE_VERSION = 'talk-arrangements-v101-stage-9a-app-controls-polish';
 
 const PRECACHE_URLS = [
   './',
@@ -69,12 +69,13 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(event.request.url);
   const isLocalAsset = url.origin === self.location.origin;
-  const isCssOrAppScript = isLocalAsset && (
+  const isPolishedAsset = isLocalAsset && (
     url.pathname.endsWith('/css/main.css') ||
-    url.pathname.endsWith('/js/app.js')
+    url.pathname.endsWith('/js/app.js') ||
+    url.pathname.endsWith('/js/mobile-toolbar.js')
   );
 
-  if (isCssOrAppScript) {
+  if (isPolishedAsset) {
     event.respondWith(
       fetch(event.request, { cache: 'reload' })
         .then(response => {
