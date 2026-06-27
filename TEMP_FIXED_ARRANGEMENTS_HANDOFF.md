@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-9a-final-frontend-polish-code-implemented-pending-live-review
 next_stage: stage-9a-live-verification-then-stage-9b-push-backend
-cache_version: talk-arrangements-v92-stage-9-final-polish-push
+cache_version: talk-arrangements-v93-stage-9a-final-polish
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -177,7 +177,7 @@ Stage 9A required fixes:
 - Improve touch targets, contrast, focus states, and labels where safe.
 
 Stage 9A cache target:
-- `talk-arrangements-v92-stage-9-final-polish-push`
+- `talk-arrangements-v93-stage-9a-final-polish`
 
 Stage 9A source fixes completed:
 - Corrected event terminology in `js/app.js`, `index.html`, and `js/unified-note-modal.js`.
@@ -187,7 +187,7 @@ Stage 9A source fixes completed:
 - Event type dropdown options are rebuilt from the canonical `EVENT_TYPES` list so EN/ES language switches update the Add/Edit Event modal.
 - Increased planning and congregation table minimum widths and column widths so names remain readable with intentional horizontal scrolling.
 - Improved table row height, input height, contact card spacing, message template padding, event modal fields, color swatches, modal footer layout, and focus-visible states.
-- Bumped service worker cache to `talk-arrangements-v92-stage-9-final-polish-push`.
+- Bumped service worker cache to `talk-arrangements-v93-stage-9a-final-polish`.
 
 Stage 9A tests run so far:
 - Source scan found no active app-source UTF-8 mojibake markers or replacement-character markers.
