@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9b-b-blocked-cloudflare-credentials-unavailable
-next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-credentials
+current_stage: stage-9a-final-ui-polish-dark-calendar
+next_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-after-ui-polish
 cache_version: talk-arrangements-v97-stage-9a-cache-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -218,8 +218,28 @@ Approval classification: `BLOCKED`
 
 Deployment classification: `not deployed; blocked before implementation/deployment by missing Cloudflare credentials/config`
 
+## Stage 9A Final UI Polish Reopened (2026-06-27)
+
+Supervisor authorized a final frontend-only Stage 9A polish pass before Stage 9B-B deployment work.
+
+Scope:
+
+- Improve dark mode calendar readability with CSS-only changes.
+- Verify final mobile spacing, alignment, touch targets, modal spacing, button sizing, month navigation, dropdown alignment, and event cards.
+- Run a regression sweep for Dashboard, Planning, Congregations, Events, Reminders, Settings, Cloud Backup controls, Import/Export controls, EN/ES switching, light mode, and dark mode.
+
+Guardrails:
+
+- Do not begin Cloudflare Worker deployment.
+- Do not modify Worker files, VAPID, KV, D1, cron, GitHub Actions, Firebase, or push backend logic.
+- Do not start Release Candidate or Stage 10.
+
+Approval classification: `IN PROGRESS`
+
+Deployment classification: `frontend polish pending implementation, commit, push, and live verification`
+
 ## Next Authorized Stage
 
-Next authorized stage: `Stage 9B-B — Cloudflare Deploy and WebPush Delivery`
+Next authorized stage after this UI polish pass: `Stage 9B-B — Cloudflare Deploy and WebPush Delivery`
 
 Do not start Release Candidate or Stage 10 until Stage 9B-B is complete and live verified.
