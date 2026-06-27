@@ -326,6 +326,70 @@ nav.no-print button.active{
 .cal-det-card{padding:8px 46px 8px 0;border-bottom:1px solid var(--line);}
 .cal-det-card:last-child{border-bottom:0;}
 .cal-det-title{font-weight:800;margin-top:3px;}
+[data-theme="dark"] .cal-wrap,
+[data-theme="system"] .cal-wrap{
+  background:color-mix(in srgb,var(--panel) 92%,#000);
+  border-color:color-mix(in srgb,var(--line) 78%,var(--accent) 22%);
+}
+[data-theme="dark"] .cal-hdr,
+[data-theme="system"] .cal-hdr{
+  color:color-mix(in srgb,var(--muted) 72%,#fff 28%);
+  letter-spacing:.04em;
+}
+[data-theme="dark"] .cal-day,
+[data-theme="system"] .cal-day{
+  background:color-mix(in srgb,var(--panel-2) 88%,#000);
+  border-color:color-mix(in srgb,var(--line) 82%,#fff 8%);
+  color:var(--text);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+[data-theme="dark"] .cal-day:not(.cal-empty):hover,
+[data-theme="system"] .cal-day:not(.cal-empty):hover{
+  border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+  background:color-mix(in srgb,var(--accent) 13%,var(--panel-2));
+}
+[data-theme="dark"] .cal-has-ev,
+[data-theme="system"] .cal-has-ev{
+  background:color-mix(in srgb,var(--accent) 12%,var(--panel-2));
+  border-color:color-mix(in srgb,var(--accent) 28%,var(--line));
+}
+[data-theme="dark"] .cal-dn,
+[data-theme="system"] .cal-dn{
+  color:color-mix(in srgb,var(--text) 90%,#fff 10%);
+}
+[data-theme="dark"] .cal-today,
+[data-theme="system"] .cal-today{
+  outline:2px solid var(--accent);
+  outline-offset:-2px;
+  border-color:var(--accent)!important;
+}
+[data-theme="dark"] .cal-today .cal-dn,
+[data-theme="system"] .cal-today .cal-dn{
+  background:var(--accent);
+  color:#08231d;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 20%,transparent);
+}
+[data-theme="dark"] .cal-selected,
+[data-theme="system"] .cal-selected{
+  border-color:var(--warn);
+  background:color-mix(in srgb,var(--warn) 14%,var(--panel-2));
+}
+[data-theme="dark"] .cal-badge,
+[data-theme="system"] .cal-badge{
+  width:10px;
+  height:10px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.22),0 0 10px rgba(0,0,0,.25);
+}
+[data-theme="dark"] .cal-det-inner,
+[data-theme="system"] .cal-det-inner{
+  background:color-mix(in srgb,var(--panel-2) 90%,#000);
+  border-color:color-mix(in srgb,var(--line) 75%,var(--accent) 25%);
+}
+[data-theme="dark"] .cal-filter-sel,
+[data-theme="system"] .cal-filter-sel{
+  background:color-mix(in srgb,var(--panel-2) 88%,#000);
+  color:var(--text);
+}
 .ta-reminders-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
 .ta-reminder-inapp-notice,
 .ta-reminder-push-card,
@@ -399,6 +463,11 @@ textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 72%,tra
   .cal-grid{gap:3px;}
   .cal-day{min-height:44px;padding:5px;}
   .cal-ml{min-width:140px;font-size:15px;}
+  .cal-tb{align-items:stretch;}
+  .cal-nav{width:100%;justify-content:space-between;}
+  .cal-filter-sel{width:100%;min-width:0;}
+  .event-card{padding:14px;}
+  .event-type-badge{min-height:30px;line-height:1.2;}
   .event-card-actions,.ta-reminder-card-actions{width:100%;}
   .event-card-actions button,.ta-reminder-card-actions button{flex:1 1 auto;}
   .field-row.two-col{grid-template-columns:1fr;}
