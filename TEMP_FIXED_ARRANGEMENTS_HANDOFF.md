@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9a-final-frontend-polish-code-implemented-pending-live-review
-next_stage: stage-9a-live-verification-then-stage-9b-push-backend
+current_stage: stage-9a-live-v97-verified-with-tooling-observations
+next_stage: david-device-review-then-stage-9b-push-backend
 cache_version: talk-arrangements-v97-stage-9a-cache-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -227,6 +227,40 @@ Stage 9A v97 stale app-script cache repair:
 - Changed `index.html` to load `js/app.js?v=stage9a-v97`.
 - Updated `sw.js` precache to cache the same versioned app script URL.
 - Bumped service worker cache from `talk-arrangements-v96-stage-9a-live-approved` to `talk-arrangements-v97-stage-9a-cache-repair`.
+
+Stage 9A v97 live verification result:
+- Commit deployed: `6d36413` (`fix: bust Stage 9A app script cache`).
+- Live URL verified: `https://davidfontenelle80-cloud.github.io/Talk-Arrangements-Public/`.
+- Live `origin/main` and local `HEAD` matched at `6d36413` before this final tracker-only update.
+- Live `sw.js` served `talk-arrangements-v97-stage-9a-cache-repair`.
+- Live `index.html` loaded `js/app.js?v=stage9a-v97`.
+- Live `sw.js` precached `./js/app.js?v=stage9a-v97`.
+- Live `js/app.js` contained `addEvent:"Add Event"` and `addEvent:"Agregar evento"` and no duplicate-plus `addEvent` strings.
+- Live source checks found no mojibake markers in `index.html` or `js/app.js`.
+- Mobile rendered browser checks found no mojibake, no visible `<`, `/main>`, or `</main>` raw text, and no console errors.
+- Mobile nav rendered as intentional horizontal scroll with no merged tab labels.
+- Dashboard, Planning, Congregations, Events, and Reminders rendered on the live site.
+- Planning tables scrolled horizontally with readable columns.
+- Congregations table scrolled horizontally and Spanish email header rendered `CORREO`, not `EMAIL ADDRESS`.
+- Events rendered correct JW terminology in ES and EN: Circuit Overseer Visit / Visita del Superintendente de Circuito, Circuit Assembly / Asamblea de Circuito, Regional Convention / Asamblea Regional, Special Talk / Discurso Especial, Memorial / Conmemoración.
+- Memorial/Conmemoración rendered with `🍷`.
+- Events Add button rendered cleanly as `＋ Agregar evento` / `＋ Add Event`.
+- Calendar rendered clean weekday labels and event type filters; previous month changed June 2026 to May 2026 and next month returned to June 2026.
+- Event type filter accepted Memorial and returned to All Types.
+- Add Event modal opened cleanly with no mojibake, 44px close/save/cancel buttons, full-width fields, and reachable controls.
+- Reminders rendered with in-app-only limitation text and 44px action/diagnostic buttons.
+- Stale app-script cache issue was reproduced at v96 and resolved by the v97 versioned `js/app.js` request.
+
+Verification limitations:
+- In-app browser screenshot capture failed twice with `Page.captureScreenshot` timeouts, including a clipped screenshot attempt; screenshots were attempted but not reviewed.
+- The in-app browser remained at 390 CSS pixels after viewport reset/set attempts, so a true desktop-width rendered pass could not be completed in this tooling session.
+- No Cloudflare Workers, VAPID, Push API backend, KV, D1, cron jobs, or Stage 9B work was started.
+
+Approval classification:
+- `APPROVED WITH OBSERVATIONS` for Stage 9A code/deployment verification.
+
+Deployment classification:
+- v97 code implemented, pushed, and live-source/live-render verified; David iPhone/device approval still recommended because screenshots and true desktop-width capture were blocked by tooling.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
