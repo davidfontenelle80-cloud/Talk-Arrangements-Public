@@ -1,0 +1,35 @@
+# Copy this file to wrangler.toml locally or configure equivalent settings in the Cloudflare dashboard.
+# Do not commit real secrets.
+
+name = "talk-arrangements-push"
+main = "worker.js"
+compatibility_date = "2026-06-27"
+
+# Replace with your Cloudflare account id when deploying locally.
+# account_id = "YOUR_ACCOUNT_ID"
+
+# GitHub Pages origin for Talk Arrangements.
+[vars]
+ALLOWED_ORIGIN = "https://davidfontenelle80-cloud.github.io"
+VAPID_PUBLIC_KEY = "REPLACE_WITH_PUBLIC_VAPID_KEY"
+VAPID_SUBJECT = "mailto:REPLACE_WITH_CONTACT_EMAIL"
+
+# Use one of these storage options. KV is the simplest starting point for v1.
+# Create with:
+# wrangler kv namespace create PUSH_STORE
+# wrangler kv namespace create PUSH_STORE --preview
+
+[[kv_namespaces]]
+binding = "PUSH_STORE"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID"
+
+# Scheduled trigger. Runs every minute. If Cloudflare plan limits apply,
+# use the fastest available schedule and document the expected delay.
+[triggers]
+crons = ["* * * * *"]
+
+# Secrets to set with wrangler or Cloudflare dashboard:
+# wrangler secret put VAPID_PRIVATE_KEY
+# Optional if endpoint auth is added later:
+# wrangler secret put PUSH_SHARED_SECRET
