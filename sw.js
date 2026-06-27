@@ -1,10 +1,11 @@
-const CACHE_VERSION = 'talk-arrangements-v97-stage-9a-cache-repair';
+const CACHE_VERSION = 'talk-arrangements-v100-stage-9a-final-ui-polish';
 
 const PRECACHE_URLS = [
   './',
   './index.html',
   './manifest.json',
   './css/main.css',
+  './css/main.css?v=stage9a-v99',
   './css/dark-mode.css',
   './css/components.css',
   './css/responsive.css',
@@ -65,6 +66,26 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  const isLocalAsset = url.origin === self.location.origin;
+  const isCssOrAppScript = isLocalAsset && (
+    url.pathname.endsWith('/css/main.css') ||
+    url.pathname.endsWith('/js/app.js')
+  );
+
+  if (isCssOrAppScript) {
+    event.respondWith(
+      fetch(event.request, { cache: 'reload' })
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_VERSION).then(cache => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(cached => {
