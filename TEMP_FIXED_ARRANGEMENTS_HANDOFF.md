@@ -276,6 +276,78 @@ Stage 9B-B approval classification: `BLOCKED`
 
 Stage 9B-B deployment classification: `NOT DEPLOYED`
 
+## Stage 9B-B NoClip Reference Inspection (2026-06-27)
+
+Codex inspected the NoClip repo reference from local checkout `.codex-checks/note-clip-current` and remote `origin/main` for `davidfontenelle80-cloud/note-clip`.
+
+NoClip reference files inspected:
+
+- `js/push.js`
+- `js/reminders.js`
+- `sw.js`
+- `cloudflare/note-clip-push/src/worker.js`
+- `cloudflare/note-clip-push/wrangler.toml`
+- `cloudflare/note-clip-push/migrations/0001_schema.sql`
+- `cloudflare/note-clip-push/README.md`
+
+NoClip architecture findings:
+
+- Worker structure: module Worker with `fetch` and `scheduled` handlers.
+- Storage: D1 database binding `DB`, not KV.
+- Tables: `subscriptions` and `reminders`.
+- Reminder indexing: unique index on `(subscription_id, source_type, source_id)` and due index on `(fired, fire_at)`.
+- Cron: every minute with `crons = ["* * * * *"]`.
+- VAPID: public key in Worker vars/frontend, private key as Worker secret.
+- Web Push delivery: Worker implements VAPID JWT, ECDH payload encryption, AES-128-GCM Web Push payload, and sends directly to subscription endpoint.
+- Subscription storage: frontend sends endpoint plus `p256dh` and `auth`; Worker stores or updates by endpoint.
+- Reminder sync: frontend stores `subscriptionId`, syncs note/list reminders to `POST /api/reminders`, clears with `DELETE /api/reminders/:sourceType/:sourceId`.
+- Service worker: handles `push` with `self.registration.showNotification(...)`.
+- Notification click: NoClip `sw.js` has push display; Talk Arrangements already has both `push` and `notificationclick` handlers.
+- Deployment docs: NoClip README documents D1 migration, VAPID secret, public vars, CORS, and deployment guardrails.
+
+Important security note:
+
+- NoClip `js/push.js` contains a frontend `PUSH_SECRET` pattern. Talk Arrangements must not copy that secret or introduce a committed private/shared secret. If endpoint abuse protection is needed, only non-secret public controls can be frontend-visible; true secrets must remain server-side.
+
+Talk Arrangements comparison:
+
+- Existing `js/push.js` already supports Worker URL, VAPID public key, `PushManager.subscribe()`, `syncReminder()`, `clearReminder()`, `sendTestPush()`, and `diagnose()`.
+- Existing `sw.js` already supports `push` and `notificationclick`.
+- Existing Worker scaffold uses KV-style `PUSH_STORE`, not NoClip's D1 schema.
+- Existing Worker `sendWebPush()` still throws and has not been replaced with NoClip-style Web Push signing/encryption.
+- Existing `wrangler.toml.example` is placeholder-only; no deployable `wrangler.toml` exists.
+
+Adaptation decision:
+
+- NoClip's D1 architecture is the stronger pattern for scheduled reminders because it supports indexed due-reminder queries and reliable update/delete by subscription/source.
+- Talk Arrangements can adapt the NoClip Worker encryption/signing code and D1 schema after Cloudflare deploy configuration is available.
+- Implementation was not started in this pass because the required Stage 9B-B stop condition fired before coding: Cloudflare credentials/deploy configuration are unavailable.
+
+Stage 9B-B recheck after NoClip inspection:
+
+- `wrangler` is still not available on PATH.
+- No deployable `cloudflare/talk-arrangements-push/wrangler.toml` exists.
+- `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `CF_API_TOKEN` are not set.
+- `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT` are not set.
+- `ALLOWED_ORIGIN` and `TALK_PUSH_WORKER_URL` are not set.
+- No readable local Wrangler/Cloudflare login config was found in the checked locations.
+
+Required David action to resume:
+
+1. Provide Cloudflare access by installing/configuring Wrangler or setting `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+2. Authorize storage choice for Talk Arrangements: recommended D1 to match NoClip, or KV if David explicitly prefers the existing scaffold.
+3. Create/provide D1 database id or KV namespace id.
+4. Generate/provide frontend-safe VAPID public key.
+5. Configure VAPID private key only as a Cloudflare secret.
+6. Provide VAPID subject/contact value.
+7. Provide/confirm Worker URL.
+8. Confirm cron trigger availability.
+9. Provide an iPhone live-test path for closed-app notification verification.
+
+NoClip reference inspection classification: `COMPLETE`
+
+Stage 9B-B implementation classification: `BLOCKED`
+
 ## Next Authorized Stage
 
 Stage 9A v101 app-controls polish is live-approved.

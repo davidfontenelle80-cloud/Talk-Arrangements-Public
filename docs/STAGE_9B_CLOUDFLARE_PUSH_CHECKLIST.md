@@ -129,3 +129,33 @@ Stage 9B-B credential/deploy recheck on 2026-06-27 found:
 - Cron trigger is not deployed/configured.
 
 Do not implement or claim closed-app Web Push completion until those items are configured and live device testing passes.
+
+## NoClip Reference Inspection
+
+Inspected on 2026-06-27 from `.codex-checks/note-clip-current` remote `origin/main`:
+
+- `js/push.js`
+- `js/reminders.js`
+- `sw.js`
+- `cloudflare/note-clip-push/src/worker.js`
+- `cloudflare/note-clip-push/wrangler.toml`
+- `cloudflare/note-clip-push/migrations/0001_schema.sql`
+- `cloudflare/note-clip-push/README.md`
+
+Reference pattern:
+
+- D1-backed Worker with `subscriptions` and `reminders` tables.
+- Scheduled Worker cron every minute.
+- VAPID public key as public Worker/frontend config.
+- VAPID private key as Worker secret only.
+- Worker-side VAPID JWT signing and Web Push payload encryption.
+- Frontend `PushManager` subscription saved to backend.
+- Reminder create/update/delete syncs to backend.
+- Service worker receives `push` and calls `showNotification()`.
+
+Talk Arrangements adaptation note:
+
+- Existing Talk `js/push.js` and `sw.js` already cover frontend subscription and notification handling shape.
+- Existing Talk Worker still uses KV scaffold and `sendWebPush()` throws.
+- Recommended next implementation is to adapt NoClip's D1 schema and Worker-side VAPID/encryption code, but only after Cloudflare credentials/deploy config are available.
+- Do not copy NoClip secrets or its frontend `PUSH_SECRET` value.
