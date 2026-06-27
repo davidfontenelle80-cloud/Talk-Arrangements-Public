@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-27
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9b-b-cloudflare-deploy-and-webpush-delivery-active
-next_stage: none-until-stage-9b-b-live-verified
+current_stage: stage-9b-b-blocked-cloudflare-credentials-and-config-unavailable
+next_stage: stage-9b-b-resume-after-cloudflare-credentials-and-config
 cache_version: talk-arrangements-v101-stage-9a-app-controls-polish
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -21,15 +21,15 @@ Stage 9A frontend polish v101 is live verified and approved.
 
 Stage 9B-A Cloudflare push backend scaffold is complete.
 
-Stage 9B-B Cloudflare Deploy and WebPush Delivery is now the active authorized stage.
+Stage 9B-B Cloudflare Deploy and WebPush Delivery was activated and rechecked.
 
-Stage 9B-B status: `ACTIVE - PENDING CLOUDFLARE CONFIGURATION, IMPLEMENTATION, DEPLOYMENT, AND LIVE CLOSED-APP TESTING`
+Stage 9B-B status: `BLOCKED - CLOUDFLARE CREDENTIALS AND DEPLOY CONFIGURATION UNAVAILABLE`
 
 Stage 9A approval classification: `APPROVED`
 
 Stage 9A deployment classification: `DEPLOYED AND LIVE VERIFIED`
 
-Stage 9B-B approval classification: `NOT YET APPROVED`
+Stage 9B-B approval classification: `BLOCKED`
 
 Stage 9B-B deployment classification: `NOT YET DEPLOYED`
 
@@ -222,11 +222,65 @@ Security rules:
 - Never commit VAPID private key, Cloudflare token, GitHub token, shared secret, or private credentials.
 - Frontend may contain only the public Worker URL and VAPID public key.
 
+## Stage 9B-B Credential / Deploy Recheck (2026-06-27)
+
+Codex rechecked the activated Stage 9B-B repo state at commit `5a82dd2`.
+
+Result: `BLOCKED`
+
+No Worker/Web Push implementation or deployment was started because required Cloudflare deployment inputs are unavailable in this environment.
+
+Verified missing items:
+
+- `wrangler` is not available on PATH.
+- No deployable `cloudflare/talk-arrangements-push/wrangler.toml` exists; only `wrangler.toml.example` with placeholders exists.
+- `CLOUDFLARE_API_TOKEN` is not set.
+- `CLOUDFLARE_ACCOUNT_ID` is not set.
+- `CF_API_TOKEN` is not set.
+- `VAPID_PUBLIC_KEY` is not set.
+- `VAPID_PRIVATE_KEY` is not set.
+- `VAPID_SUBJECT` is not set.
+- `ALLOWED_ORIGIN` is not set.
+- `TALK_PUSH_WORKER_URL` is not set.
+- No readable local Wrangler/Cloudflare login config was found in the checked locations.
+- Worker URL is not available.
+- `PUSH_STORE` KV namespace/binding is not configured or verifiable.
+- Cron trigger is not deployed/configured.
+
+Endpoint test result:
+
+- `GET /api/health`: not tested; Worker URL unavailable.
+- `OPTIONS *`: not tested; Worker URL unavailable.
+- `POST /api/subscribe`: not tested; Worker URL unavailable.
+- `POST /api/reminders`: not tested; Worker URL unavailable.
+- `DELETE /api/reminders/:sourceType/:sourceId`: not tested; Worker URL unavailable.
+- `POST /api/test-push`: not tested; Worker URL unavailable.
+
+Closed-app notification result:
+
+- Not testable until Worker deployment, VAPID keys/secrets, storage binding, cron trigger, frontend Worker URL/VAPID public key config, and physical iPhone notification testing are available.
+
+Required before resuming Stage 9B-B:
+
+1. Install or make `wrangler` available.
+2. Provide Cloudflare authentication via Wrangler login or `CLOUDFLARE_API_TOKEN`.
+3. Provide `CLOUDFLARE_ACCOUNT_ID` or a deployable `wrangler.toml`.
+4. Create/bind KV namespace `PUSH_STORE`.
+5. Generate a VAPID key pair.
+6. Configure `VAPID_PRIVATE_KEY` only as a Cloudflare secret.
+7. Configure `VAPID_PUBLIC_KEY`, `VAPID_SUBJECT`, and `ALLOWED_ORIGIN`.
+8. Configure the scheduled cron trigger.
+9. Provide the public Worker URL and VAPID public key for safe frontend config.
+
+Stage 9B-B approval classification: `BLOCKED`
+
+Stage 9B-B deployment classification: `NOT DEPLOYED`
+
 ## Next Authorized Stage
 
 Stage 9A v101 app-controls polish is live-approved.
 
-Current authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`.
+Current authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`, blocked pending Cloudflare credentials/configuration.
 
 Next authorized stage: none until Stage 9B-B is implemented, deployed, and live verified.
 

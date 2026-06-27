@@ -1,6 +1,6 @@
 # Stage 9B — Cloudflare Push Backend Checklist
 
-Status: **Stage 9B-A scaffold completed by supervisor; Stage 9B-B deploy/test remains for Codex.**
+Status: **Stage 9B-A scaffold completed by supervisor; Stage 9B-B is blocked by missing Cloudflare credentials/configuration.**
 
 Repo: `davidfontenelle80-cloud/Talk-Arrangements-Public`
 
@@ -117,3 +117,15 @@ Allowed in frontend/source:
 ## Current blocker
 
 True closed-app notifications cannot be live-approved until a Cloudflare Worker is deployed with storage, VAPID secrets, scheduled trigger, and successful device testing.
+
+Stage 9B-B credential/deploy recheck on 2026-06-27 found:
+
+- `wrangler` is not available on PATH.
+- No deployable `cloudflare/talk-arrangements-push/wrangler.toml` exists; only `wrangler.toml.example` exists.
+- Cloudflare auth/account env vars are not set.
+- VAPID public/private/subject env vars are not set.
+- Worker URL is unavailable.
+- `PUSH_STORE` KV namespace/binding is not configured or verifiable.
+- Cron trigger is not deployed/configured.
+
+Do not implement or claim closed-app Web Push completion until those items are configured and live device testing passes.
