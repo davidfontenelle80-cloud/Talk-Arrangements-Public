@@ -35,11 +35,11 @@ var APP_KEY="jw-talk-arrangements-v1";
     
     // ── Event Types ──────────────────────────────────────────────────────────────
     var EVENT_TYPES=[
-      {id:'circuit-overseer',label:{en:'Circuit Overseer Visit',es:'Visita del Superintendente'},icon:'👔',color:'#6366f1'},
-      {id:'assembly',label:{en:'Assembly',es:'Asamblea'},icon:'🏟️',color:'#10b981'},
-      {id:'convention',label:{en:'Convention',es:'Convención'},icon:'🌐',color:'#3b82f6'},
+      {id:'circuit-overseer',label:{en:'Circuit Overseer Visit',es:'Visita del Superintendente de Circuito'},icon:'👔',color:'#6366f1'},
+      {id:'assembly',label:{en:'Circuit Assembly',es:'Asamblea de Circuito'},icon:'🏟️',color:'#10b981'},
+      {id:'convention',label:{en:'Regional Convention',es:'Asamblea Regional'},icon:'🌐',color:'#3b82f6'},
       {id:'special-talk',label:{en:'Special Talk',es:'Discurso Especial'},icon:'🎤',color:'#f59e0b'},
-      {id:'memorial',label:{en:'Memorial',es:'Conmemoración'},icon:'🕯️',color:'#8b5cf6'},
+      {id:'memorial',label:{en:'Memorial',es:'Conmemoración'},icon:'\ud83c\udf77',color:'#8b5cf6'},
       {id:'holiday-blackout',label:{en:'Holiday / Blackout',es:'Feriado / Fecha Bloqueada'},icon:'🚫',color:'#ef4444'},
       {id:'local-event',label:{en:'Local Congregation Event',es:'Evento Congregacional'},icon:'🏠',color:'#14b8a6'},
       {id:'custom',label:{en:'Custom Event',es:'Evento Personalizado'},icon:'📌',color:'#f97316'}
@@ -617,7 +617,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       document.getElementById("printDate").textContent=new Date().toLocaleDateString();
       document.querySelectorAll("[data-lang]").forEach(function(b){b.classList.toggle("active",b.dataset.lang===state.language);});
       document.querySelectorAll("[data-theme-pick]").forEach(function(b){b.classList.toggle("active",b.dataset.themePick===state.theme);});
-      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderEvents();renderCalendar();renderUpcomingEvents();renderReminders();
+      renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderEvents();renderCalendar();renderUpcomingEvents();renderReminders();renderEventTypeOptions();
     }
 
     // ── Rollover ──────────────────────────────────────────────────────────────────
@@ -747,6 +747,17 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       }).join('');
     }
 
+    function renderEventTypeOptions(selectedType){
+      var sel=document.getElementById('evTypeField');
+      if(!sel)return;
+      var isEs=state.language==='es';
+      var current=selectedType!==undefined?selectedType:sel.value;
+      sel.innerHTML='<option value="">-</option>'+EVENT_TYPES.map(function(t){
+        var label=isEs?t.label.es:t.label.en;
+        return '<option value="'+t.id+'"'+(current===t.id?' selected':'')+'>'+t.icon+' '+esc(label)+'</option>';
+      }).join('');
+    }
+
     function openEventModal(evId){
       var isEs=state.language==='es';
       var ev=evId?(state.taEvents||[]).find(function(e){return e.id===evId;}):null;
@@ -755,7 +766,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       document.getElementById('eventModalTitle').textContent=ev?tt('editEvent'):tt('addEvent');
       document.getElementById('evIdField').value=ev?ev.id:'';
       document.getElementById('evTitleField').value=ev?ev.title||'':'';
-      document.getElementById('evTypeField').value=ev?ev.type||'':'';
+      renderEventTypeOptions(ev?ev.type||'':'');
       document.getElementById('evStartField').value=ev?ev.startDate||'':'';
       document.getElementById('evEndField').value=ev?ev.endDate||'':'';
       document.getElementById('evAllDayField').checked=ev?ev.allDay!==false:true;
@@ -1580,8 +1591,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var isEs=state.language==='es';
       var msgs={
         'circuit-overseer':['Circuit Overseer Visit — review assignments','Visita del Superintendente de Circuito — revise las asignaciones'],
-        'assembly':['Assembly — no arrangements on this date','Asamblea — no hay arreglos en esta fecha'],
-        'convention':['Convention — no arrangements on this date','Convención — no hay arreglos en esta fecha'],
+        'assembly':['Circuit Assembly - no arrangements on this date','Asamblea de Circuito - no hay arreglos en esta fecha'],
+        'convention':['Regional Convention - no arrangements on this date','Asamblea Regional - no hay arreglos en esta fecha'],
         'special-talk':['Special Talk scheduled — verify assignments','Discurso especial programado — verifique las asignaciones'],
         'memorial':['Memorial — arrangements restricted on this date','Conmemoración — arreglos restringidos en esta fecha'],
         'holiday-blackout':['Blackout date — no assignments','Fecha bloqueada — sin asignaciones'],

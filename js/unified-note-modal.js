@@ -157,7 +157,7 @@
     document.getElementById('monthNoteHint').textContent = t('Only this month/year','Solo este mes/año');
     document.getElementById('monthNoteDesc').innerHTML =
       '<span class="note-callout-heading">' + t('📅 WHEN TO USE THIS NOTE','📅 CUÁNDO USAR ESTA NOTA') + '</span>' +
-      '<ul><li>' + t('Assembly','Asamblea') + '</li><li>' + t('Circuit overseer visit','Visita del superintendente') + '</li><li>' + t('Special event','Evento especial') + '</li><li>' + t('Temporary change','Cambio temporal') + '</li></ul>';
+      '<ul><li>' + t('Circuit Assembly','Asamblea de Circuito') + '</li><li>' + t('Circuit Overseer Visit','Visita del Superintendente de Circuito') + '</li><li>' + t('Special Talk','Discurso Especial') + '</li><li>' + t('Temporary change','Cambio temporal') + '</li></ul>';
     document.getElementById('globalNoteTitle').placeholder = t('Global note title','Título de nota global');
     document.getElementById('globalNoteDetails').placeholder = t('Details visible everywhere','Detalles visibles en todas partes');
     document.getElementById('congNoteTitle').placeholder = t('Congregation note title','Título de nota de congregación');

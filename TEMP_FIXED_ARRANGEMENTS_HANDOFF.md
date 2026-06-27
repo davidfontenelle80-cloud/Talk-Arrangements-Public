@@ -7,9 +7,9 @@ created: 2026-06-23
 last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9a-final-frontend-polish-in-progress
+current_stage: stage-9a-final-frontend-polish-code-implemented-pending-live-review
 next_stage: stage-9a-live-verification-then-stage-9b-push-backend
-cache_version: talk-arrangements-v91-stage-9-final-repair
+cache_version: talk-arrangements-v92-stage-9-final-polish-push
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -110,7 +110,7 @@ Cloudflare configuration required for true closed-app reminders:
 - Add CORS allowlist for the GitHub Pages origin.
 
 Tests run:
-- Source scan found no `Ã`, `Â`, replacement-character, visible `/main>`, or old Reminder inline-handler markers in the edited source set.
+- Source scan found no UTF-8 mojibake markers, replacement-character markers, visible `/main>`, or old Reminder inline-handler markers in the edited source set.
 - Verified Events/Reminders/main source structure: `<section id="events">`, `<section id="reminders">`, and proper `</main>`.
 - JavaScript syntax parsed successfully for `js/app.js`, `js/push.js`, and `sw.js` using Node VM parser in the local runtime.
 - Verified `sw.js` cache string is `talk-arrangements-v91-stage-9-final-repair` and precaches `./js/push.js`.
@@ -179,10 +179,25 @@ Stage 9A required fixes:
 Stage 9A cache target:
 - `talk-arrangements-v92-stage-9-final-polish-push`
 
-Known source gaps before Stage 9A work:
-- `js/app.js` still uses `Assembly`, `Convention`, `Convención`, `Visita del Superintendente`, and the candle icon for Memorial/Conmemoración.
-- `index.html` event type options still use `Assembly` and `Convention`.
-- `js/unified-note-modal.js` contains old example wording for Assembly and Circuit overseer visit.
+Stage 9A source fixes completed:
+- Corrected event terminology in `js/app.js`, `index.html`, and `js/unified-note-modal.js`.
+- Event types now use `Circuit Overseer Visit`, `Circuit Assembly`, `Regional Convention`, `Special Talk`, and `Memorial`.
+- Spanish event types now use `Visita del Superintendente de Circuito`, `Asamblea de Circuito`, `Asamblea Regional`, `Discurso Especial`, and `Conmemoración`.
+- Replaced the Memorial/Conmemoración candle icon source with an encoding-safe wine-glass symbol escape.
+- Event type dropdown options are rebuilt from the canonical `EVENT_TYPES` list so EN/ES language switches update the Add/Edit Event modal.
+- Increased planning and congregation table minimum widths and column widths so names remain readable with intentional horizontal scrolling.
+- Improved table row height, input height, contact card spacing, message template padding, event modal fields, color swatches, modal footer layout, and focus-visible states.
+- Bumped service worker cache to `talk-arrangements-v92-stage-9-final-polish-push`.
+
+Stage 9A tests run so far:
+- Source scan found no active app-source UTF-8 mojibake markers or replacement-character markers.
+- JavaScript syntax parsed successfully for `js/app.js`, `js/unified-note-modal.js`, `js/push.js`, `js/i18n.js`, and `sw.js`.
+
+Stage 9A tests still required after deployment:
+- Mobile/tablet/desktop visual review.
+- Screenshot review.
+- Live EN/ES review.
+- Live calendar, event, reminder, cloud backup, export/import, and light/dark regression checks.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
@@ -279,7 +294,7 @@ Current repo differs from the previous handoff in these ways:
 ## Stage 9 Live Testing Findings
 
 ### Blocking Issue 1 — UI text mojibake / encoding corruption
-- Live app displays corrupted strings such as `pÃ...` in Spanish headings, tabs, button labels, and descriptions.
+- Live app displayed corrupted Spanish strings in headings, tabs, button labels, and descriptions.
 - Repo inspection confirms mojibake in `js/app.js` translation strings and some `index.html` static text.
 - Emergency helper patch in `js/i18n.js` only mitigates part of the problem.
 - Proper follow-up must repair `js/app.js` and `index.html` source directly.

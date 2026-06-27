@@ -119,13 +119,13 @@
     .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
     .panel-title{padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel-2);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;}
     .panel-title strong{font-size:15px;}
-    .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .table-wrap{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;}
     table{width:100%;border-collapse:collapse;min-width:680px;}
     th,td{border-bottom:1px solid var(--line);padding:8px;vertical-align:middle;text-align:left;}
     th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:color-mix(in srgb,var(--panel-2),transparent 20%);white-space:nowrap;}
     tbody tr.current{background:color-mix(in srgb,var(--accent),transparent 70%);box-shadow:inset 5px 0 0 var(--accent);font-weight:600;}
     tbody tr:hover{background:color-mix(in srgb,var(--panel-2),transparent 38%);}
-    td select,td input,td textarea{padding:6px 7px;width:100%;}
+    td select,td input,td textarea{padding:8px 9px;width:100%;}
     td textarea{resize:none;min-height:36px;max-height:80px;overflow-y:auto;}
     #dashboard table{min-width:1040px;}
     #dashboard th:nth-child(1),#dashboard td:nth-child(1){min-width:128px;width:128px;}
@@ -179,7 +179,7 @@
     .year-incomplete{border-color:var(--warn);background:color-mix(in srgb,var(--warn),transparent 84%);color:var(--warn);}
     tbody tr.planning-incomplete{background:color-mix(in srgb,var(--warn),transparent 78%);box-shadow:inset 5px 0 0 var(--warn);}
     tbody tr.planning-incomplete:hover{background:color-mix(in srgb,var(--warn),transparent 70%);}
-    .planning-year table{min-width:660px;}
+    .planning-year table{min-width:920px;}
     .list-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
     .search{min-width:min(280px,100%);padding:9px 10px;}
     .field-cell{display:flex;align-items:center;gap:4px;}
@@ -255,26 +255,32 @@ nav.no-print button.active{
 }
 #planningTables .table-wrap,
 #congregations .table-wrap,
-#dashboard .table-wrap{padding-bottom:8px;}
-#planningTables table{min-width:920px;}
-#planningTables th:nth-child(2),#planningTables td:nth-child(2){min-width:240px;}
-#planningTables th:nth-child(3),#planningTables td:nth-child(3){min-width:190px;}
-#planningTables th:nth-child(5),#planningTables td:nth-child(5){min-width:170px;}
+#dashboard .table-wrap{padding-bottom:10px;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 55%,transparent) transparent;}
+#planningTables table{min-width:1080px;}
+#planningTables th:nth-child(1),#planningTables td:nth-child(1){min-width:130px;}
+#planningTables th:nth-child(2),#planningTables td:nth-child(2){min-width:320px;}
+#planningTables th:nth-child(3),#planningTables td:nth-child(3){min-width:240px;}
+#planningTables th:nth-child(4),#planningTables td:nth-child(4){min-width:130px;text-align:center;}
+#planningTables th:nth-child(5),#planningTables td:nth-child(5){min-width:260px;}
 #planningTables td,
 #congregations td,
-#dashboard td{height:48px;}
+#dashboard td{height:52px;line-height:1.35;}
 #planningTables td input,
 #planningTables td select,
 #planningTables td textarea,
 #congregations td input,
 #congregations td select,
-#congregations td textarea{min-height:40px;}
-#congregations .field-cell input{min-width:150px;}
-#congregations th:nth-child(1),#congregations td:nth-child(1){min-width:250px;}
-#congregations th:nth-child(3),#congregations td:nth-child(3){min-width:220px;}
-#congregations th:nth-child(4),#congregations td:nth-child(4){min-width:200px;}
-#congregations th:nth-child(5),#congregations td:nth-child(5){min-width:250px;}
-.contact-card{gap:14px;}
+#congregations td textarea{min-height:44px;}
+#planningTables td:nth-child(2),
+#congregations td:nth-child(1){font-weight:650;white-space:normal;overflow-wrap:anywhere;}
+#congregations table{min-width:1260px;}
+#congregations .field-cell input{min-width:180px;}
+#congregations th:nth-child(1),#congregations td:nth-child(1){min-width:300px;}
+#congregations th:nth-child(3),#congregations td:nth-child(3){min-width:250px;}
+#congregations th:nth-child(4),#congregations td:nth-child(4){min-width:220px;}
+#congregations th:nth-child(5),#congregations td:nth-child(5){min-width:280px;}
+#congregations th:nth-child(6),#congregations td:nth-child(6){min-width:230px;}
+.contact-card{gap:16px;padding:16px;}
 .action-row button,
 .contact-card button,
 .copy-field-btn,
@@ -287,7 +293,7 @@ nav.no-print button.active{
 .event-card-actions button,
 .ta-reminder-card-actions button{padding-inline:14px;}
 .icon-btn.action-text{width:auto;min-width:76px;padding:0 12px;font-size:13px;font-weight:700;}
-.template-box{padding:14px 16px;font-size:14px;line-height:1.6;}
+.template-box{padding:16px;font-size:14px;line-height:1.65;}
 .event-card{
   border:1px solid var(--line);
   border-radius:var(--radius-sm);
@@ -350,6 +356,27 @@ nav.no-print button.active{
 .ta-reminder-card-note{color:var(--muted);white-space:pre-wrap;line-height:1.45;}
 .ta-reminder-card-time{font-weight:700;color:var(--accent);}
 .ta-reminder-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.field-row{display:grid;gap:7px;margin-bottom:14px;}
+.field-row label{font-size:13px;font-weight:700;color:var(--muted);}
+.field-row input,.field-row select,.field-row textarea{min-height:46px;padding:10px 12px;}
+.field-row textarea{line-height:1.45;}
+.field-row.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.inline-check{display:flex;align-items:center;gap:10px;}
+.inline-check input{width:20px;height:20px;min-height:20px;}
+.modal-body{display:grid;gap:2px;}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:10px;}
+.modal-footer button{min-height:44px;min-width:96px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.modal-header strong{font-size:18px;}
+#evTypeField{font-weight:650;}
+.color-swatches{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px;}
+.color-swatch{width:34px;height:34px;border-radius:999px;border:2px solid color-mix(in srgb,var(--line) 70%,transparent);}
+.color-swatch.active{outline:3px solid color-mix(in srgb,var(--accent) 50%,transparent);outline-offset:2px;}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 72%,transparent);outline-offset:2px;}
 
 /* ── Tabular numeric values ── */
 .kpi-val,.num,.tabular,.progress-val{
@@ -363,6 +390,8 @@ nav.no-print button.active{
   nav.no-print{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;gap:10px;}
   nav.no-print button{min-width:auto;padding-inline:13px;font-size:14px;}
   .section-head{align-items:flex-start;}
+  .section-head-actions{width:100%;}
+  .section-head-actions button{min-height:44px;}
   .list-tools{width:100%;}
   .search{width:100%;}
   .contact-card{padding:16px;}
@@ -372,6 +401,9 @@ nav.no-print button.active{
   .cal-ml{min-width:140px;font-size:15px;}
   .event-card-actions,.ta-reminder-card-actions{width:100%;}
   .event-card-actions button,.ta-reminder-card-actions button{flex:1 1 auto;}
+  .field-row.two-col{grid-template-columns:1fr;}
+  .modal-footer{display:grid;grid-template-columns:1fr;gap:8px;}
+  .modal-footer button{width:100%;}
   input,select,textarea,
   td input,td select,td textarea,
   .modal label input{font-size:16px;}
