@@ -9,7 +9,7 @@ owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-9a-final-frontend-polish-code-implemented-pending-live-review
 next_stage: stage-9a-live-verification-then-stage-9b-push-backend
-cache_version: talk-arrangements-v95-stage-9a-live-verification
+cache_version: talk-arrangements-v96-stage-9a-live-approved
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -208,6 +208,15 @@ Stage 9A v94 live verification issue found:
 Stage 9A v95 live-verification fix:
 - Changed the Congregations email table header from `data-i18n="email"` to the app-owned `data-i18n="mail"` key so EN remains `Email` and ES renders `Correo`.
 - Bumped service worker cache from `talk-arrangements-v94-stage-9a-final-polish` to `talk-arrangements-v95-stage-9a-live-verification`.
+
+Stage 9A v95 browser verification issue found:
+- Mobile browser verification found the Events add button rendered as `＋ + Agregar evento`.
+- Cause: the button has a visible plus icon in `index.html` and the `addEvent` translation string also included a leading `+`.
+- Required source-only fix: remove the duplicate leading plus from the EN/ES `addEvent` strings while keeping the button icon.
+
+Stage 9A v96 duplicate-plus fix:
+- Changed `addEvent` strings to `Add Event` and `Agregar evento`; the button keeps the standalone plus icon from `index.html`.
+- Bumped service worker cache from `talk-arrangements-v95-stage-9a-live-verification` to `talk-arrangements-v96-stage-9a-live-approved`.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
