@@ -7,8 +7,8 @@ created: 2026-06-23
 last_updated: 2026-06-26
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9-final-polish-and-push-backend-in-progress
-next_stage: stage-9-live-verification-after-final-polish-and-push-backend
+current_stage: stage-9a-final-frontend-polish-in-progress
+next_stage: stage-9a-live-verification-then-stage-9b-push-backend
 cache_version: talk-arrangements-v91-stage-9-final-repair
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
@@ -154,6 +154,35 @@ Required final polish target:
 - Finish or document the Cloudflare push backend exactly. Do not commit private secrets.
 - If Cloudflare credentials/secrets are missing, stop and list exactly what David must configure.
 - Do not start Release Candidate or Stage 10.
+
+## Stage 9A Final Frontend Polish Intake (2026-06-27)
+
+Scope update:
+- Stage 9A is frontend/UI polish only.
+- Cloudflare Workers, VAPID, Push API backend, KV, D1, cron jobs, subscription storage, and closed-app notification backend work are moved to a separate future Stage 9B.
+- Missing Cloudflare backend credentials are no longer a stop condition for Stage 9A.
+- Do not start Release Candidate or Stage 10.
+
+Stage 9A required fixes:
+- Eliminate remaining source/visible mojibake and encoding issues across the app.
+- Use JW-correct event terminology everywhere in EN/ES.
+- Replace the Memorial/Conmemoración candle icon with a cleaner memorial icon.
+- Improve mobile planning/congregation table readability with intentional horizontal scrolling and wider columns.
+- Improve action button tap targets, spacing, alignment, and clarity.
+- Polish Add/Edit Event modal spacing, layout, typography, and controls.
+- Polish calendar headers, navigation, filters, dark mode, empty state, and event indicators.
+- Polish Reminder cards, spacing, typography, badges, and actions.
+- Review Dashboard, Planning, Congregations, Events, Reminders, and Settings at mobile/tablet/landscape widths.
+- Audit translations for mixed language, capitalization, and untranslated labels.
+- Improve touch targets, contrast, focus states, and labels where safe.
+
+Stage 9A cache target:
+- `talk-arrangements-v92-stage-9-final-polish-push`
+
+Known source gaps before Stage 9A work:
+- `js/app.js` still uses `Assembly`, `Convention`, `Convención`, `Visita del Superintendente`, and the candle icon for Memorial/Conmemoración.
+- `index.html` event type options still use `Assembly` and `Convention`.
+- `js/unified-note-modal.js` contains old example wording for Assembly and Circuit overseer visit.
 
 ## Stage 9 Regression Repair (2026-06-26)
 
