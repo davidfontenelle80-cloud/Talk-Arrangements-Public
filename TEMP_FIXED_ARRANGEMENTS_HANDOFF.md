@@ -348,6 +348,39 @@ NoClip reference inspection classification: `COMPLETE`
 
 Stage 9B-B implementation classification: `BLOCKED`
 
+## Stage 9B-B Resume Attempt After Token Rotation (2026-06-27)
+
+David reported that the previous exposed Cloudflare token was revoked and a regenerated token should be used only through the secure development environment.
+
+Codex rechecked the local secure environment without printing any secret values.
+
+Result: `BLOCKED`
+
+Verified current state:
+
+- `wrangler` is not available on PATH.
+- No deployable `cloudflare/talk-arrangements-push/wrangler.toml` exists.
+- `CLOUDFLARE_API_TOKEN` is not set in the current process environment.
+- `CLOUDFLARE_ACCOUNT_ID` is not set in the current process environment.
+- `CF_API_TOKEN` is not set in the current process environment.
+- `VAPID_PUBLIC_KEY` is not set in the current process environment.
+- `VAPID_PRIVATE_KEY` is not set in the current process environment.
+- `VAPID_SUBJECT` is not set in the current process environment.
+- `ALLOWED_ORIGIN` is not set in the current process environment.
+- `TALK_PUSH_WORKER_URL` is not set in the current process environment.
+
+No Worker, D1/KV, VAPID, cron, frontend config, or service-worker code was changed in this attempt.
+
+Exact next action required from David:
+
+1. Install or make Wrangler available, or explicitly authorize using `npx wrangler`.
+2. Provide Cloudflare auth to this process through the secure environment as `CLOUDFLARE_API_TOKEN`.
+3. Provide `CLOUDFLARE_ACCOUNT_ID` through the secure environment.
+4. Provide or authorize generating VAPID keys, with only the public key committed and the private key stored as a Cloudflare secret.
+5. Confirm D1 is approved for Talk Arrangements to match the NoClip pattern.
+
+Stage 9B-B remains blocked until those items are available to the execution environment.
+
 ## Next Authorized Stage
 
 Stage 9A v101 app-controls polish is live-approved.
