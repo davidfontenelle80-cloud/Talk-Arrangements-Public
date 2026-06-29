@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v101-stage-9a-app-controls-polish';
+const CACHE_VERSION = 'talk-arrangements-v102-web-push-worker-ready';
 
 const PRECACHE_URLS = [
   './',
@@ -29,6 +29,7 @@ const PRECACHE_URLS = [
   './js/components/card.js',
   './js/components/input.js',
   './js/perf.js',
+  './js/push-config.js',
   './js/push.js',
   './js/app.js?v=stage9a-v97',
   './js/firebase/firebase-config.js',

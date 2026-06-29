@@ -11,8 +11,8 @@ compatibility_date = "2026-06-27"
 # GitHub Pages origin for Talk Arrangements.
 [vars]
 ALLOWED_ORIGIN = "https://davidfontenelle80-cloud.github.io"
-VAPID_PUBLIC_KEY = "REPLACE_WITH_PUBLIC_VAPID_KEY"
-VAPID_SUBJECT = "mailto:REPLACE_WITH_CONTACT_EMAIL"
+VAPID_PUBLIC_KEY = "BIe93k4JqNNiEgVpwSf2sXwhIqDdoXxdSECJdKVgCt_2R7EKADVFZqlUHxJ-lzpenLyrv49V8ckxyWW8p5ErXw0"
+VAPID_SUBJECT = "mailto:davidfontenelle80@gmail.com"
 
 # Use one of these storage options. KV is the simplest starting point for v1.
 # Create with:
@@ -21,7 +21,7 @@ VAPID_SUBJECT = "mailto:REPLACE_WITH_CONTACT_EMAIL"
 
 [[kv_namespaces]]
 binding = "PUSH_STORE"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "5cd8802b64b348e6ba2983ecfa273da5"
 preview_id = "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID"
 
 # Scheduled trigger. Runs every minute. If Cloudflare plan limits apply,

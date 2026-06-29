@@ -4,12 +4,12 @@ repo: davidfontenelle80-cloud/Talk-Arrangements-Public
 app: Talk Arrangements
 status: active-temporary
 created: 2026-06-23
-last_updated: 2026-06-27
+last_updated: 2026-06-29
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
-current_stage: stage-9b-b-blocked-cloudflare-credentials-and-config-unavailable
-next_stage: stage-9b-b-resume-after-cloudflare-credentials-and-config
-cache_version: talk-arrangements-v101-stage-9a-app-controls-polish
+current_stage: stage-9b-b-backend-deployed-configured-device-verification-pending
+next_stage: stage-9b-b-frontend-live-deploy-and-closed-app-push-verification
+cache_version: talk-arrangements-v102-web-push-worker-ready
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -23,15 +23,15 @@ Stage 9B-A Cloudflare push backend scaffold is complete.
 
 Stage 9B-B Cloudflare Deploy and WebPush Delivery was activated and rechecked.
 
-Stage 9B-B status: `BLOCKED - CLOUDFLARE CREDENTIALS AND DEPLOY CONFIGURATION UNAVAILABLE`
+Stage 9B-B status: `BACKEND DEPLOYED AND CONFIGURED - FRONTEND LIVE DEPLOY AND CLOSED-APP PUSH VERIFICATION PENDING`
 
 Stage 9A approval classification: `APPROVED`
 
 Stage 9A deployment classification: `DEPLOYED AND LIVE VERIFIED`
 
-Stage 9B-B approval classification: `BLOCKED`
+Stage 9B-B approval classification: `NOT APPROVED`
 
-Stage 9B-B deployment classification: `NOT YET DEPLOYED`
+Stage 9B-B deployment classification: `BACKEND DEPLOYED AND CONFIGURED`
 
 Do not start Release Candidate or Stage 10.
 
@@ -381,11 +381,101 @@ Exact next action required from David:
 
 Stage 9B-B remains blocked until those items are available to the execution environment.
 
+## Stage 9B-B Cloudflare Deployment Continuation (2026-06-29)
+
+David confirmed Cloudflare Free plan should be preserved. Current architecture remains Free-plan compatible for personal use: one Worker, one KV namespace, and one scheduled cron trigger.
+
+Cloudflare resources now verified:
+
+- Worker name: `talk-arrangements-push`
+- Worker URL: `https://talk-arrangements-push.davidfontenelle80.workers.dev`
+- Active Worker version: `dc6f63c4-22d7-4fa1-a1af-edc3ab9423a5`
+- KV namespace name: `talk-arrangements-push-store`
+- KV namespace ID: `5cd8802b64b348e6ba2983ecfa273da5`
+- KV binding name: `PUSH_STORE`
+- Cron trigger: `* * * * *`
+
+Public frontend configuration:
+
+- `js/push-config.js` contains the Worker URL.
+- `js/push-config.js` contains the public VAPID key.
+- `sw.js` cache version is `talk-arrangements-v102-web-push-worker-ready`.
+
+VAPID status:
+
+- Fresh VAPID pair generated for Talk Arrangements.
+- Public key is committed only in frontend/public config.
+- Private key has not been printed or committed.
+- Private key is stored only as Cloudflare Worker secret `VAPID_PRIVATE_KEY`.
+
+Cloudflare configuration completed:
+
+1. KV namespace `talk-arrangements-push-store` bound to Worker binding name `PUSH_STORE`.
+2. Worker variable `ALLOWED_ORIGIN=https://davidfontenelle80-cloud.github.io` configured.
+3. Worker variable `VAPID_PUBLIC_KEY` configured from `js/push-config.js`.
+4. Worker variable `VAPID_SUBJECT=mailto:davidfontenelle80@gmail.com` configured.
+5. Worker secret `VAPID_PRIVATE_KEY` configured through Wrangler; private value was not printed or committed.
+6. Cron trigger `* * * * *` configured.
+7. Existing Worker redeployed through Wrangler; Worker/KV were not recreated.
+
+Endpoint verification status:
+
+- `GET /api/health`: HTTP 200; reports `hasStore=true`, `hasVapidPublicKey=true`, `hasVapidPrivateKey=true`, and `hasVapidSubject=true`.
+- `POST /api/subscribe`: HTTP 200 with a non-real verification subscription.
+- `POST /api/reminders`: HTTP 200 with a non-real verification subscription.
+- `DELETE /api/reminders/:sourceType/:sourceId`: HTTP 200 with a non-real verification subscription.
+- `POST /api/test-push`: pending a real browser `PushSubscription`; dummy subscriptions cannot verify Web Push delivery.
+
+Verification conclusion:
+
+- Worker code is deployed and reachable.
+- Cloudflare binding/variables/secret/cron are attached to the active Worker runtime.
+- Do not recreate the Worker or KV namespace.
+- Real push delivery still requires a live frontend/browser subscription and device verification.
+
+Frontend verification status:
+
+- Notification permission: pending live frontend/device test.
+- Subscription stored: pending live frontend/device test.
+- Reminder saved: pending live frontend/device test.
+- Reminder updated: pending live frontend/device test.
+- Reminder deleted: pending live frontend/device test.
+- Test push received: pending live frontend/device test.
+- Scheduled reminder received: pending live frontend/device test.
+- App closed / phone locked notification: pending installed iPhone PWA test.
+- Notification tap opens app: pending installed iPhone PWA test.
+
+Files changed in current Stage 9B-B work:
+
+- `cloudflare/talk-arrangements-push/worker.js`
+- `cloudflare/talk-arrangements-push/wrangler.toml.example`
+- `cloudflare/talk-arrangements-push/README.md`
+- `cloudflare/talk-arrangements-push/wrangler.toml`
+- `docs/STAGE_9B_CLOUDFLARE_PUSH_CHECKLIST.md`
+- `index.html`
+- `js/push.js`
+- `js/push-config.js`
+- `sw.js`
+- `TEMP_FIXED_ARRANGEMENTS_HANDOFF.md`
+
+Commit hashes:
+
+- Worker/dashboard deployed version: `dc6f63c4-22d7-4fa1-a1af-edc3ab9423a5`
+- Local repo commit: pending.
+
+Deployment classification: `BACKEND DEPLOYED AND CONFIGURED`
+
+Approval classification: `NOT APPROVED`
+
+Current completion: `85%`
+
+Next authorized stage: complete Stage 9B-B frontend live deploy, real push subscription verification, scheduled reminder verification, and closed-app iPhone PWA verification only.
+
 ## Next Authorized Stage
 
 Stage 9A v101 app-controls polish is live-approved.
 
-Current authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`, blocked pending Cloudflare credentials/configuration.
+Current authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`, backend deployed/configured and pending frontend live deploy plus device verification.
 
 Next authorized stage: none until Stage 9B-B is implemented, deployed, and live verified.
 

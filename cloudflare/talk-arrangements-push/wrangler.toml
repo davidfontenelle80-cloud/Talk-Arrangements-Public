@@ -1,0 +1,23 @@
+name = "talk-arrangements-push"
+main = "worker.js"
+compatibility_date = "2026-06-27"
+account_id = "3df617adc3ddf2b3ed89cedbbb917fab"
+preview_urls = false
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+
+[vars]
+ALLOWED_ORIGIN = "https://davidfontenelle80-cloud.github.io"
+VAPID_PUBLIC_KEY = "BIe93k4JqNNiEgVpwSf2sXwhIqDdoXxdSECJdKVgCt_2R7EKADVFZqlUHxJ-lzpenLyrv49V8ckxyWW8p5ErXw0"
+VAPID_SUBJECT = "mailto:davidfontenelle80@gmail.com"
+
+[[kv_namespaces]]
+binding = "PUSH_STORE"
+id = "5cd8802b64b348e6ba2983ecfa273da5"
+
+[triggers]
+crons = ["* * * * *"]
