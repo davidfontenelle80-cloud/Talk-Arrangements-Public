@@ -31,7 +31,7 @@
     .cal-filter-sel{padding:4px 8px;border-radius:6px;border:1px solid var(--border,#ddd);background:var(--bg,#fff);color:inherit;font-size:.85rem}
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
     .cal-hdr{text-align:center;font-size:.7rem;font-weight:600;padding:3px;opacity:.6;text-transform:uppercase}
-    .cal-day{min-height:52px;padding:3px;border-radius:6px;background:var(--surface,#fff);border:1px solid var(--border,#eee);cursor:default;transition:background .12s}
+    .cal-day{min-height:52px;padding:3px;border-radius:6px;background:var(--panel,#fff);border:1px solid var(--border,#eee);cursor:default;transition:background .12s}
     .cal-has-ev{cursor:pointer}
     .cal-has-ev:hover{background:rgba(200,169,110,.1)}
     .cal-today{border-color:var(--color-primary,#C8A96E)!important}
@@ -40,7 +40,7 @@
     .cal-dn{font-size:.78rem;font-weight:500;line-height:1.2}
     .cal-badges{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
     .cal-badge{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-    .cal-det-panel{margin-top:10px;padding:12px;background:var(--surface,#fff);border-radius:10px;border:1px solid var(--border,#eee)}
+    .cal-det-panel{margin-top:10px;padding:12px;background:var(--panel,#fff);border-radius:10px;border:1px solid var(--border,#eee)}
     .cal-det-inner{position:relative;padding-top:4px}
     .cal-det-cls{position:absolute;right:0;top:0}
     .cal-det-card{padding:8px 0;border-bottom:1px solid var(--border,#eee)}
@@ -49,7 +49,7 @@
     .cal-det-title{font-size:.95rem;font-weight:700}
     .cal-det-dates{font-size:.78rem;opacity:.6;margin-top:2px}
     .cal-det-desc{font-size:.82rem;margin-top:5px}
-    .up-widget{padding:10px 12px;background:var(--surface,#fff);border-radius:10px;border:1px solid var(--border,#eee);margin-bottom:12px}
+    .up-widget{padding:10px 12px;background:var(--panel,#fff);border-radius:10px;border:1px solid var(--border,#eee);margin-bottom:12px}
     .up-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
     .up-title{font-weight:700;font-size:.9rem}
     .up-badge{background:var(--color-primary,#C8A96E);color:#fff;border-radius:10px;padding:2px 8px;font-size:.75rem;font-weight:600}
@@ -376,31 +376,31 @@
 
   <!-- Stage 9: Reminder Modal -->
   <div id="reminderModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;">
-    <div style="background:var(--surface,#1e2130);border-radius:12px;padding:24px;min-width:320px;max-width:480px;width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+    <div style="background:var(--panel,#1e2130);border-radius:12px;padding:24px;min-width:320px;max-width:480px;width:90vw;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
       <h3 id="reminderModalTitle" style="margin:0 0 16px;color:var(--text,#fff)">Reminder</h3>
       <input type="hidden" id="reminderIdField">
       <div style="margin-bottom:12px">
         <label style="display:block;color:var(--muted,#aaa);font-size:0.85em;margin-bottom:4px"><span data-i18n="reminders.title">Title</span> *</label>
-        <input type="text" id="reminderTitleField" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--input-bg,#2a2f45);color:var(--text,#fff)" placeholder="Reminder title">
+        <input type="text" id="reminderTitleField" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--panel-2,#2a2f45);color:var(--text,#fff)" placeholder="Reminder title">
       </div>
       <div style="margin-bottom:12px">
         <label style="display:block;color:var(--muted,#aaa);font-size:0.85em;margin-bottom:4px" data-i18n="reminders.note">Note</label>
-        <textarea id="reminderNoteField" rows="2" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--input-bg,#2a2f45);color:var(--text,#fff);resize:vertical"></textarea>
+        <textarea id="reminderNoteField" rows="2" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--panel-2,#2a2f45);color:var(--text,#fff);resize:vertical"></textarea>
       </div>
       <div style="display:flex;gap:12px;margin-bottom:16px">
         <div style="flex:1">
           <label style="display:block;color:var(--muted,#aaa);font-size:0.85em;margin-bottom:4px"><span data-i18n="reminders.date">Date</span> *</label>
-          <input type="date" id="reminderDateField" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--input-bg,#2a2f45);color:var(--text,#fff)">
+          <input type="date" id="reminderDateField" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--panel-2,#2a2f45);color:var(--text,#fff)">
         </div>
         <div style="flex:1">
           <label style="display:block;color:var(--muted,#aaa);font-size:0.85em;margin-bottom:4px" data-i18n="reminders.time">Time</label>
-          <input type="time" id="reminderTimeField" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--input-bg,#2a2f45);color:var(--text,#fff)">
+          <input type="time" id="reminderTimeField" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:6px;border:1px solid var(--border,#333);background:var(--panel-2,#2a2f45);color:var(--text,#fff)">
         </div>
       </div>
       <div class="ta-reminder-modal-actions" style="display:flex;gap:8px;justify-content:flex-end">
         <button id="reminderDeleteModalBtn" style="display:none;padding:8px 14px;border-radius:6px;border:none;background:#c0392b;color:#fff;cursor:pointer" data-i18n="reminders.deleteReminder">Delete</button>
-        <button id="reminderCancelBtn" style="padding:8px 14px;border-radius:6px;border:none;background:var(--btn-bg,#444);color:var(--text,#fff);cursor:pointer" data-i18n="reminders.cancel">Cancel</button>
-        <button id="reminderSaveBtn" style="padding:8px 14px;border-radius:6px;border:none;background:var(--primary,#5b8cff);color:#fff;cursor:pointer" data-i18n="reminders.save">Save</button>
+        <button id="reminderCancelBtn" style="padding:8px 14px;border-radius:6px;border:none;background:var(--panel-2,#444);color:var(--text,#fff);cursor:pointer" data-i18n="reminders.cancel">Cancel</button>
+        <button id="reminderSaveBtn" style="padding:8px 14px;border-radius:6px;border:none;background:var(--accent,#5b8cff);color:#fff;cursor:pointer" data-i18n="reminders.save">Save</button>
       </div>
     </div>
   </div>
