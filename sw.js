@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v103-theme-token-fixes';
+const CACHE_VERSION = 'talk-arrangements-v104-delivery-hint';
 
 const PRECACHE_URLS = [
   './',
