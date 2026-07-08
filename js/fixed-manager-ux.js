@@ -15,6 +15,52 @@
   function selectedCongregation(){var el=document.getElementById('fixedRuleCong');return el?el.value:'';}
   function rules(){return state&&Array.isArray(state.fixedArrangements)?state.fixedArrangements:[];}
 
+  function normalizeCongregationName(value){
+    return String(value||'').toLowerCase().replace(/\s+/g,' ').trim().replace(/newlondon/g,'new london');
+  }
+
+  function syncFixedCongregationFlags(){
+    if(typeof state==='undefined'||!state||!Array.isArray(state.congregations))return false;
+    var fixedNames=[];
+    rules().forEach(function(rule){
+      var name=normalizeCongregationName(rule&&rule.congregation);
+      if(name&&fixedNames.indexOf(name)===-1)fixedNames.push(name);
+    });
+    if(!fixedNames.length)return false;
+    var changed=false;
+    state.congregations.forEach(function(cong){
+      if(!cong)return;
+      if(fixedNames.indexOf(normalizeCongregationName(cong.name))!==-1&&!cong.isFixed){
+        cong.isFixed=true;
+        changed=true;
+      }
+    });
+    return changed;
+  }
+
+  function refreshFixedCheckboxViews(){
+    if(typeof renderCongregations==='function')renderCongregations();
+    if(typeof renderDashboard==='function')renderDashboard();
+    else if(typeof renderConflicts==='function')renderConflicts();
+    if(typeof renderPlanning==='function')renderPlanning();
+  }
+
+  function installAutoFixedCheckboxSync(){
+    if(window.__fixedAutoCheckboxSyncInstalled||typeof saveState!=='function')return;
+    window.__fixedAutoCheckboxSyncInstalled=true;
+    var originalSaveState=saveState;
+    saveState=function(){
+      var changed=syncFixedCongregationFlags();
+      var result=originalSaveState.apply(this,arguments);
+      if(changed)setTimeout(refreshFixedCheckboxViews,0);
+      return result;
+    };
+    if(syncFixedCongregationFlags()){
+      originalSaveState();
+      refreshFixedCheckboxViews();
+    }
+  }
+
   function ensureStyles(){
     if(document.getElementById('fixedManagerUxStyles'))return;
     var css=''+
@@ -161,6 +207,7 @@
   (function monitor(){
     tries++;
     ensureStyles();
+    installAutoFixedCheckboxSync();
     setupModeListeners();
     if(tries<240)setTimeout(monitor,500);
   })();
