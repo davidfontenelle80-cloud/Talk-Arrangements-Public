@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v105-lead-time-check';
+const CACHE_VERSION = 'talk-arrangements-v106-fixed-autocheck';
 
 const PRECACHE_URLS = [
   './',
