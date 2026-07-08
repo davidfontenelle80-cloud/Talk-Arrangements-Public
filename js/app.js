@@ -1,4 +1,4 @@
-ï»¿/**
+/**
  * app.js â Talk Arrangements
  * Public talk schedule manager for Spanish-speaking JW congregation.
  */
