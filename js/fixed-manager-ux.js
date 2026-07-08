@@ -26,12 +26,15 @@
       var name=normalizeCongregationName(rule&&rule.congregation);
       if(name&&fixedNames.indexOf(name)===-1)fixedNames.push(name);
     });
-    if(!fixedNames.length)return false;
+    // Read-only mirror: a congregation's FIXED flag exactly reflects whether it
+    // appears in the Fixed Arrangements schedule. In schedule -> checked; removed
+    // from schedule -> unchecked. This runs on every saveState.
     var changed=false;
     state.congregations.forEach(function(cong){
       if(!cong)return;
-      if(fixedNames.indexOf(normalizeCongregationName(cong.name))!==-1&&!cong.isFixed){
-        cong.isFixed=true;
+      var shouldBeFixed=fixedNames.indexOf(normalizeCongregationName(cong.name))!==-1;
+      if(shouldBeFixed!==!!cong.isFixed){
+        cong.isFixed=shouldBeFixed;
         changed=true;
       }
     });
@@ -59,6 +62,30 @@
       originalSaveState();
       refreshFixedCheckboxViews();
     }
+    // Read-only: the FIXED checkbox is a pure indicator of the Fixed Arrangements
+    // schedule and cannot be toggled by hand. Disable it after every render.
+    if(typeof renderCongregations==='function'&&!window.__fixedReadOnlyWrapInstalled){
+      window.__fixedReadOnlyWrapInstalled=true;
+      var originalRenderCongregations=renderCongregations;
+      renderCongregations=function(){
+        var r=originalRenderCongregations.apply(this,arguments);
+        setTimeout(enforceFixedCheckboxReadOnly,0);
+        return r;
+      };
+    }
+  }
+
+  function enforceFixedCheckboxReadOnly(){
+    try{
+      var boxes=document.querySelectorAll('input[data-field="isFixed"]');
+      for(var i=0;i<boxes.length;i++){
+        var cb=boxes[i];
+        cb.disabled=true;
+        cb.style.cursor='not-allowed';
+        cb.style.opacity='0.9';
+        cb.title=txt('Set automatically by the Fixed Arrangements schedule','Se marca automaticamente segun el programa de Arreglos Fijos');
+      }
+    }catch(e){}
   }
 
   function ensureStyles(){
@@ -209,6 +236,7 @@
     ensureStyles();
     installAutoFixedCheckboxSync();
     setupModeListeners();
+    enforceFixedCheckboxReadOnly();
     if(tries<240)setTimeout(monitor,500);
   })();
 })();
