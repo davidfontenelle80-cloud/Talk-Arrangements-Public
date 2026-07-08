@@ -7,6 +7,15 @@
 (function () {
   'use strict';
 
+  // Align reminder timing with the worker, which sweeps every minute. app.js still
+  // ships an old 15-minute assumption (MIN_REMINDER_LEAD_MINUTES / REMINDER_CHECK_MINUTES);
+  // these are global vars read at call time, so overriding them here fixes the
+  // over-strict lead requirement and makes the "delivers around" hint accurate.
+  try {
+    window.REMINDER_CHECK_MINUTES = 1;
+    window.MIN_REMINDER_LEAD_MINUTES = 2;
+  } catch (e) {}
+
   // ---- shared helpers ----
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {

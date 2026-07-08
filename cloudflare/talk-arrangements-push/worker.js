@@ -66,6 +66,36 @@ function reminderKey(subscriptionId, sourceType, sourceId) {
   return `reminder:${subscriptionId}:${sourceType}:${sourceId}`;
 }
 
+// ── Due-minute buckets (avoids namespace-wide KV list; mirrors ministry-tracker) ──
+const DUE_BUCKET_LOOKBACK_MINUTES = 12;
+function dueBucketMinute(fireAtIso) {
+  const d = new Date(fireAtIso);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+}
+function dueBucketKey(minute) {
+  return `due:${minute}`;
+}
+async function addReminderToDueBucket(store, minute, key) {
+  if (!minute) return;
+  const bucketKey = dueBucketKey(minute);
+  const current = await store.get(bucketKey, 'json').catch(() => null);
+  const keys = Array.isArray(current && current.keys) ? current.keys : [];
+  if (keys.indexOf(key) === -1) keys.push(key);
+  await store.put(bucketKey, JSON.stringify({ minute, keys, updatedAt: new Date().toISOString() }), {
+    expirationTtl: 60 * 60 * 24 * 3,
+  });
+}
+function dueBucketMinutesToCheck(now) {
+  const base = new Date((now || new Date()).getTime());
+  base.setSeconds(0, 0);
+  const out = [];
+  for (let i = DUE_BUCKET_LOOKBACK_MINUTES; i >= 0; i -= 1) {
+    out.push(new Date(base.getTime() - i * 60000).toISOString().slice(0, 16));
+  }
+  return out;
+}
+
 function textBytes(value) {
   return new TextEncoder().encode(String(value));
 }
@@ -205,18 +235,20 @@ async function encryptPushPayload(subscription, payload) {
 }
 
 async function listDueReminderKeys(store, nowIso) {
-  // KV list is eventually consistent. For v1 this is acceptable for reminders.
-  // Codex may replace with D1 indexing if precision/scale requires it.
+  // Read only the current due-minute bucket plus a short lookback, never the
+  // whole namespace. Stale bucket entries are safe: missing/sent records skip.
   const due = [];
-  let cursor;
-  do {
-    const page = await store.list({ prefix: 'reminder:', cursor });
-    cursor = page.cursor;
-    for (const key of page.keys || []) {
-      const item = await store.get(key.name, 'json');
-      if (item && item.fireAt && item.fireAt <= nowIso && !item.sentAt) due.push({ key: key.name, item });
+  const seen = Object.create(null);
+  for (const minute of dueBucketMinutesToCheck(new Date(nowIso))) {
+    const bucket = await store.get(dueBucketKey(minute), 'json').catch(() => null);
+    const keys = Array.isArray(bucket && bucket.keys) ? bucket.keys : [];
+    for (const keyName of keys) {
+      if (seen[keyName]) continue;
+      seen[keyName] = true;
+      const item = await store.get(keyName, 'json').catch(() => null);
+      if (item && item.fireAt && item.fireAt <= nowIso && !item.sentAt) due.push({ key: keyName, item });
     }
-  } while (cursor);
+  }
   return due;
 }
 
@@ -229,6 +261,7 @@ async function handleHealth(request, env) {
     hasVapidPrivateKey: !!env.VAPID_PRIVATE_KEY,
     hasVapidSubject: !!env.VAPID_SUBJECT,
     webPushDeliveryImplemented: true,
+    dueBucketScheduler: true,
   }, 200, corsHeaders(request, env));
 }
 
@@ -287,8 +320,11 @@ async function handleUpsertReminder(request, env) {
     updatedAt: new Date().toISOString(),
   };
 
-  await store.put(reminderKey(subscriptionId, sourceType, sourceId), JSON.stringify(record));
-  return json({ ok: true, reminder: record }, 200, headers);
+  const rKey = reminderKey(subscriptionId, sourceType, sourceId);
+  await store.put(rKey, JSON.stringify(record));
+  const bucketMinute = dueBucketMinute(fireAt);
+  await addReminderToDueBucket(store, bucketMinute, rKey);
+  return json({ ok: true, reminder: record, dueBucketMinute: bucketMinute }, 200, headers);
 }
 
 async function handleDeleteReminder(request, env, pathname) {
