@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v107-fixed-readonly';
+const CACHE_VERSION = 'talk-arrangements-v108-cloud-account-ui';
 
 const PRECACHE_URLS = [
   './',
@@ -24,6 +24,7 @@ const PRECACHE_URLS = [
   './js/unified-note-modal.js',
   './js/mobile-toolbar.js',
   './js/duplicate-congregation-guardrail.js',
+  './js/cloud-account-ui.js',
   './js/components/button.js',
   './js/components/modal.js',
   './js/components/card.js',
