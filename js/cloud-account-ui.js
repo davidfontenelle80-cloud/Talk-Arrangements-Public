@@ -1,17 +1,13 @@
 /**
- * cloud-account-ui.js — adds a persistent Cloud Account (Sign in / Sign out)
- * control to the Settings > Backup & restore panel. Self-diagnosing: if cloud
- * sign-in is not available on this device it says so instead of hiding.
+ * cloud-account-ui.js — adds two persistent controls to the Settings > Backup &
+ * restore panel: a Cloud Account (Sign in / Sign out) button and a one-tap
+ * Enable notifications button. Both are self-diagnosing: if a capability is not
+ * available on this device they say so instead of hiding.
  */
 (function () {
   'use strict';
 
-  function fbReady() {
-    return !!(window.KHub && KHub.Firebase && KHub.Firebase.auth && KHub.CloudAuth);
-  }
-  function currentUser() {
-    return (window.KHub && KHub.CloudAuth && KHub.CloudAuth.currentUser) ? KHub.CloudAuth.currentUser() : null;
-  }
+  // ---- shared helpers ----
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -23,24 +19,34 @@
     el.textContent = msg;
     el.classList.add('show');
     clearTimeout(toast._t);
-    toast._t = setTimeout(function () { el.classList.remove('show'); }, 2800);
+    toast._t = setTimeout(function () { el.classList.remove('show'); }, 3200);
+  }
+  function anchorRow() {
+    var save = document.getElementById('settingsCloudSaveBtn');
+    return (save && save.parentNode) ? save : null;
   }
 
-  function ensureButton() {
-    var save = document.getElementById('settingsCloudSaveBtn');
-    if (!save || !save.parentNode) { return null; }
+  // ---- Cloud account (sign in / sign out) ----
+  function fbReady() {
+    return !!(window.KHub && KHub.Firebase && KHub.Firebase.auth && KHub.CloudAuth);
+  }
+  function currentUser() {
+    return (window.KHub && KHub.CloudAuth && KHub.CloudAuth.currentUser) ? KHub.CloudAuth.currentUser() : null;
+  }
+  function ensureAccountBtn() {
+    var save = anchorRow();
+    if (!save) { return null; }
     var btn = document.getElementById('settingsCloudAccountBtn');
     if (!btn) {
       btn = document.createElement('button');
       btn.id = 'settingsCloudAccountBtn';
       btn.type = 'button';
-      save.parentNode.insertBefore(btn, save); // account control first in the row
-      btn.addEventListener('click', onClick);
+      save.parentNode.insertBefore(btn, save);
+      btn.addEventListener('click', onAccountClick);
     }
     return btn;
   }
-
-  function updateLabel() {
+  function updateAccountLabel() {
     var btn = document.getElementById('settingsCloudAccountBtn');
     if (!btn) { return; }
     if (!fbReady()) {
@@ -59,13 +65,12 @@
       btn.title = 'Sign in to enable cloud backup and sync across devices.';
     }
   }
-
-  function onClick() {
+  function onAccountClick() {
     if (!fbReady()) { return; }
     var u = currentUser();
     if (u) {
       var doSignOut = function () {
-        KHub.CloudAuth.signOut().then(function () { toast('Signed out of cloud backup'); updateLabel(); });
+        KHub.CloudAuth.signOut().then(function () { toast('Signed out of cloud backup'); updateAccountLabel(); });
       };
       if (typeof window.showConfirm === 'function') { window.showConfirm('Sign out of cloud backup?', doSignOut); }
       else if (window.confirm('Sign out of cloud backup?')) { doSignOut(); }
@@ -74,20 +79,93 @@
     KHub.CloudAuth.openDialog().then(function (result) {
       if (result === 'reset-sent') { toast('Password reset email sent'); }
       else if (result) { toast('Signed in to cloud backup'); }
-      updateLabel();
+      updateAccountLabel();
     }).catch(function () {});
   }
 
+  // ---- Enable notifications (one tap: permission + push subscribe) ----
+  function pushReady() { return !!(window.TalkPush && typeof window.TalkPush.subscribe === 'function'); }
+  function notifSupported() {
+    return ('Notification' in window) && ('serviceWorker' in navigator) && ('PushManager' in window);
+  }
+  function isIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent || ''); }
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  }
+  function ensureNotifBtn() {
+    var save = anchorRow();
+    if (!save) { return null; }
+    var btn = document.getElementById('settingsNotifBtn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'settingsNotifBtn';
+      btn.type = 'button';
+      save.parentNode.insertBefore(btn, save); // sits between account button and Cloud Save
+      btn.addEventListener('click', onNotifClick);
+    }
+    return btn;
+  }
+  function updateNotifLabel() {
+    var btn = document.getElementById('settingsNotifBtn');
+    if (!btn) { return; }
+    if (!notifSupported() || !pushReady()) {
+      btn.disabled = true;
+      btn.innerHTML = '&#128276; Notifications not supported';
+      btn.title = 'This device or browser does not support background notifications.';
+      return;
+    }
+    var perm = Notification.permission;
+    if (perm === 'granted') {
+      btn.disabled = false;
+      btn.innerHTML = '&#128276; Notifications on — send test';
+      btn.title = 'Notifications are enabled on this device. Tap to send a test.';
+    } else if (perm === 'denied') {
+      btn.disabled = true;
+      btn.innerHTML = '&#128277; Notifications blocked';
+      btn.title = 'Notifications are blocked for this app. Turn them on in your device Settings, then reopen the app.';
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = '&#128276; Enable notifications';
+      btn.title = 'Turn on reminder notifications on this device.';
+    }
+  }
+  function onNotifClick() {
+    if (!notifSupported() || !pushReady()) { return; }
+    var perm = Notification.permission;
+    if (perm === 'denied') { return; }
+    if (perm === 'granted') {
+      if (typeof window.TalkPush.sendTestPush === 'function') {
+        toast('Sending a test notification...');
+        window.TalkPush.sendTestPush()
+          .then(function () { toast('Test scheduled — it should arrive shortly.'); })
+          .catch(function (e) { toast('Could not send test: ' + ((e && e.message) || 'error')); });
+      }
+      return;
+    }
+    if (isIOS() && !isStandalone()) {
+      toast('On iPhone/iPad: add this app to your Home Screen, open it from that icon, then tap Enable notifications.');
+      return;
+    }
+    toast('Enabling notifications...');
+    window.TalkPush.subscribe()
+      .then(function () { toast('Notifications enabled on this device'); updateNotifLabel(); })
+      .catch(function (e) { toast('Could not enable: ' + ((e && e.message) || 'permission not granted')); updateNotifLabel(); });
+  }
+
+  // ---- monitor: keep both controls present and current ----
   var tries = 0;
   (function monitor() {
     tries++;
-    if (ensureButton()) {
-      updateLabel();
+    var acct = ensureAccountBtn();
+    var notif = ensureNotifBtn();
+    if (acct) {
+      updateAccountLabel();
       if (fbReady() && KHub.CloudAuth.onChange && !window.__cloudAccountUiBound) {
         window.__cloudAccountUiBound = true;
-        KHub.CloudAuth.onChange(updateLabel);
+        KHub.CloudAuth.onChange(updateAccountLabel);
       }
     }
+    if (notif) { updateNotifLabel(); }
     if (tries < 240) { setTimeout(monitor, 500); }
   })();
 })();

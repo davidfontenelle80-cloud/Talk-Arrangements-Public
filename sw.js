@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v108-cloud-account-ui';
+const CACHE_VERSION = 'talk-arrangements-v109-notif-enable';
 
 const PRECACHE_URLS = [
   './',
