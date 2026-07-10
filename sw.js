@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v110-notif-ux';
+const CACHE_VERSION = 'talk-arrangements-v111-push-auth';
 
 const PRECACHE_URLS = [
   './',
