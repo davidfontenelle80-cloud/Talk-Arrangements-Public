@@ -59,6 +59,19 @@
     } catch (e) {}
   }
 
+  function getAuthToken() {
+    try { return localStorage.getItem('talkPushAuthToken') || ''; } catch (e) { return ''; }
+  }
+
+  function setAuthToken(token) {
+    try { if (token) localStorage.setItem('talkPushAuthToken', token); } catch (e) {}
+  }
+
+  function authHeaders(token) {
+    token = token || getAuthToken();
+    return token ? { Authorization: 'Bearer ' + token } : {};
+  }
+
   function log(action, details) {
     try {
       console.info('[TalkPush]', action, Object.assign({
@@ -143,6 +156,7 @@
         })
       }).then(function (data) {
         setSubscriptionId(data.id || data.subscriptionId || '');
+        setAuthToken(data.authToken || '');
         log('subscribe:saved', { subscriptionId: data.id || data.subscriptionId || '' });
         return data;
       });
@@ -155,6 +169,7 @@
       log('reminder:sync', { sourceType: sourceType, sourceId: sourceId, fireAt: fireAt });
       return jsonFetch(c.workerUrl + '/api/reminders', {
         method: 'POST',
+        headers: authHeaders(subData.authToken),
         body: JSON.stringify({
           app: 'talk-arrangements-public',
           subscriptionId: subData.id || subData.subscriptionId || getSubscriptionId(),
@@ -174,7 +189,7 @@
     var url = c.workerUrl + '/api/reminders/' + encodeURIComponent(sourceType) + '/' + encodeURIComponent(sourceId);
     if (id) url += '?subscriptionId=' + encodeURIComponent(id);
     log('reminder:clear', { sourceType: sourceType, sourceId: sourceId, subscriptionId: id });
-    return jsonFetch(url, { method: 'DELETE' });
+    return jsonFetch(url, { method: 'DELETE', headers: authHeaders() });
   }
 
   function sendTestPush() {
@@ -183,6 +198,7 @@
       log('test-push:send', { subscriptionId: subData.id || subData.subscriptionId || getSubscriptionId() });
       return jsonFetch(c.workerUrl + '/api/test-push', {
         method: 'POST',
+        headers: authHeaders(subData.authToken),
         body: JSON.stringify({
           app: 'talk-arrangements-public',
           subscriptionId: subData.id || subData.subscriptionId || getSubscriptionId(),

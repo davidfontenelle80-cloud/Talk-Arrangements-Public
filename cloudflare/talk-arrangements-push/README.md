@@ -61,6 +61,8 @@ The VAPID private key must stay only in Cloudflare as the `VAPID_PRIVATE_KEY` se
 
 ## Security rules
 
+Reminder writes, deletes, and test pushes require a random per-subscription capability token. The Worker stores the token with the subscription in KV and returns it only to the subscribing browser. Deploy the Worker before the matching frontend; existing installations obtain a token on their next subscription or reminder sync.
+
 Allowed in repo/frontend:
 
 - Worker public URL

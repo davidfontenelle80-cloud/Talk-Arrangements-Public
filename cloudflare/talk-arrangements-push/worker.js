@@ -56,6 +56,33 @@ function assertApp(data) {
   if (data && data.app && data.app !== APP_ID) throw new Error('Unsupported app.');
 }
 
+function createAuthToken() {
+  var bytes = crypto.getRandomValues(new Uint8Array(32));
+  return bytesToBase64Url(bytes);
+}
+
+function bearerToken(request) {
+  var header = String(request.headers.get('authorization') || '').trim();
+  var match = header.match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : '';
+}
+
+function tokensMatch(actual, expected) {
+  actual = String(actual || '');
+  expected = String(expected || '');
+  if (!actual || !expected || actual.length !== expected.length) return false;
+  var mismatch = 0;
+  for (var i = 0; i < actual.length; i += 1) mismatch |= actual.charCodeAt(i) ^ expected.charCodeAt(i);
+  return mismatch === 0;
+}
+
+async function requireSubscriptionAccess(request, store, subscriptionId) {
+  var record = await store.get(`subscription:${subscriptionId}`, 'json');
+  if (!record) return { error: 'Unknown subscriptionId.', status: 404 };
+  if (!tokensMatch(bearerToken(request), record.authToken)) return { error: 'Unauthorized.', status: 401 };
+  return { record: record };
+}
+
 function makeSubscriptionId(subscription) {
   const endpoint = subscription && subscription.endpoint ? String(subscription.endpoint) : '';
   if (!endpoint) throw new Error('Subscription endpoint is required.');
@@ -243,17 +270,19 @@ async function handleSubscribe(request, env) {
   }
 
   const id = makeSubscriptionId(data.subscription);
+  const authToken = createAuthToken();
   const record = {
     id,
     app: APP_ID,
     subscription: data.subscription,
+    authToken,
     userAgent: data.userAgent || '',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
   await store.put(`subscription:${id}`, JSON.stringify(record));
-  return json({ ok: true, id, subscriptionId: id }, 200, headers);
+  return json({ ok: true, id, subscriptionId: id, authToken }, 200, headers);
 }
 
 async function handleUpsertReminder(request, env) {
@@ -271,8 +300,8 @@ async function handleUpsertReminder(request, env) {
     return json({ ok: false, error: 'subscriptionId, sourceType, sourceId, and fireAt are required.' }, 400, headers);
   }
 
-  const subscription = await store.get(`subscription:${subscriptionId}`, 'json');
-  if (!subscription) return json({ ok: false, error: 'Unknown subscriptionId.' }, 404, headers);
+  const access = await requireSubscriptionAccess(request, store, subscriptionId);
+  if (access.error) return json({ ok: false, error: access.error }, access.status, headers);
 
   const record = {
     app: APP_ID,
@@ -306,6 +335,9 @@ async function handleDeleteReminder(request, env, pathname) {
   if (!subscriptionId) {
     return json({ ok: false, error: 'subscriptionId is required to delete a reminder.' }, 400, headers);
   }
+
+  const access = await requireSubscriptionAccess(request, store, subscriptionId);
+  if (access.error) return json({ ok: false, error: access.error }, access.status, headers);
 
   await store.delete(reminderKey(subscriptionId, sourceType, sourceId));
   return json({ ok: true, deleted: 1 }, 200, headers);
@@ -349,8 +381,9 @@ async function handleTestPush(request, env) {
   const subscriptionId = String(data.subscriptionId || '').trim();
   if (!subscriptionId) return json({ ok: false, error: 'subscriptionId is required.' }, 400, headers);
 
-  const subRecord = await store.get(`subscription:${subscriptionId}`, 'json');
-  if (!subRecord) return json({ ok: false, error: 'Unknown subscriptionId.' }, 404, headers);
+  const access = await requireSubscriptionAccess(request, store, subscriptionId);
+  if (access.error) return json({ ok: false, error: access.error }, access.status, headers);
+  const subRecord = access.record;
 
   const payload = {
     title: data.title || 'Talk Arrangements',
