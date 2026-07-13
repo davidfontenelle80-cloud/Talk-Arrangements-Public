@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v110-notif-ux';
+const CACHE_VERSION = 'talk-arrangements-v111-sw-fix';
 
 const PRECACHE_URLS = [
   './',
@@ -93,7 +93,14 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match('./'));
+      return fetch(event.request).catch(() => {
+        // Only serve the offline page for navigation requests.
+        // Serving index.html for JS assets causes SyntaxError: Unexpected token '<'
+        if (event.request.destination === 'document') {
+          return caches.match('./');
+        }
+        return Response.error();
+      });
     })
   );
 });
