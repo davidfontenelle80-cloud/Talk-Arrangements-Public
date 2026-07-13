@@ -1,5 +1,5 @@
 /**
- * app.js â Talk Arrangements
+ * app.js — Talk Arrangements
  * Public talk schedule manager for Spanish-speaking JW congregation.
  */
 
@@ -39,7 +39,7 @@ function computeDeliveryTime(reminderTime) {
 
     var T={
       en:{appTitle:"Talk Arrangements",subtitle:"Congregation public talk arrangements",dashboard:"Dashboard",planning:"Planning",congregations:"Congregations",backup:"Backup",import:"Import",reset:"Reset",dashHint:"Current year at a glance \u2014 current month highlighted.",addMonth:"Add Month",yearSchedule:"Year schedule",month:"Month",congregation:"Congregation",statusCol:"Status",fixedCol:"Fixed",notContacted:"Not contacted",messageSentStatus:"Message sent",confirmedStatus:"Confirmed",needsFollowUp:"Needs follow-up",followUpDate:"Follow up by",note:"Note",actions:"Actions",speakerContact:"Speaker contact",planningTitle:"Planning for the next 3 years",planningHint:"Use this for future arrangements and fixed recurring notes.",addYear:"Add Year",congTitle:"Congregation list",congHint:"Edit contact information here; dashboard lookups update immediately.",search:"Search congregations or contacts",addCong:"Add",coordinator:"Coordinator",phone:"Phone",email:"Email",currentMonth:"Current month",copied:"Copied",noContact:"Select a congregation row (\u25ce) to see contact options.",call:"Call",text:"Text",mail:"Email",copy:"Copy",total:"Total",sent:"Sent",confirmedCount:"Confirmed",conWho:"With whom",contact:"Contact",deleteConfirm:"Are you sure you want to delete this?",restored:"Starter data restored.",imported:"Backup imported.",saved:"Saved.",exported:"Backup downloaded.",invalidBackup:"This backup file could not be read.",print:"Print",createNextYear:"Next Year",confirmCreateYear:"Archive {year} and create template for {next}?",yearCreated:"{year} schedule created + {prev} archived",templates:"Message template",openSms:"Send SMS",openEmail:"Send Email",copyMsg:"Copy message",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Print list",shareContact:"Share contact",privateData:"Contacts loaded",publicData:"Public version \u2014 no contacts",conflictWarnings:"{n} issue(s)",duplicateCong:"{c} scheduled twice within 6 months ({m1} & {m2})",missingFixed:"Fixed congregation not scheduled: {c}",dupMonth:"Month {m} appears more than once",nothingToCopy:"Nothing to copy",settingsTitle:"Settings & Profile",profileName:"Your name",profileCong:"Your congregation",profilePhone:"Your phone (for messages)",privacyNote:"Your data is saved on this device and can sync through cloud backup when enabled.",save:"Save",cancel:"Cancel",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",yearChangePrompt:"It is now {year}. Roll over the schedule?",archiveNote:"Previous schedule archived to Planning.",emailSubject:"Congregation list",listCopied:"List copied \u2014 paste into your email",eventsTitle:"Events",eventsHint:"Manage congregation events",addEvent:"Add Event",editEvent:"Edit Event",deleteEvent:"Delete Event",eventTitle:"Title",eventType:"Event type",eventStartDate:"Start date",eventEndDate:"End date",eventAllDay:"All day",eventDescription:"Description",eventNotes:"Notes",eventColor:"Color",eventActive:"Active",noEvents:"No events yet. Tap + Add Event to create one.",confirmDeleteEvent:"Delete this event?","reminders.tab":"Reminders","reminders.addReminder":"Add Reminder","reminders.editReminder":"Edit Reminder","reminders.title":"Title","reminders.note":"Note","reminders.date":"Date","reminders.time":"Time","reminders.noReminders":"No reminders yet","reminders.save":"Save","reminders.cancel":"Cancel","reminders.deleteReminder":"Delete","reminders.notifAllow":"Allow Notifications","reminders.notifEnabled":"Notifications enabled","reminders.notifDenied":"Notifications denied","reminders.notifUnsupported":"Notifications not supported on this device","reminders.iosBanner":"To receive reminders, add this app to your Home Screen","reminders.inAppOnly":"In-app reminders only (app must be open)","reminders.deliversAround":"Delivers around {time}","reminders.leadError":"Pick a time at least {min} minutes from now so the reminder can be delivered.","reminders.setForDelivers":"Set for {picked} \u2014 delivers around {time}"},
-      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos p\u00fablicos de la congregaci\u00f3n",dashboard:"Tablero",planning:"Planificaci\u00f3n",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El a\u00f1o actual con el mes presente resaltado.",addMonth:"A\u00f1adir mes",yearSchedule:"Programa del a\u00f1o",month:"Mes",congregation:"Congregaci\u00f3n",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"Planificaci\u00f3n de los pr\u00f3ximos 3 a\u00f1os",planningHint:"Use esta secci\u00f3n para arreglos futuros y notas fijas.",addYear:"A\u00f1adir a\u00f1o",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aqu\u00ed; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"A\u00f1adir",coordinator:"Coordinador",phone:"Tel\u00e9fono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (\u25ce) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"\u00bfDesea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"Pr\u00f3ximo A\u00f1o",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"VersiÃ³n pÃºblica \u2014 sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"Congregaci\u00f3n fija sin programar: {c}",dupMonth:"El mes {m} aparece mÃ¡s de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"ConfiguraciÃ³n y Perfil",profileName:"Tu nombre",profileCong:"Tu congregaci\u00f3n",profilePhone:"Tu tel\u00e9fono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando estÃ¡ activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos dÃ­as",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. \u00bfCambiar el programa al nuevo a\u00f1o?",archiveNote:"Programa anterior archivado en Planificaci\u00f3n.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada \u2014 p\u00e9gala en tu correo",eventsTitle:"Eventos",eventsHint:"Administra eventos de la congregaciÃ³n",addEvent:"Agregar evento",editEvent:"Editar evento",deleteEvent:"Eliminar evento",eventTitle:"TÃ­tulo",eventType:"Tipo de evento",eventStartDate:"Fecha de inicio",eventEndDate:"Fecha de fin",eventAllDay:"Todo el dÃ­a",eventDescription:"DescripciÃ³n",eventNotes:"Notas",eventColor:"Color",eventActive:"Activo",noEvents:"Sin eventos aÃºn. Toca + Agregar evento para crear uno.",confirmDeleteEvent:"Â¿Eliminar este evento?","reminders.tab":"Recordatorios","reminders.addReminder":"Agregar Recordatorio","reminders.editReminder":"Editar Recordatorio","reminders.title":"T\u00edtulo","reminders.note":"Nota","reminders.date":"Fecha","reminders.time":"Hora","reminders.noReminders":"Sin recordatorios a\u00fan","reminders.save":"Guardar","reminders.cancel":"Cancelar","reminders.deleteReminder":"Eliminar","reminders.notifAllow":"Permitir Notificaciones","reminders.notifEnabled":"Notificaciones activas","reminders.notifDenied":"Notificaciones denegadas","reminders.notifUnsupported":"Notificaciones no disponibles en este dispositivo","reminders.iosBanner":"Para recibir recordatorios, agrega esta app a tu pantalla de inicio","reminders.inAppOnly":"Solo recordatorios en la app (la app debe estar abierta)","reminders.deliversAround":"Se entrega alrededor de las {time}","reminders.leadError":"Elige una hora al menos {min} minutos despu\u00e9s de ahora para que el recordatorio pueda entregarse.","reminders.setForDelivers":"Programado para las {picked} \u2014 se entrega alrededor de las {time}"}
+      es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos p\u00fablicos de la congregaci\u00f3n",dashboard:"Tablero",planning:"Planificaci\u00f3n",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El a\u00f1o actual con el mes presente resaltado.",addMonth:"A\u00f1adir mes",yearSchedule:"Programa del a\u00f1o",month:"Mes",congregation:"Congregaci\u00f3n",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"Planificaci\u00f3n de los pr\u00f3ximos 3 a\u00f1os",planningHint:"Use esta secci\u00f3n para arreglos futuros y notas fijas.",addYear:"A\u00f1adir a\u00f1o",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aqu\u00ed; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"A\u00f1adir",coordinator:"Coordinador",phone:"Tel\u00e9fono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (\u25ce) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"\u00bfDesea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"Pr\u00f3ximo A\u00f1o",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Versión pública \u2014 sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"Congregaci\u00f3n fija sin programar: {c}",dupMonth:"El mes {m} aparece más de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuración y Perfil",profileName:"Tu nombre",profileCong:"Tu congregaci\u00f3n",profilePhone:"Tu tel\u00e9fono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando está activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos días",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. \u00bfCambiar el programa al nuevo a\u00f1o?",archiveNote:"Programa anterior archivado en Planificaci\u00f3n.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada \u2014 p\u00e9gala en tu correo",eventsTitle:"Eventos",eventsHint:"Administra eventos de la congregación",addEvent:"Agregar evento",editEvent:"Editar evento",deleteEvent:"Eliminar evento",eventTitle:"Título",eventType:"Tipo de evento",eventStartDate:"Fecha de inicio",eventEndDate:"Fecha de fin",eventAllDay:"Todo el día",eventDescription:"Descripción",eventNotes:"Notas",eventColor:"Color",eventActive:"Activo",noEvents:"Sin eventos aún. Toca + Agregar evento para crear uno.",confirmDeleteEvent:"¿Eliminar este evento?","reminders.tab":"Recordatorios","reminders.addReminder":"Agregar Recordatorio","reminders.editReminder":"Editar Recordatorio","reminders.title":"T\u00edtulo","reminders.note":"Nota","reminders.date":"Fecha","reminders.time":"Hora","reminders.noReminders":"Sin recordatorios a\u00fan","reminders.save":"Guardar","reminders.cancel":"Cancelar","reminders.deleteReminder":"Eliminar","reminders.notifAllow":"Permitir Notificaciones","reminders.notifEnabled":"Notificaciones activas","reminders.notifDenied":"Notificaciones denegadas","reminders.notifUnsupported":"Notificaciones no disponibles en este dispositivo","reminders.iosBanner":"Para recibir recordatorios, agrega esta app a tu pantalla de inicio","reminders.inAppOnly":"Solo recordatorios en la app (la app debe estar abierta)","reminders.deliversAround":"Se entrega alrededor de las {time}","reminders.leadError":"Elige una hora al menos {min} minutos despu\u00e9s de ahora para que el recordatorio pueda entregarse.","reminders.setForDelivers":"Programado para las {picked} \u2014 se entrega alrededor de las {time}"}
     };
 
     var starter={
@@ -65,7 +65,7 @@ function computeDeliveryTime(reminderTime) {
       {id:'assembly',label:{en:'Circuit Assembly',es:'Asamblea de Circuito'},icon:'ðï¸',color:'#10b981'},
       {id:'convention',label:{en:'Regional Convention',es:'Asamblea Regional'},icon:'ð',color:'#3b82f6'},
       {id:'special-talk',label:{en:'Special Talk',es:'Discurso Especial'},icon:'ð¤',color:'#f59e0b'},
-      {id:'memorial',label:{en:'Memorial',es:'ConmemoraciÃ³n'},icon:'\ud83c\udf77',color:'#8b5cf6'},
+      {id:'memorial',label:{en:'Memorial',es:'Conmemoración'},icon:'\ud83c\udf77',color:'#8b5cf6'},
       {id:'holiday-blackout',label:{en:'Holiday / Blackout',es:'Feriado / Fecha Bloqueada'},icon:'ð«',color:'#ef4444'},
       {id:'local-event',label:{en:'Local Congregation Event',es:'Evento Congregacional'},icon:'ð ',color:'#14b8a6'},
       {id:'custom',label:{en:'Custom Event',es:'Evento Personalizado'},icon:'ð',color:'#f97316'}
@@ -138,8 +138,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var contactName=row.contact||"";
         if(!contactName){var cObj=findCong(cname);if(cObj)contactName=cObj.coordinator||"";}
         var greeting=buildGreeting(treatment,contactName,nameFormat);
-        var from=p.name?"Le escribe "+p.name+(p.congregation?" de la CongregaciÃ³n "+p.congregation:"")+".":" ";
-        return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso pÃºblico del mes de "+m+" con la congregaciÃ³n "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
+        var from=p.name?"Le escribe "+p.name+(p.congregation?" de la Congregación "+p.congregation:"")+".":" ";
+        return greeting+". "+from+" Le contactamos para confirmar el arreglo del discurso público del mes de "+m+" con la congregación "+cname+". Por favor confirme su disponibilidad cuando tenga oportunidad. Gracias."+(p.name?"\n\n"+p.name:"");
       }
       var enTreatment=getTreatmentForRow(row.id);
       var enFmt=state.contactNameFormat||"none";
@@ -247,8 +247,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function waH(p,txt){var c=String(p||"").replace(/[^\d+]/g,"");return(c?"https://wa.me/"+c:"https://wa.me/")+"?text="+encodeURIComponent(txt);}
     function mailH(email,cong,body){
       if(!email||String(email).toUpperCase()==="N/A")return"";
-      var subj=encodeURIComponent(state.language==="es"?"Arreglo de discurso pÃºblico":"Public talk arrangement");
-      var b=encodeURIComponent(body||(state.language==="es"?"Saludos,\n\nQuerÃ­a comunicarme sobre el arreglo con "+(cong||"su congregaciÃ³n")+".":" Hello,\n\nI wanted to reach out about the arrangement with "+(cong||"your congregation")+"."));
+      var subj=encodeURIComponent(state.language==="es"?"Arreglo de discurso público":"Public talk arrangement");
+      var b=encodeURIComponent(body||(state.language==="es"?"Saludos,\n\nQuería comunicarme sobre el arreglo con "+(cong||"su congregación")+".":" Hello,\n\nI wanted to reach out about the arrangement with "+(cong||"your congregation")+"."));
       return"https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(email)+"&su="+subj+"&body="+b;
     }
     function fuClass(d){if(!d)return"";var diff=(new Date(d+"T00:00:00")-today)/86400000;return diff<0?"fu-overdue":diff<=7?"fu-soon":"";}
@@ -270,12 +270,12 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function monthList(list){return list.map(function(i){return months()[+i];}).join(", ");}
     function planningAuditHtml(year){
       var a=planningYearAudit(year);
-      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"AÃ±o completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregaciÃ³n.":"All 12 months have congregations.")+'</span></div>';
+      if(a.complete)return '<div class="year-check year-complete"><strong>'+(state.language==="es"?"Año completo":"Year complete")+'</strong><span>'+(state.language==="es"?"Los 12 meses tienen congregación.":"All 12 months have congregations.")+'</span></div>';
       var items=[];
       if(a.missingMonths.length)items.push((state.language==="es"?"Faltan meses: ":"Missing months: ")+monthList(a.missingMonths));
-      if(a.blankCongs.length)items.push((state.language==="es"?"Falta congregaciÃ³n: ":"Missing congregation: ")+monthList(a.blankCongs));
+      if(a.blankCongs.length)items.push((state.language==="es"?"Falta congregación: ":"Missing congregation: ")+monthList(a.blankCongs));
       if(a.duplicateMonths.length)items.push((state.language==="es"?"Mes duplicado: ":"Duplicate month: ")+monthList(a.duplicateMonths));
-      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar aÃ±o":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
+      return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar año":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
     }
 
     // ââ Message template âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -379,7 +379,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
 
     // ââ Planning contact picker + card (combined, rendered into planningContactCard) ââ
     function renderContactPicker(){
-      // No-op stub â renderPlanningContact now owns the picker UI inside planningContactCard.
+      // No-op stub — renderPlanningContact now owns the picker UI inside planningContactCard.
       // Called from renderAll for compatibility; actual work done in renderPlanningContact.
       renderPlanningContact();
     }
@@ -422,9 +422,9 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           var yearOnlyOpts=availYears.map(function(y){return'<option value="'+y+'"'+(+y===+year?' selected':'')+'>'+y+'</option>';}).join("");
           card.innerHTML=
             '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:0.85em;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:8px;">'+
-            '<label style="color:var(--muted)">'+(isEs?"AÃ±o":"Year")+': <select class="picker-sel" id="pYear">'+yearOnlyOpts+'</select></label>'+
+            '<label style="color:var(--muted)">'+(isEs?"Año":"Year")+': <select class="picker-sel" id="pYear">'+yearOnlyOpts+'</select></label>'+
             '</div>'+
-            '<div class="empty">'+(isEs?"No hay arreglos para este aÃ±o.":"No arrangements for this year.")+'</div>';
+            '<div class="empty">'+(isEs?"No hay arreglos para este año.":"No arrangements for this year.")+'</div>';
           document.getElementById("pYear").addEventListener("change",function(){
             state.contactPickerYear=+this.value;state.contactPickerMonth=null;state.contactPickerIdx=0;
             saveState();renderPlanningContact();
@@ -451,7 +451,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var yearOpts=availYears.map(function(y){return'<option value="'+y+'"'+(+y===+year?' selected':'')+'>'+y+'</option>';}).join("");
       var monthOpts=availMonths.map(function(m){return'<option value="'+m+'"'+(+m===+month?' selected':'')+'>'+months()[m]+'</option>';}).join("");
       var arrOpts=arrangements.length>1?arrangements.map(function(a,i){
-        var lbl=(a.congregation||"")+(a.contact?" â "+a.contact:"");
+        var lbl=(a.congregation||"")+(a.contact?" — "+a.contact:"");
         return'<option value="'+i+'"'+(i===idx?' selected':'')+'>'+esc(lbl)+'</option>';
       }).join(""):"";
       var currentTreatment=getTreatmentForRow(arr.id);
@@ -483,7 +483,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       card.innerHTML=
         // Picker row
         '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:0.85em;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:10px;">'+
-        '<label style="color:var(--muted)">'+(isEs?"AÃ±o":"Year")+': <select class="picker-sel" id="pYear">'+yearOpts+'</select></label>'+
+        '<label style="color:var(--muted)">'+(isEs?"Año":"Year")+': <select class="picker-sel" id="pYear">'+yearOpts+'</select></label>'+
         '<label style="color:var(--muted)">'+(isEs?"Mes":"Month")+': <select class="picker-sel" id="pMonth">'+monthOpts+'</select></label>'+
         (arrangements.length>1?'<label style="color:var(--muted)">'+(isEs?"Contacto":"Contact")+': <select class="picker-sel" id="pArr">'+arrOpts+'</select></label>':"")+
         '<label style="color:var(--muted)">'+(isEs?"Trato":"Greeting")+': <select class="picker-sel" id="pTreat">'+treatOpts+'</select></label>'+
@@ -492,8 +492,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         // Contact info
         '<div><div class="contact-name">'+esc(cname)+fixedTag+'</div>'+(coord?'<div class="muted">'+esc(coord)+'</div>':'')+'</div>'+
         '<div class="contact-meta">'+
-        '<div>'+tt("phone")+': <strong>'+(cphone?esc(cphone):"â")+'</strong></div>'+
-        '<div>'+tt("email")+': <strong>'+(cemail?esc(cemail):"â")+'</strong></div>'+
+        '<div>'+tt("phone")+': <strong>'+(cphone?esc(cphone):"—")+'</strong></div>'+
+        '<div>'+tt("email")+': <strong>'+(cemail?esc(cemail):"—")+'</strong></div>'+
         '</div>'+
         '<div style="margin:6px 0 4px;font-size:0.82em;color:var(--muted)">'+(isEs?"Estado":"Status")+':</div>'+
         '<select id="pStatus" class="status-select s-'+currentStatus+'" style="margin-bottom:8px;">'+statusOpts+'</select>'+
@@ -553,7 +553,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var fixedTag=c.isFixed?'<span class="fixed-badge">FIJO</span>':"";
       card.innerHTML=
         '<div><div class="contact-name">'+esc(c.name)+fixedTag+'</div><div class="muted">'+esc(c.coordinator||"")+'</div></div>'+
-        '<div class="contact-meta"><div>'+tt("phone")+': <strong>'+esc(c.phone||"â")+'</strong></div><div>'+tt("email")+': <strong>'+esc(c.email||"â")+'</strong></div>'+(c.note?'<div>'+tt("note")+': '+esc(c.note)+'</div>':'')+'</div>'+
+        '<div class="contact-meta"><div>'+tt("phone")+': <strong>'+esc(c.phone||"—")+'</strong></div><div>'+tt("email")+': <strong>'+esc(c.email||"—")+'</strong></div>'+(c.note?'<div>'+tt("note")+': '+esc(c.note)+'</div>':'')+'</div>'+
         '<div class="action-row no-print">'+lbtn("&#9742; "+tt("call"),call,!call)+lbtn("&#128172; "+tt("text"),sms,!sms)+lbtn("&#9993; "+tt("mail"),mailBase,!mailBase)+'<button data-copy="'+esc(c.phone||"")+'">&#10697; '+tt("phone")+'</button><button data-copy="'+esc(c.email||"")+'">&#10697; '+tt("email")+'</button>'+'<button class="share-contact-btn" data-share-info="'+esc(info)+'">&#129302; '+tt("shareContact")+'</button>'+'</div>'+
         '<div class="no-print"><div class="template-label">'+tt("templates")+'</div><div class="template-box">'+esc(msg)+'</div>'+
         '<div class="action-row" style="margin-top:8px">'+(smsBody?lbtn("&#128241; "+tt("openSms"),smsBody,false):"")+
@@ -758,7 +758,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       list.innerHTML=events.map(function(ev){
         var et=EVENT_TYPES.find(function(t){return t.id===ev.type;})||{icon:'ð',color:'#888',label:{en:'Event',es:'Evento'}};
         var dateStr=ev.startDate||(isEs?'Sin fecha':'No date');
-        if(ev.endDate&&ev.endDate!==ev.startDate)dateStr+=' â '+ev.endDate;
+        if(ev.endDate&&ev.endDate!==ev.startDate)dateStr+=' — '+ev.endDate;
         return '<div class="event-card" data-event-id="'+esc(ev.id)+'">'
           +'<div class="event-card-header">'
           +'<span class="event-type-badge" style="background:'+et.color+'22;color:'+et.color+';border:1px solid '+et.color+'44">'+et.icon+' '+esc(et.label[state.language]||et.label.en)+'</span>'
@@ -822,7 +822,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function saveEvent(){
       var titleEl=document.getElementById('evTitleField');
       var title=(titleEl?titleEl.value:'').trim();
-      if(!title){toast(state.language==='es'?'El tÃ­tulo es requerido':'Title is required');return;}
+      if(!title){toast(state.language==='es'?'El título es requerido':'Title is required');return;}
       var idVal=document.getElementById('evIdField').value;
       var startDate=document.getElementById('evStartField').value;
       var endDate=document.getElementById('evEndField').value||startDate;
@@ -968,7 +968,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         return s<=new Date(yr,mo+1,0,23,59,59)&&en>=new Date(yr,mo,1);
       }).length;
       if(!upcoming.length){
-        container.innerHTML='<div class="up-widget"><p class="up-empty">'+(isEs?'Sin eventos prÃ³ximos':'No upcoming events')+'</p></div>';
+        container.innerHTML='<div class="up-widget"><p class="up-empty">'+(isEs?'Sin eventos próximos':'No upcoming events')+'</p></div>';
         return;
       }
       var nxt=upcoming[0];
@@ -979,7 +979,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var nl=net?(isEs?net.label.es:net.label.en):nxt.type;
         var ni=net?net.icon:'ð';
         nxtHtml='<div class="up-next" style="border-left-color:'+nc+'">'+
-          '<div class="up-next-lbl">'+(isEs?'PrÃ³ximo Evento':'Next Event')+'</div>'+
+          '<div class="up-next-lbl">'+(isEs?'Próximo Evento':'Next Event')+'</div>'+
           '<div class="up-next-ico">'+ni+'</div>'+
           '<div class="up-next-ttl">'+nxt.title+'</div>'+
           '<div class="up-next-dt">'+nxt.startDate+'</div>'+
@@ -991,11 +991,11 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var ico=et?et.icon:'ð';
         return '<div class="up-item">'+
           '<span class="up-dot" style="background:'+col+'">'+ico+'</span>'+
-          '<span class="up-info"><strong>'+e.title+'</strong><small> Â· '+e.startDate+'</small></span>'+
+          '<span class="up-info"><strong>'+e.title+'</strong><small> · '+e.startDate+'</small></span>'+
           '</div>';
       }).join('');
       container.innerHTML='<div class="up-widget">'+
-        '<div class="up-hdr"><span class="up-title">'+(isEs?'PrÃ³ximos Eventos':'Upcoming Events')+'</span>'+
+        '<div class="up-hdr"><span class="up-title">'+(isEs?'Próximos Eventos':'Upcoming Events')+'</span>'+
         '<span class="up-badge">'+tmc+(isEs?' este mes':' this month')+'</span></div>'+
         nxtHtml+
         '<div class="up-list">'+listHtml+'</div>'+
@@ -1288,28 +1288,28 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
 
     function testTalkPush(btn) {
       if (!window.TalkPush || typeof window.TalkPush.sendTestPush !== 'function') {
-        toast(reminderText('Background push is not available.', 'Las notificaciones en segundo plano no estÃ¡n disponibles.'));
+        toast(reminderText('Background push is not available.', 'Las notificaciones en segundo plano no están disponibles.'));
         return;
       }
       if (!reminderPushConfigured()) {
-        toast(reminderText('Background push needs Cloudflare setup.', 'Las notificaciones en segundo plano necesitan configuraciÃ³n de Cloudflare.'));
+        toast(reminderText('Background push needs Cloudflare setup.', 'Las notificaciones en segundo plano necesitan configuración de Cloudflare.'));
         return;
       }
       if (btn) btn.disabled = true;
       window.TalkPush.sendTestPush()
-        .then(function () { toast(reminderText('Test push sent.', 'NotificaciÃ³n de prueba enviada.')); })
-        .catch(function (err) { toast((err && err.message) || reminderText('Test push failed.', 'FallÃ³ la prueba de notificaciÃ³n.')); })
+        .then(function () { toast(reminderText('Test push sent.', 'Notificación de prueba enviada.')); })
+        .catch(function (err) { toast((err && err.message) || reminderText('Test push failed.', 'Falló la prueba de notificación.')); })
         .finally(function () { if (btn) btn.disabled = false; });
     }
 
     function diagnoseTalkPush() {
       if (!window.TalkPush || typeof window.TalkPush.diagnose !== 'function') {
-        toast(reminderText('Background push is not available.', 'Las notificaciones en segundo plano no estÃ¡n disponibles.'));
+        toast(reminderText('Background push is not available.', 'Las notificaciones en segundo plano no están disponibles.'));
         return;
       }
       window.TalkPush.diagnose().then(function (d) {
-        var msg = reminderText('Push diagnosis', 'DiagnÃ³stico de notificaciones') + ': '
-          + (d.configured ? reminderText('configured', 'configurado') : reminderText('missing Cloudflare/VAPID config', 'falta configuraciÃ³n Cloudflare/VAPID'));
+        var msg = reminderText('Push diagnosis', 'Diagnóstico de notificaciones') + ': '
+          + (d.configured ? reminderText('configured', 'configurado') : reminderText('missing Cloudflare/VAPID config', 'falta configuración Cloudflare/VAPID'));
         toast(msg);
         console.info('[TalkPush] diagnosis', d);
       });
@@ -1407,12 +1407,12 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           + '<span>' + reminderText('Saved reminders sync to the push worker for closed-app delivery.', 'Los recordatorios guardados se sincronizan con el Worker para avisos con la app cerrada.') + '</span>'
           + '<div class="ta-reminder-push-actions">'
           + '<button class="btn btn-sm" data-reminder-action="test-push">' + reminderText('Test Push', 'Probar') + '</button>'
-          + '<button class="btn btn-sm" data-reminder-action="diagnose-push">' + reminderText('Diagnose', 'DiagnÃ³stico') + '</button>'
+          + '<button class="btn btn-sm" data-reminder-action="diagnose-push">' + reminderText('Diagnose', 'Diagnóstico') + '</button>'
           + '</div></div>'
         : '<div class="ta-reminder-push-card ta-reminder-push-blocked">'
           + '<strong>' + reminderText('Background push not configured', 'Notificaciones en segundo plano no configuradas') + '</strong>'
-          + '<span>' + reminderText('Current reminders are saved and work while the app is open. Closed-app delivery needs a Cloudflare Worker URL and VAPID public key.', 'Los recordatorios se guardan y funcionan mientras la app estÃ¡ abierta. Para avisos con la app cerrada se necesita URL de Cloudflare Worker y clave pÃºblica VAPID.') + '</span>'
-          + '<button class="btn btn-sm" data-reminder-action="diagnose-push">' + reminderText('Diagnose', 'DiagnÃ³stico') + '</button>'
+          + '<span>' + reminderText('Current reminders are saved and work while the app is open. Closed-app delivery needs a Cloudflare Worker URL and VAPID public key.', 'Los recordatorios se guardan y funcionan mientras la app está abierta. Para avisos con la app cerrada se necesita URL de Cloudflare Worker y clave pública VAPID.') + '</span>'
+          + '<button class="btn btn-sm" data-reminder-action="diagnose-push">' + reminderText('Diagnose', 'Diagnóstico') + '</button>'
           + '</div>';
       var listHtml = rems.length === 0
         ? '<p class="ta-empty-msg">' + tt('reminders.noReminders') + '</p>'
@@ -1684,16 +1684,16 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function stage8c_eventText(evt){
       var isEs=state.language==='es';
       var msgs={
-        'circuit-overseer':['Circuit Overseer Visit â review assignments','Visita del Superintendente de Circuito â revise las asignaciones'],
+        'circuit-overseer':['Circuit Overseer Visit — review assignments','Visita del Superintendente de Circuito — revise las asignaciones'],
         'assembly':['Circuit Assembly - no arrangements on this date','Asamblea de Circuito - no hay arreglos en esta fecha'],
         'convention':['Regional Convention - no arrangements on this date','Asamblea Regional - no hay arreglos en esta fecha'],
-        'special-talk':['Special Talk scheduled â verify assignments','Discurso especial programado â verifique las asignaciones'],
-        'memorial':['Memorial â arrangements restricted on this date','ConmemoraciÃ³n â arreglos restringidos en esta fecha'],
-        'holiday-blackout':['Blackout date â no assignments','Fecha bloqueada â sin asignaciones'],
-        'local-event':['Congregation event â check for conflicts','Evento de congregaciÃ³n â verifique conflictos'],
-        'custom':['Congregation event â check for conflicts','Evento de congregaciÃ³n â verifique conflictos']
+        'special-talk':['Special Talk scheduled — verify assignments','Discurso especial programado — verifique las asignaciones'],
+        'memorial':['Memorial — arrangements restricted on this date','Conmemoración — arreglos restringidos en esta fecha'],
+        'holiday-blackout':['Blackout date — no assignments','Fecha bloqueada — sin asignaciones'],
+        'local-event':['Congregation event — check for conflicts','Evento de congregación — verifique conflictos'],
+        'custom':['Congregation event — check for conflicts','Evento de congregación — verifique conflictos']
       };
-      var pair=msgs[evt.type]||['Event â check for conflicts','Evento â verifique conflictos'];
+      var pair=msgs[evt.type]||['Event — check for conflicts','Evento — verifique conflictos'];
       var base=isEs?pair[1]:pair[0];
       return evt.title?base+' ('+evt.title+')':base;
     }
@@ -1704,19 +1704,19 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var lines=[];
       if(conflicts.blocking.length){
         lines.push('â '+(isEs?'Fecha restringida:':'Restricted date:'));
-        conflicts.blocking.forEach(function(e){ lines.push('  â¢ '+stage8c_eventText(e)); });
+        conflicts.blocking.forEach(function(e){ lines.push('  • '+stage8c_eventText(e)); });
       }
       if(conflicts.advisory.length){
         if(lines.length)lines.push('');
         lines.push('â ï¸ '+(isEs?'Aviso de calendario:':'Calendar notice:'));
-        conflicts.advisory.forEach(function(e){ lines.push('  â¢ '+stage8c_eventText(e)); });
+        conflicts.advisory.forEach(function(e){ lines.push('  • '+stage8c_eventText(e)); });
       }
       var header=isEs?(conflicts.blocking.length?'Fecha restringida':'Aviso de calendario'):(conflicts.blocking.length?'Restricted date':'Calendar notice');
       var msgEl=document.getElementById('confirmMsg');
       var okBtn=document.getElementById('confirmOkBtn');
       var cancelBtn=document.getElementById('confirmCancelBtn');
       if(!msgEl||!okBtn||!cancelBtn)return;
-      msgEl.textContent=(header+(monthLabel?' â '+monthLabel:''))+':\n\n'+lines.join('\n');
+      msgEl.textContent=(header+(monthLabel?' — '+monthLabel:''))+':\n\n'+lines.join('\n');
       okBtn.textContent=isEs?'Entendido':'Understood';
       var prevCancel=cancelBtn.style.display;
       cancelBtn.style.display='none';
@@ -1733,8 +1733,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var isBlocking=conflicts.blocking.length>0;
       var isEs=state.language==='es';
       var title=isBlocking
-        ?(isEs?'Fecha restringida â haga clic para ver':'Restricted date â click to view')
-        :(isEs?'Aviso de calendario â haga clic para ver':'Calendar notice â click to view');
+        ?(isEs?'Fecha restringida — haga clic para ver':'Restricted date — click to view')
+        :(isEs?'Aviso de calendario — haga clic para ver':'Calendar notice — click to view');
       var icon=isBlocking?'â':'â ï¸';
       var cls=isBlocking?'ta-evt-badge ta-evt-blocked':'ta-evt-badge ta-evt-advisory';
       return'<span class="'+cls+'" title="'+esc(title)+'" data-ta-evt-badge="1">'+icon+'</span>';
