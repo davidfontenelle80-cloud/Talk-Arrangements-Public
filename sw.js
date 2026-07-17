@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v111-sw-fix';
+const CACHE_VERSION = 'talk-arrangements-v111-sw-fix-no-pinch-zoom';
 
 const PRECACHE_URLS = [
   './',
