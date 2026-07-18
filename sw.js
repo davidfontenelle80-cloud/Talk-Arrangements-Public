@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v111-sw-fix-no-pinch-zoom';
+const CACHE_VERSION = 'talk-arrangements-v112-iphone-black-screen';
 
 const PRECACHE_URLS = [
   './',
@@ -40,12 +40,12 @@ const PRECACHE_URLS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_VERSION)
-      .then(cache => cache.addAll(PRECACHE_URLS))
-      .then(() => {
-        self.skipWaiting();
-        console.log('[KHub SW] Installed.');
-      })
-      .catch(err => console.error('[KHub SW] Install failed:', err))
+      .then(cache => Promise.all(
+        PRECACHE_URLS.map(url =>
+          cache.add(url).catch(err => console.warn('[Talks SW] Optional precache failed:', url, err))
+        )
+      ))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -54,15 +54,12 @@ self.addEventListener('activate', event => {
     caches.keys()
       .then(keys => Promise.all(
         keys
-          .filter(key => key !== CACHE_VERSION)
+          .filter(key => key.startsWith('talk-arrangements-') && key !== CACHE_VERSION)
           .map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())
-      .then(() => {
-        self.clients.matchAll({ type: 'window' }).then(clients => {
-          clients.forEach(client => client.postMessage({ type: 'RELOAD_READY' }));
-        });
-      })
+      .then(() => self.clients.matchAll({ type: 'window' }))
+      .then(clients => clients.forEach(client => client.postMessage({ type: 'RELOAD_READY' })))
   );
 });
 
@@ -70,37 +67,53 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
-  const isLocalAsset = url.origin === self.location.origin;
-  const isPolishedAsset = isLocalAsset && (
-    url.pathname.endsWith('/css/main.css') ||
-    url.pathname.endsWith('/js/app.js') ||
-    url.pathname.endsWith('/js/mobile-toolbar.js')
-  );
+  const isLocalAsset = url.origin === self.location.origin && url.pathname.includes('/Talk-Arrangements-Public/');
+  if (!isLocalAsset) return;
 
-  if (isPolishedAsset) {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_VERSION).then(cache => cache.put('./index.html', copy));
+          return response;
+        })
+        .catch(() => caches.match('./index.html').then(cached => cached || caches.match('./')))
+    );
+    return;
+  }
+
+  const isCriticalRuntimeAsset =
+    event.request.destination === 'script' ||
+    event.request.destination === 'style' ||
+    url.pathname.endsWith('/manifest.json');
+
+  if (isCriticalRuntimeAsset) {
     event.respondWith(
       fetch(event.request, { cache: 'reload' })
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_VERSION).then(cache => cache.put(event.request, copy));
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_VERSION).then(cache => cache.put(event.request, copy));
+          }
           return response;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => caches.match(event.request).then(cached => cached || Response.error()))
     );
     return;
   }
 
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).catch(() => {
-        // Only serve the offline page for navigation requests.
-        // Serving index.html for JS assets causes SyntaxError: Unexpected token '<'
-        if (event.request.destination === 'document') {
-          return caches.match('./');
-        }
-        return Response.error();
-      });
+      const network = fetch(event.request)
+        .then(response => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_VERSION).then(cache => cache.put(event.request, copy));
+          }
+          return response;
+        });
+      return cached || network;
     })
   );
 });
