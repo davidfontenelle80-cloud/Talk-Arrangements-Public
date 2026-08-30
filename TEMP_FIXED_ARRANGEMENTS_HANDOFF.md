@@ -889,3 +889,161 @@ passed 57/57; `node tests/ot-total-tests.js` passed 6/6; `node --check` passed a
 JavaScript files. No deployment or cache change was performed.
 
 Phase 3D (Finance audit) NOT STARTED - awaiting Supervisor review of Phase 3C.
+
+## Phase 3D - Boilerplate Drift Audit: Finance Tracker vs KHub-Boilerplate (2026-08-30)
+
+AUDIT ONLY. Compared Finance Tracker `main` (`e816bd9`) against KHub-Boilerplate
+`main` (`9ba80db`) by inspecting the actual files. KHub-Boilerplate was NOT modified.
+Finance application code was NOT modified. Talk application code was NOT modified;
+this tracker is the only changed file. Pipe Bending was NOT audited. All new Finance
+recommendations in this section are `PENDING SUPERVISOR REVIEW`.
+
+Carry-forward Supervisor-approved decisions were preserved without reopening them:
+P1, P2, P3, M1, M2/M3, O2, O3-as-an-M1-extension, and O4 remain PROMOTE;
+O6 and Talk A2 remain OPTIONAL PATTERN; Talk A1 remains APP-SPECIFIC / insufficient
+evidence; O5 remains NOT PROMOTED. The closed zoom/docs questions were not reopened.
+
+### Material-difference decision table
+
+| ID | Area/pattern | KHub behavior | Finance behavior and exact evidence | Stronger implementation and why | Classification | Promotion risk | Cross-app corroboration / contradiction |
+|---|---|---|---|---|---|---|---|
+| F1 | Query-tolerant cached-shell lookup | `sw.js` uses `caches.match(event.request)` after a failed network request. Query-busted requests only match an identical cached request. | `sw.js` uses `caches.match(event.request, { ignoreSearch: true })` for a failed app-shell request after matching the path against `PRECACHE_URLS`. | Finance is more tolerant of query-string cache busting while offline, but ignoring all search parameters can serve the wrong variant if query parameters affect content. | **AMBIGUOUS** | Medium; safe only when query parameters are version/cache-bust metadata and never language, user, or content selectors. Prefer a narrowly normalized shell URL rather than blanket `ignoreSearch`. | Does not implement or contradict P1's core rule: both Finance and KHub still lack an explicit offline-document fallback for an uncached navigation. No Talk/Overtime corroboration for blanket `ignoreSearch`. |
+| F2 | SW registration / update UX / recovery | `js/app.js` has the KHub inline registration lifecycle, update checks, update banner, safe-reload logic, and `SKIP_WAITING` / `RELOAD_READY` handling. | `app.js:219-221` only calls `navigator.serviceWorker.register('sw.js').catch(() => {})`; `index.html` includes an update-notice element but Finance has no updatefound flow, safe-reload decision, event bus, broken-shell detection, or scoped repair. | KHub/Ministry/Overtime evidence is stronger. Finance adds no reusable lifecycle mechanism. | **APP-SPECIFIC** (no promotion; KHub leads) | High if copied: silent registration failures and immediate SW activation can leave users without actionable update/recovery UX. | Contradicts M1/O3 adoption in Finance; provides no competing system and no reason to alter the approved single-manager direction. |
+| F3 | Bounded legacy local-state conversion | KHub defines storage/import contracts but has no concrete application-state migration implementation. | `storage.js:5-6,81-186,195-205` recognizes `financeDashboard_v1`, falls back to legacy `financeApp_v1`, normalizes missing collections/settings, and deterministically converts legacy bank/vault/card/category/reminder shapes into the current dashboard model. | Finance demonstrates a useful bounded conversion at the storage boundary; it is clearer than ad hoc field checks throughout rendering. However it is a single Finance-specific conversion, has no migration registry/version chain, and leaves the legacy key in place. | **OPTIONAL PATTERN** | Medium; copying Finance mappings would corrupt other domains. A reusable form needs explicit source/target versions, idempotence, validation, backup, and retirement policy. | Provides the first non-push application-data evidence supporting Talk A2's bounded-migration direction. It corroborates A2 as optional, not as a universal default. |
+| F4 | Import preview and reconciliation before mutation | KHub `docs/UX-STANDARDS.md` section 4 mandates a 9-step import/restore contract, but the reference repo has no reusable importer implementation. | `js/excel-import.js:330-457,576-633` parses into a detached preview, reports discovered sheets/tables/rows, duplicate names, missing fields, totals and deltas, renders warnings and affected data, and requires a separate Apply action. `applyPreview()` is not called until explicit confirmation. | Finance supplies concrete implementation evidence for parse -> validate/reconcile -> preview -> explicit apply. It is stronger than having guidance alone for import-heavy apps. But it implements only part of the KHub contract: it does not create/offer a pre-import recovery snapshot (steps 5 and 9), and warnings can be overridden. | **OPTIONAL PATTERN** | Medium-high until generalized with schema adapters, required/optional validation severity, a pre-import snapshot, atomic apply, failure summary, and rollback. | Corroborates KHub's existing 9-step data-safety policy and O6's real-source testability opportunity, but does not justify weakening the contract. |
+| F5 | Explicit per-collection source-of-truth semantics | KHub requires import flows to identify overwrite, merge, duplicate, and conflict behavior, but provides no executable strategy map. | `js/excel-import.js:462-511` deliberately preserves local vault targets, conditionally replaces cards only when imported cards exist, replaces accounts/investments, and fully replaces goals (`next.goals = preview.goals || []`) so deleted workbook goals do not reappear. `CLAUDE.md:34-38` records the authoritative-source rule. | The generic principle is strong: every imported collection should declare `replace`, `merge`, `preserve-local-fields`, or `reject-on-conflict` semantics before apply. Finance's actual collection names and calculations remain domain-specific. | **PROMOTE** as an extension to the existing import contract; implementation pending Supervisor review. | Medium; a wrong strategy can silently resurrect deleted records or erase local-only fields. Require explicit policy, preview counts, schema validation, snapshot, and tests. | Extends rather than contradicts the KHub 9-step contract. No prior app provided such explicit mixed collection semantics in this audit record. |
+| F6 | Recoverable IndexedDB transaction handling at an integration boundary | KHub's error boundary treats unhandled promise rejections generally; approved M2 calls for a narrow recoverable IndexedDB transaction matcher. | `js/firebase/firebase-sync.js:42-57` makes bridge sync non-blocking, defers it until DOM ready, and treats a transaction error as non-fatal so local state still boots. Its matcher is broad (`message.includes('transaction')`) and local to this integration. | Finance is stronger than KHub's current no-recovery behavior at this boundary, but Ministry M2 is the stronger reusable implementation because its matcher targets the known transaction-not-in-progress signature. | **PROMOTE** only as corroboration of approved M2; do not copy Finance's broad matcher. | Medium; swallowing every message containing “transaction” could hide real corruption, permission, or persistence failures. Preserve logging and limit the signature and scope. | Independently corroborates the need behind M2 from a second IndexedDB-backed Firebase integration. It does not contradict M2/M3; Finance's `js/error-boundary.js` itself is byte-equivalent to KHub and has no M3 i18n improvement. |
+| F7 | Bridge-to-app freshness guard and remote overwrite | KHub CloudBackup is user/device scoped and compares server/local timestamps plus state `updatedAt` before restoring. | `js/firebase/firebase-sync.js:17-40` reads a singleton `finance-sync/bridge-import` document, compares a stored timestamp, JSON-parses `data.state`, checks only that it is an object, overwrites `financeDashboard_v1`, marks the timestamp, and reloads. | KHub's generic user-scoped backup/restore is safer. Finance's reload guard is useful for its Excel bridge but its validation and overwrite semantics are too weak for boilerplate promotion. | **APP-SPECIFIC** | High; lexicographic timestamp assumptions, singleton document ownership, shallow validation, direct overwrite, and no rollback/conflict preview could lose data if generalized. Firestore authorization depends on external rules not present here. | Does not contradict F4/F5; it shows why the full KHub import/restore contract must also govern cloud/bridge ingestion. No new Firebase security pattern to promote. |
+| F8 | Offline runtime dependencies | KHub policy requires runtime dependencies to be precached or self-hosted so cold offline launch can perform the main task. | `index.html:15,85-88` loads Font Awesome, Firebase compat SDKs, and SheetJS from CDNs; `sw.js` ignores cross-origin requests and does not precache them. `excel-import-bridge.html` also loads SheetJS from a CDN. | KHub policy is stronger. Finance's local shell may open offline, but Excel import and cloud features depend on previously available network/CDN state. | **APP-SPECIFIC** (adoption gap; no promotion) | Medium; offline behavior varies by browser HTTP cache and CDN availability, and the import parser can fail after an ostensibly successful PWA launch. | Supports P2's need for explicit cold-offline and asset-failure regression guidance. It provides no P1 implementation evidence because Finance still has no document-only offline fallback. |
+| F9 | Shared components and error boundary | KHub currently has the same modal/input/error-boundary implementations inspected in prior phases. | Finance `js/components/{modal,input}.js`, `js/a11y.js`, `js/perf.js`, and `js/error-boundary.js` are byte-equivalent to KHub apart from trailing newlines; modal/input therefore retain the same `innerHTML` and conditional `aria-describedby` limitations. | Overtime O4 and Ministry M2/M3 remain stronger; Finance adds no competing implementation. | **APP-SPECIFIC** (no new candidate) | Low for the audit decision; future Finance adoption should use the approved shared improvements rather than fork them. | No O4 corroboration from Finance; no M3 corroboration. No contradiction because behavior is simply the older shared baseline. |
+| F10 | Test/CI scaffolding | KHub has `package.json`, lint/format/static checks, and `scripts/khub-check.mjs`; approved O6 remains an optional real-source harness pattern. | Finance has no `package.json`, no `tests/` directory, and no `.github/workflows` test workflow. The audit could run syntax checks and KHub's external ship checker only. | KHub and Overtime are stronger. Finance's data/import calculations have no repository-native automated regression suite. | **APP-SPECIFIC** (gap; no Finance candidate) | Medium; complex parsing, migration, freshness, and reconciliation behavior can drift without fixtures and frozen/source-based tests. | Does not corroborate O6; it strengthens the rationale for keeping O6 available as an optional pattern for data-heavy apps. |
+
+### PROMOTE candidates - pending Supervisor review
+
+- **F5:** extend the existing KHub import/restore contract with an explicit per-collection
+  strategy declaration (`replace`, `merge`, `preserve-local-fields`, or
+  `reject-on-conflict`) that is shown in preview and covered by snapshot/rollback tests.
+  Promote only the generic policy/adapter shape, not Finance account, vault, card, goal,
+  workbook, or accounting rules.
+- **M2 reaffirmed by F6:** recover only the known transient IndexedDB transaction failure
+  at a narrow integration/error-boundary scope, keep the application usable, and retain
+  structured warning evidence. Ministry's specific matcher remains the preferred base;
+  Finance's blanket `includes('transaction')` must not be copied.
+
+### APP-SPECIFIC candidates / adoption gaps - no KHub promotion
+
+- Finance workbook sheet detection, cell addresses, balance/coverage/net-worth math,
+  paycheck mappings, account/vault/card/goal shapes, and source workbook rules in
+  `js/excel-import.js`, `storage.js`, `dashboard.js`, and `app.js`.
+- The `finance-sync/bridge-import` Firestore singleton, bridge timestamp key, direct
+  localStorage overwrite, and reload sequence in `js/firebase/firebase-sync.js`.
+- `excel-import-bridge.html`, `bridge-manifest.json`, its icons, and the legacy
+  `index-David-Yamel.html` / `sw-David-Yamel.js` copies.
+- Finance's bare SW registrar is behind KHub/M1/O3 and is not a candidate.
+- CDN-hosted Firebase, SheetJS, and Font Awesome are a Finance adoption gap against KHub's
+  offline policy, not a reusable improvement.
+- Finance has no push frontend/worker, scheduled push, dead-sub cleanup, or structured
+  counters; it provides no new P3 evidence.
+- Finance's current `js/components` and `js/error-boundary.js` are the older KHub baseline;
+  O4 and M2/M3 remain the approved forward direction.
+- Finance `js/firebase/cloud-backup.js` is identical to KHub except one explanatory sentence
+  and is not a new pattern. The Firebase web config is public client configuration, not a
+  private server secret; authorization still depends on external Auth/Firestore rules.
+- Closed zoom behavior was observed only as existing configuration and was not reopened.
+
+### OPTIONAL PATTERN candidates - pending Supervisor review
+
+- **F3:** bounded, version-aware application-state conversion at the storage boundary.
+  Generalize only as an opt-in migration registry with source/target versions, validation,
+  idempotence, recovery snapshot, and retirement guidance. This adds application-data
+  corroboration to Talk A2 without making migrations mandatory for new apps.
+- **F4:** detached import preview/reconciliation implementation scaffold for import-heavy
+  apps. Any reusable version must complete all nine KHub steps, especially pre-import
+  snapshot and rollback, and must use per-app parser/schema adapters.
+
+### AMBIGUOUS candidates - Supervisor judgment
+
+- **F1:** `caches.match(..., { ignoreSearch: true })` for query-busted shell assets. It is
+  useful when search parameters are version-only, but unsafe as a blanket default when
+  queries select content. Prefer explicit URL normalization or a version-parameter allowlist.
+- Finance's import warning override is practical for known workbook drift, but the current
+  single confirmation does not distinguish warning from blocking validation failure. A
+  reusable severity model is needed before considering promotion.
+
+### Cross-app corroboration / contradiction
+
+- **P1:** Finance does not corroborate it. Finance and KHub both use same-request shell
+  fallback and provide no explicit offline document for an uncached navigation. Finance's
+  `ignoreSearch` does not change the document-vs-asset rule. Talk + Overtime remain the
+  implementation evidence for P1.
+- **P2:** Finance `CLAUDE.md` has only a cache-bump/live-verify deploy reminder and lacks
+  generalized SW fallback/safety/regression guidance. CDN offline gaps and the lack of an
+  update UX reinforce the need for P2; no contradiction.
+- **P3:** no push stack exists in Finance; no new evidence.
+- **M1/O3:** Finance has only a silent one-line registrar and no recovery. This is an
+  adoption gap, not a contradiction; the approved single-manager direction stands.
+- **M2:** independently corroborated in `firebase-sync.js`, but with a matcher that is too
+  broad. Use Ministry's narrower implementation.
+- **M3:** not corroborated. Finance error-boundary is the same as KHub.
+- **O2:** Finance, like KHub/Talk, broadly deletes every non-current origin cache. It
+  contradicts the approved namespaced-cleanup direction; Overtime remains the stronger
+  implementation.
+- **O4:** not corroborated. Finance shares KHub's older modal/input implementation.
+- **O6:** no Finance tests or CI. The data-heavy import/migration code strengthens the use
+  case for O6 but supplies no implementation evidence.
+- **Talk A1:** Finance is network-first for its whole same-origin shell, like KHub/Ministry/
+  Overtime, not Talk's stable-cache/hot-file split. No corroboration; A1 remains APP-SPECIFIC.
+- **Talk A2:** Finance provides a bounded legacy application-state converter. This is new
+  cross-domain evidence for keeping A2 as OPTIONAL PATTERN, not enough to make it a default.
+- **O5:** Finance uses atomic `cache.addAll`, like KHub. It does not corroborate Overtime's
+  rejected partial required-shell installation; O5 remains NOT PROMOTED.
+
+### Exact files inspected and verification
+
+Finance files inspected: `sw.js`, `app.js`, `storage.js`, `dashboard.js`,
+`js/excel-import.js`, `js/firebase/{firebase-sync,cloud-backup,firebase-config}.js`,
+`js/{config,error-boundary,a11y,perf,tab-labels}.js`,
+`js/components/{button,card,input,modal}.js`, `index.html`,
+`excel-import-bridge.html`, `bridge-manifest.json`, `manifest.json`,
+`css/{styles,components,dark-mode,responsive}.css`, `CLAUDE.md`, `TEST-CHECKLIST.md`,
+`README.md`, `HANDOFF.md`, `TOOLS.md`,
+`docs/stage-notes/2026-07-01-v102-audit-token-cache-fixes.md`, and the repository file,
+workflow, and test inventory. The legacy copies `index-David-Yamel.html` and
+`sw-David-Yamel.js` were inventoried only; they were not treated as the current app entry
+point or current service worker.
+
+KHub comparison files inspected: `sw.js`, `js/app.js`, `js/error-boundary.js`,
+`js/config.js`, `js/a11y.js`, `js/perf.js`,
+`js/components/{button,card,input,modal}.js`, `js/firebase/cloud-backup.js`,
+`index.html`, `manifest.json`, `CLAUDE.md`, `TEST-CHECKLIST.md`, `README.md`,
+`package.json`, `scripts/khub-check.mjs`, `docs/UX-STANDARDS.md`,
+`docs/APP-ARCHETYPES.md`, Firebase/security scaffolding, notification reference files,
+and the repository file inventory.
+
+Read-only verification against Finance `e816bd9`:
+
+- `node --check` passed all 18 JavaScript files (0 syntax failures).
+- Finance contains no repository-native `package.json`, `tests/`, or GitHub Actions test
+  workflow, so no application test suite was available to execute.
+- `node work/KHub-Boilerplate/scripts/khub-check.mjs work/finance-tracker` executed and
+  returned FAIL with 9 failures and 5 warnings. Reported failures: duplicate IDs across the
+  three checked-in HTML files and raw color/sharp-corner drift; warnings: five hard-coded
+  radii. Because the checker scans all HTML, the duplicate-ID result includes duplicate IDs
+  across separate documents (not proof of duplicate IDs within the live `index.html` alone).
+  Runtime verification remains required by the checker and was not performed because this
+  stage is audit-only and no deployment was authorized.
+
+### Phase 3D completion proof
+
+- Finance audited at `e816bd9ff158b3987d3ab1785c4202cb4bea7d92`.
+- KHub compared at `9ba80db83484ec2c198a6f81073659b88ce92502`.
+- Starting Talk tracker commit verified as
+  `1e6e70feb1617dcad06882e5f82d38ef99732878` before the audit.
+- Finance application code NOT modified.
+- KHub-Boilerplate NOT modified.
+- Talk application code NOT modified; tracker only.
+- Pipe Bending NOT audited.
+- No implementation, deployment, cache-version change, or next-stage work performed.
+
+Phase 3D Finance audit COMPLETE - `PENDING SUPERVISOR REVIEW`.
+STOP. Phase 3E Pipe Bending audit NOT STARTED.
