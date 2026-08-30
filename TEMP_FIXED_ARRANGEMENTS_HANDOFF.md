@@ -4,12 +4,12 @@ repo: davidfontenelle80-cloud/Talk-Arrangements-Public
 app: Talk Arrangements
 status: active-temporary
 created: 2026-06-23
-last_updated: 2026-06-29
+last_updated: 2026-08-30
 owner: David
 feature: fixed-arrangement-rules-and-planning-ux
 current_stage: stage-9b-b-backend-deployed-configured-device-verification-pending
 next_stage: stage-9b-b-frontend-live-deploy-and-closed-app-push-verification
-cache_version: talk-arrangements-v102-web-push-worker-ready
+cache_version: talk-arrangements-v111-sw-fix-no-pinch-zoom
 remove_when: feature-complete-qa-complete-mobile-desktop-light-dark-english-spanish-export-import-cloud-live-approved
 ---
 
@@ -481,3 +481,54 @@ Current authorized stage: `Stage 9B-B - Cloudflare Deploy and WebPush Delivery`,
 Next authorized stage: none until Stage 9B-B is implemented, deployed, and live verified.
 
 Do not start Release Candidate or Stage 10 until Stage 9B-B is complete and live verified.
+
+## Repo Reconciliation (2026-08-30)
+
+This tracker was last accurate at commit `bf3983e` (2026-06-29). The repository
+has advanced since then and this handoff had drifted out of sync. This section
+reconciles the tracker to the actual repository before any Phase 1 work begins.
+No behavior was changed by this reconciliation; it is a documentation update only.
+
+Actual repository state at reconciliation time:
+
+- `origin/main` HEAD: `b78f902` (2026-07-17) — "fix: disable accidental pinch zoom".
+- Service worker cache version is `talk-arrangements-v111-sw-fix-no-pinch-zoom`
+  (this tracker's frontmatter previously claimed `...v102-web-push-worker-ready`;
+  corrected above).
+- `cloudflare/talk-arrangements-push/worker.js` `sendWebPush()` is fully
+  implemented (VAPID JWT signing, ECDH key agreement, HKDF, AES-128-GCM aes128gcm
+  Web Push encryption, direct POST to the subscription endpoint).
+  `GET /api/health` reports `webPushDeliveryImplemented: true`. This supersedes
+  the earlier "sendWebPush() still throws / main implementation gap" notes in the
+  Stage 9B-A and NoClip-inspection sections above, which are now historical.
+- A frontend save-time reminder lead-time guard already exists in `js/app.js`:
+  `MIN_REMINDER_LEAD_MINUTES = 15` (commit `ad2fad6`, v105) blocks only changed
+  reminder times set under the window, with an EN/ES toast and form values kept.
+  An honest delivery-time display also exists: `REMINDER_CHECK_MINUTES = 15` +
+  `computeDeliveryTime` (commit `3cab2e7`, v104). These are pre-existing and are
+  NOT part of Phase 1; Phase 1 does not touch reminder behavior.
+- Worker cron trigger in `cloudflare/talk-arrangements-push/wrangler.toml` at this
+  HEAD is still `* * * * *` (every minute). Phase 1 changes this to `*/5 * * * *`.
+
+Commits landed since the last tracker-known commit `bf3983e` (newest first):
+
+- `b78f902` 2026-07-17 fix: disable accidental pinch zoom
+- `87f9e95` 2026-07-17 chore: apply one-time no-pinch-zoom migration
+- `b3a81e2` 2026-07-13 docs: expand CLAUDE.md with ship checklist, post-deploy verification, SW safety rules
+- `9c375dc` 2026-07-13 fix: bump CACHE_VERSION to v111, fix SW fallback to avoid serving HTML for JS asset requests
+- `78350f6` 2026-07-13 fix: correct garbled Spanish characters (double-encoded UTF-8)
+- `4ade1f8` 2026-07-09 Add YAML frontmatter standard to CLAUDE.md
+- `f6d9eca` 2026-07-08 hotfix: strip BOM from app.js — fixes SyntaxError on load
+- `fe7bb34` 2026-07-08 feat: notification UX polish — sweep hint, status block, 6-state detection
+- `d82dd21` 2026-07-08 Add one-tap Enable notifications button to Settings (mirrors note-clip); SW v109
+- `6e08a99` 2026-07-07 Cloud Account (Sign in/Sign out) control in Settings; loaded via push-config; SW v108
+- `9c1cbcb` 2026-07-07 FIXED checkbox: read-only mirror of Fixed Arrangements schedule; bump SW cache to v107
+- `becc644` 2026-07-07 Refresh cache for fixed arrangement auto-check
+- `6e9fc70` 2026-07-07 Auto-check congregations from fixed arrangement rules
+- `e57ff8a` 2026-07-03 chore: retrigger Pages deploy (previous deploy job failed transiently)
+- `ad2fad6` 2026-07-03 v105: minimum reminder lead-time check on save — MIN_REMINDER_LEAD_MINUTES(15)
+- `3cab2e7` 2026-07-03 v104: honest reminder delivery time — REMINDER_CHECK_MINUTES(15) + computeDeliveryTime
+- `5e70fd0` 2026-07-01 v103: audit fixes — undefined theme tokens, dark-mode panels, light-mode reminder modal
+- `e5be3b9` 2026-06-29 docs: record Stage 9B-B backend commit
+
+Tracker and repository are aligned as of this section. Phase 1 coding may proceed.
