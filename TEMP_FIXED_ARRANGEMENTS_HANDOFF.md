@@ -779,3 +779,113 @@ ministry js/push-toggle.js, css/{main,components,dark-mode,responsive}.css, inde
 cloudflare/ministry-tracker-push/{worker.js,wrangler.toml} vs khub docs/notifications/reference/worker.js.
 
 Phase 3C (Overtime audit) NOT STARTED - awaiting Supervisor review of the Ministry findings above.
+
+## Phase 3C - Boilerplate Drift Audit: Overtime Tracker vs KHub-Boilerplate (2026-08-30)
+
+AUDIT ONLY. Compared Overtime Tracker `main` (`bca4cd9`) against KHub-Boilerplate
+`main` (`9ba80db`) by inspecting the actual files. KHub-Boilerplate was NOT modified.
+Overtime application code was NOT modified. Talk application code was NOT modified;
+this tracker is the only changed file. Finance Tracker and Pipe Bending were NOT audited.
+All recommendations in this section are `PENDING SUPERVISOR REVIEW`.
+
+### Material-difference decision table
+
+| ID | Area/pattern | KHub behavior | Overtime behavior and exact evidence | Stronger / why | Classification | Promotion risk | Prior evidence |
+|---|---|---|---|---|---|---|---|
+| O1 | Document-aware offline fallback | `sw.js` network-first shell fallback only matches the failed request; an uncached navigation has no explicit offline-document fallback. | `sw.js` identifies navigation/document requests, falls back to `./index.html`/`./` only for those, and for assets returns the matching cached asset or `Response.error()`. | Overtime: it preserves an offline document while never substituting HTML for a failed JS/CSS asset. | **PROMOTE** (reaffirms approved P1) | Low; preserve same-origin and GET guards and test both uncached navigation and failed asset paths. | Independently corroborates Talk P1's required principle; does not contradict Ministry's same-URL-only fallback. This is now Talk + Overtime implementation evidence. |
+| O2 | Cache ownership / activation cleanup | `sw.js` deletes every origin cache whose key is not the current KHub cache. On a shared origin this can remove caches owned by another app or feature. | `sw.js` deletes only keys starting with `overtime-tracker-` and not equal to `CACHE_VERSION`. | Overtime: cleanup is namespace-scoped and cannot evict unrelated origin caches. | **PROMOTE** | Low; every generated app needs a stable, unique cache prefix and obsolete historical prefixes may require an explicit migration list. | New finding. Talk's current `sw.js` also deletes every non-current origin cache, so Overtime contradicts the existing Talk implementation while improving the fleet-safe design. |
+| O3 | Broken-shell detection and scoped repair | KHub has update lifecycle UX in `js/app.js`, but no early script/link load-error screen, boot watchdog, or user-triggered repair for a corrupted cached shell. | `js/sw-register.js` captures failed SCRIPT/LINK loads, detects a still-empty app after 3.5s, displays an accessible recovery screen, and on user action deletes only `overtime-tracker-*` caches and unregisters only SW registrations whose scope contains `/Overtime-Tracker-/`. Commit history identifies `4afe896` as the iPhone black-screen/scoped-recovery fix. | Overtime for post-corruption recovery; KHub/Ministry remain stronger for normal safe-update lifecycle. | **PROMOTE** the recovery capability, generalized and integrated with M1; do not copy app name/scope strings or duplicate registration. | Medium; false boot-watchdog positives, destructive cache clearing, scope matching, CSP-safe rendering, and double SW registration must be designed out. Repair must remain explicit and app-scoped. | Complements rather than corroborates Ministry M1. Talk/Ministry evidence covers ordinary updates; Overtime adds a last-resort recovery path. |
+| O4 | Shared component injection hardening | `js/components/modal.js` interpolates title, confirm label, cancel label, and body directly into `innerHTML`; `js/components/input.js` writes the label with `innerHTML` and omits `aria-describedby` when no hint exists. | `js/components/modal.js` HTML-escapes title/button labels and accepts a DOM Node body; `js/components/input.js` builds label/required marker with `textContent`/DOM APIs and always associates the error id via `aria-describedby`. | Overtime: safer reusable defaults for caller-controlled text and more reliable error announcement wiring. | **PROMOTE** | Low-medium; modal body intentionally remains trusted HTML when passed as a string, so the API must document trusted-HTML vs Node/text usage and avoid implying full sanitization. | New security/accessibility evidence; no contradiction with P1-P3 or M1-M3. |
+| O5 | Precache failure policy | KHub `sw.js` uses atomic `cache.addAll()` and fails the install when any required shell asset fails. | Overtime `sw.js` uses `Promise.allSettled(PRECACHE_URLS.map(cache.add))`, allowing activation with a partial shell; O3 supplies a repair path if required files are absent. | Trade-off: KHub preserves cache completeness; Overtime can recover from a single transient 404 but may install an incomplete offline shell. | **AMBIGUOUS** | Medium-high; partial activation can trade a failed update for a later offline failure. Requires telemetry/tests and a required-vs-optional asset policy before promotion. | New; neither Talk nor Ministry decision records establish cross-app support. |
+| O6 | Deterministic domain regression harness + CI | KHub supplies lint/format/static checks but no application-domain regression harness. | `.github/workflows/tests.yml`, `tests/harness.js`, `tests/sick-leave-tests.js`, and `tests/ot-total-tests.js` run real `js/app.js` in a VM with mocked DOM/localStorage and a frozen clock; current audit run passed 57 sick-leave assertions and 6 OT assertions. | Overtime for its mature domain logic; the exact hooks/assertions are not boilerplate-generic. | **OPTIONAL PATTERN** | Medium; test-only globals and mocks can drift from browsers, and frozen time must not hide calendar transitions. Promote guidance/scaffolding only, not Overtime rules. | New maintainability pattern; no push/SW evidence and no contradiction with prior findings. |
+
+### PROMOTE candidates - pending Supervisor review
+
+- **P1 reaffirmed by Overtime:** document/navigation-only offline document fallback; never
+  return cached HTML for failed JS/CSS/assets (`sw.js`).
+- **O2:** namespace-scoped service-worker cache cleanup (`sw.js`).
+- **O3:** app-scoped broken-shell recovery capability, integrated into the eventual M1
+  manager rather than copied as Overtime's standalone/duplicate registrar (`js/sw-register.js`).
+- **O4:** DOM-safe modal/input labels and persistent error `aria-describedby` wiring
+  (`js/components/modal.js`, `js/components/input.js`).
+
+### APP-SPECIFIC candidates - no KHub promotion
+
+- `js/app.js`, `tests/sick-leave-tests.js`, and `tests/ot-total-tests.js`: overtime,
+  leave-bank, pay-period, funeral/FMLA, calendar, keypad, and localStorage schema logic.
+- `js/firebase/firebase-config.js` and Overtime cloud-auto-save wiring in `js/app.js`:
+  concrete Firebase project/app identity, storage keys, and sync timing. The checked-in
+  Firebase web configuration is public client configuration, not a private server secret;
+  authorization still depends on Auth/Firestore rules. KHub's generic Firebase guidance
+  remains the appropriate reusable layer.
+- `css/main.css`, `css/components.css`, `css/dark-mode.css`, `css/responsive.css`,
+  `index.html`, `manifest.json`, icons, and most `js/config.js`: Overtime domain UI,
+  branding, layout, navigation, and identity.
+- Locked zoom is intentional and CLOSED per Supervisor direction; it was observed but not
+  reopened or evaluated as a candidate.
+- Overtime has no push frontend, push service-worker handlers, Cloudflare Worker/API, or
+  scheduled push infrastructure. It provides no new P3 evidence.
+- Overtime has no IndexedDB use or M2 transient-transaction matcher. It provides no M2/M3
+  corroboration or contradiction.
+- Overtime `js/sw-register.js` is not Ministry M1: it lacks update checks, safe-reload
+  determination, dirty-form/modal handling, update banner behavior, event bus, and the
+  complete SKIP_WAITING/application lifecycle. KHub's inlined manager and Ministry's M1
+  module are stronger for ordinary updates; Overtime contributes only O3 recovery.
+
+### OPTIONAL PATTERN candidates - pending Supervisor review
+
+- **O6:** deterministic real-source domain test harness, frozen clock, explicit production-
+  inert test hook, and CI execution. Adopt as opt-in app-test scaffolding/guidance, not as
+  mandatory Overtime-specific code.
+
+### AMBIGUOUS candidates - Supervisor judgment
+
+- **O5:** tolerant partial precache via `Promise.allSettled`. Do not promote without a
+  required-vs-optional asset policy and explicit incomplete-cache/offline tests.
+- Overtime adds `font-size:16px` to Firebase auth modal inputs in
+  `js/firebase/cloud-backup.js`, avoiding iOS form auto-zoom, but its copy omits KHub's newer
+  API-key-referrer error mapping. Keep the 16px mobile-input principle in UX standards;
+  do not replace the stronger current KHub module with Overtime's older fork.
+
+### Cross-app corroboration / contradiction
+
+- **P1:** independently corroborated by Overtime. Talk and Overtime both implement the
+  required document-aware offline fallback. Ministry avoids HTML-for-assets through a
+  same-URL fallback but lacks an offline navigation document. P1 remains PROMOTE.
+- **P2:** Overtime `CLAUDE.md` is a short ship checklist and lacks Talk's detailed SW
+  safety/fallback/post-deploy guidance. It does not independently reproduce P2, but its O3
+  recovery history reinforces the need for generalized SW regression guidance.
+- **P3:** no push/Worker stack exists in Overtime; no new evidence.
+- **M1:** not corroborated. Overtime's recovery registrar is narrower and lacks safe-update
+  state/event-bus behavior. O3 should become a complementary M1 recovery extension.
+- **M2/M3:** no IndexedDB and no Ministry recovery/i18n boundary changes. Overtime and KHub
+  `js/error-boundary.js` are byte-equivalent at the compared heads, so no contradiction.
+- **Talk A1:** Overtime uses network-first for its eligible shell/navigation requests, not
+  Talk's stable-cache/hot-file split. No corroboration; A1 remains APP-SPECIFIC / insufficient.
+- **Talk A2:** no legacy push migration exists. A2 remains OPTIONAL PATTERN.
+- **New contradiction:** Talk/KHub broadly delete non-current origin caches; Overtime scopes
+  deletion to its own prefix. O2 recommends the Overtime design for shared-origin safety.
+
+### Exact files inspected and verification
+
+Overtime: `sw.js`, `js/sw-register.js`, `js/app.js`, `js/error-boundary.js`,
+`js/config.js`, `js/auth.js`, `js/a11y.js`, `js/i18n.js`, `js/theme.js`, `js/perf.js`,
+`js/components/{button,card,input,modal}.js`, `js/firebase/{firebase-config,cloud-backup}.js`,
+`index.html`, `manifest.json`, `css/{main,components,dark-mode,responsive}.css`,
+`CLAUDE.md`, `TEST-CHECKLIST.md`, `README.md`, `.gitignore`, `.eslintrc.json`,
+`.prettierrc`, `.github/workflows/tests.yml`, `tests/{harness,sick-leave-tests,ot-total-tests}.js`,
+and `docs/stage-notes/2026-07-01-v23-token-fix.md`.
+
+KHub comparison: `sw.js`, `js/app.js`, `js/error-boundary.js`, `js/config.js`,
+`js/auth.js`, `js/a11y.js`, `js/i18n.js`, `js/theme.js`, `js/perf.js`,
+`js/components/{button,card,input,modal}.js`, `js/firebase/cloud-backup.js`,
+`index.html`, `manifest.json`, `css/{main,components,dark-mode,responsive}.css`,
+`CLAUDE.md`, `TEST-CHECKLIST.md`, `README.md`, `package.json`,
+`scripts/khub-check.mjs`, Firebase/security scaffolding, notification reference files,
+`docs/UX-STANDARDS.md`, and `docs/APP-ARCHETYPES.md`.
+
+Read-only verification run against Overtime `bca4cd9`: `node tests/sick-leave-tests.js`
+passed 57/57; `node tests/ot-total-tests.js` passed 6/6; `node --check` passed all 19
+JavaScript files. No deployment or cache change was performed.
+
+Phase 3D (Finance audit) NOT STARTED - awaiting Supervisor review of Phase 3C.
