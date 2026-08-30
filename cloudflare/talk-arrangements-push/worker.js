@@ -16,6 +16,15 @@ const APP_ID = 'talk-arrangements-public';
 const DEFAULT_ALLOWED_ORIGIN = 'https://davidfontenelle80-cloud.github.io';
 const DEFAULT_TTL_SECONDS = 60 * 60 * 24 * 28;
 const WEB_PUSH_RS = 4096;
+// Due-window scheduling. The scheduled sweep runs every 5 minutes (see wrangler.toml).
+// Each reminder is indexed into a per-minute "due bucket"; the sweep only reads the
+// buckets in a bounded lookback window instead of listing every reminder: key.
+// 15 minutes of lookback tolerates a delayed or skipped */5 run (up to three intervals).
+const DUE_BUCKET_LOOKBACK_MINUTES = 15;
+// Bounded, self-terminating migration for reminders created before the bucket index
+// existed. Each sweep scans at most this many reminder: keys until migration completes.
+const LEGACY_MIGRATION_KEY = 'migration:dueBuckets:v1';
+const LEGACY_MIGRATION_SCAN_LIMIT = 100;
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data, null, 2), {
@@ -64,6 +73,112 @@ function makeSubscriptionId(subscription) {
 
 function reminderKey(subscriptionId, sourceType, sourceId) {
   return `reminder:${subscriptionId}:${sourceType}:${sourceId}`;
+}
+
+// --- Due-bucket index ---
+// A reminder's due bucket is the UTC minute of its fireAt (YYYY-MM-DDTHH:MM).
+// Also validates that fireAt is a real timestamp (preserves save-time behavior).
+function dueBucketMinute(value) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) throw new Error('fireAt must be a valid ISO date/time.');
+  return d.toISOString().slice(0, 16);
+}
+
+function dueBucketKey(minute) {
+  return `due:${minute}`;
+}
+
+// Index a reminder key into a minute bucket. Buckets carry a TTL so the index is
+// self-cleaning and never grows unbounded; the reminder records themselves are
+// unaffected (their persistence semantics are unchanged).
+async function addReminderToDueBucket(store, minute, key) {
+  const bucketKey = dueBucketKey(minute);
+  const current = await store.get(bucketKey, 'json').catch(() => null);
+  const keys = Array.isArray(current && current.keys) ? current.keys : [];
+  if (!keys.includes(key)) keys.push(key);
+  await store.put(bucketKey, JSON.stringify({ minute, keys, updatedAt: new Date().toISOString() }), {
+    expirationTtl: DEFAULT_TTL_SECONDS,
+  });
+}
+
+// The bounded set of minute buckets a sweep inspects: the current minute back
+// through DUE_BUCKET_LOOKBACK_MINUTES. Bounded work regardless of total reminders.
+function dueBucketMinutesToCheck(now = new Date()) {
+  const out = [];
+  const base = new Date(now);
+  base.setSeconds(0, 0);
+  for (let i = DUE_BUCKET_LOOKBACK_MINUTES; i >= 0; i -= 1) {
+    out.push(dueBucketMinute(new Date(base.getTime() - i * 60000)));
+  }
+  return out;
+}
+
+// Collect reminders that are due now, reading only the lookback buckets.
+// De-dupes keys that appear in more than one bucket, skips already-sent reminders,
+// and safely ignores stale bucket entries whose reminder record is gone.
+async function getDueReminderEntries(store, nowIso) {
+  const seen = new Set();
+  const due = [];
+  for (const minute of dueBucketMinutesToCheck(new Date(nowIso))) {
+    const bucket = await store.get(dueBucketKey(minute), 'json').catch(() => null);
+    const keys = Array.isArray(bucket && bucket.keys) ? bucket.keys : [];
+    for (const key of keys) {
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const item = await store.get(key, 'json');
+      if (item && item.fireAt && item.fireAt <= nowIso && !item.sentAt) due.push({ key, item });
+    }
+  }
+  return due;
+}
+
+// One bounded pass of legacy migration. Reminders created before the bucket index
+// existed have no dueBucketMinute field and would otherwise never appear in any
+// bucket. Each sweep scans up to LEGACY_MIGRATION_SCAN_LIMIT reminder: keys (via a
+// persisted cursor) and indexes any un-migrated, unsent reminder into a bucket:
+//   - future reminders  -> their own due bucket (fire at the right time)
+//   - already-overdue   -> the current minute bucket, so the lookback fires them
+//                          promptly on this or the next sweep (never stranded)
+// It marks each record migrated so it is not reprocessed, and sets a done flag when
+// the key space is exhausted, after which normal operation reads buckets only.
+async function migrateLegacyReminders(store, nowIso) {
+  const state = await store.get(LEGACY_MIGRATION_KEY, 'json').catch(() => null);
+  if (state && state.done) return { scanned: 0, migrated: 0, done: true };
+
+  const listOpts = { prefix: 'reminder:', limit: LEGACY_MIGRATION_SCAN_LIMIT };
+  if (state && state.cursor) listOpts.cursor = state.cursor;
+  let page;
+  try {
+    page = await store.list(listOpts);
+  } catch (_) {
+    return { scanned: 0, migrated: 0, done: false };
+  }
+
+  let migrated = 0;
+  const nowMinute = dueBucketMinute(nowIso);
+  for (const entry of page.keys || []) {
+    const rec = await store.get(entry.name, 'json');
+    if (!rec || rec.sentAt || rec.dueBucketMinute) continue; // gone, already sent, or already indexed
+    let bucketMinute;
+    try {
+      bucketMinute = dueBucketMinute(rec.fireAt);
+    } catch (_) {
+      continue; // invalid fireAt on a legacy record: leave it, do not crash the sweep
+    }
+    rec.dueBucketMinute = bucketMinute;
+    await store.put(entry.name, JSON.stringify(rec));
+    const indexMinute = rec.fireAt <= nowIso ? nowMinute : bucketMinute;
+    await addReminderToDueBucket(store, indexMinute, entry.name);
+    migrated += 1;
+  }
+
+  const done = page.list_complete === true || !page.cursor;
+  await store.put(LEGACY_MIGRATION_KEY, JSON.stringify({
+    done,
+    cursor: done ? null : page.cursor,
+    updatedAt: nowIso,
+  }));
+  return { scanned: (page.keys || []).length, migrated, done };
 }
 
 function textBytes(value) {
@@ -204,22 +319,6 @@ async function encryptPushPayload(subscription, payload) {
   return concatBytes(salt, uint32Bytes(WEB_PUSH_RS), new Uint8Array([asPublic.length]), asPublic, ciphertext);
 }
 
-async function listDueReminderKeys(store, nowIso) {
-  // KV list is eventually consistent. For v1 this is acceptable for reminders.
-  // Codex may replace with D1 indexing if precision/scale requires it.
-  const due = [];
-  let cursor;
-  do {
-    const page = await store.list({ prefix: 'reminder:', cursor });
-    cursor = page.cursor;
-    for (const key of page.keys || []) {
-      const item = await store.get(key.name, 'json');
-      if (item && item.fireAt && item.fireAt <= nowIso && !item.sentAt) due.push({ key: key.name, item });
-    }
-  } while (cursor);
-  return due;
-}
-
 async function handleHealth(request, env) {
   return json({
     ok: true,
@@ -274,6 +373,16 @@ async function handleUpsertReminder(request, env) {
   const subscription = await store.get(`subscription:${subscriptionId}`, 'json');
   if (!subscription) return json({ ok: false, error: 'Unknown subscriptionId.' }, 404, headers);
 
+  // Validates fireAt and computes the due bucket. Timing is unchanged: the bucket
+  // is derived purely from the caller-supplied fireAt.
+  let bucketMinute;
+  try {
+    bucketMinute = dueBucketMinute(fireAt);
+  } catch (_) {
+    return json({ ok: false, error: 'fireAt must be a valid ISO date/time.' }, 400, headers);
+  }
+
+  const key = reminderKey(subscriptionId, sourceType, sourceId);
   const record = {
     app: APP_ID,
     subscriptionId,
@@ -282,13 +391,18 @@ async function handleUpsertReminder(request, env) {
     title: String(data.title || 'Talk Arrangements Reminder'),
     body: String(data.body || ''),
     fireAt,
+    dueBucketMinute: bucketMinute,
     url: data.url || '/Talk-Arrangements-Public/',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
-  await store.put(reminderKey(subscriptionId, sourceType, sourceId), JSON.stringify(record));
-  return json({ ok: true, reminder: record }, 200, headers);
+  await store.put(key, JSON.stringify(record));
+  // Index into the due bucket so the scheduled sweep finds it without a full scan.
+  // On edit, an earlier fireAt's bucket entry becomes stale and is safely skipped
+  // (record.fireAt no longer matches) and TTL-expires on its own.
+  await addReminderToDueBucket(store, bucketMinute, key);
+  return json({ ok: true, reminder: record, dueBucketMinute: bucketMinute }, 200, headers);
 }
 
 async function handleDeleteReminder(request, env, pathname) {
@@ -360,21 +474,53 @@ async function handleTestPush(request, env) {
     url: '/Talk-Arrangements-Public/',
   };
 
-  const result = await sendWebPush(subRecord.subscription, payload, env);
+  let result;
+  try {
+    result = await sendWebPush(subRecord.subscription, payload, env);
+  } catch (error) {
+    // Same dead-subscription cleanup as the scheduled sweep: a 404/410 from the push
+    // service means the subscription is gone. Prune it and tell the client to
+    // re-subscribe, rather than leaving an unusable record behind.
+    if (error && (error.status === 404 || error.status === 410)) {
+      await store.delete(`subscription:${subscriptionId}`);
+      return json({ ok: false, error: 'subscription-expired', expired: true }, 410, headers);
+    }
+    throw error;
+  }
   return json({ ok: true, result }, 200, headers);
 }
 
 async function processDueReminders(env) {
   const store = requireStore(env);
   const nowIso = new Date().toISOString();
-  const due = await listDueReminderKeys(store, nowIso);
-  const results = [];
+
+  // Fold any pre-bucket reminders into the index first (bounded, self-terminating).
+  const migration = await migrateLegacyReminders(store, nowIso);
+
+  // Normal operation: read only the bounded lookback buckets.
+  const due = await getDueReminderEntries(store, nowIso);
+
+  // Structured per-run counters (no secrets, keys, or payloads are recorded):
+  //   attempted    reminders for which a push was actually sent to the push service
+  //   sent         attempts that the push service accepted
+  //   failed       transient failures (kept for retry; NOT deleted)
+  //   deadCleaned  permanently dead subscriptions pruned (404/410, or orphaned reminder)
+  const counters = { due: due.length, attempted: 0, sent: 0, failed: 0, deadCleaned: 0 };
 
   for (const entry of due) {
     const reminder = entry.item;
+    const subRecord = await store.get(`subscription:${reminder.subscriptionId}`, 'json');
+    if (!subRecord) {
+      // Orphaned reminder: its subscription was already removed (e.g. pruned as dead
+      // on an earlier run). Delete it so we do not retry a permanently gone endpoint
+      // on every sweep forever.
+      await store.delete(entry.key);
+      counters.deadCleaned += 1;
+      continue;
+    }
+
+    counters.attempted += 1;
     try {
-      const subRecord = await store.get(`subscription:${reminder.subscriptionId}`, 'json');
-      if (!subRecord) throw new Error('Missing subscription record.');
       await sendWebPush(subRecord.subscription, {
         title: reminder.title,
         body: reminder.body,
@@ -384,22 +530,34 @@ async function processDueReminders(env) {
       }, env);
       reminder.sentAt = new Date().toISOString();
       await store.put(entry.key, JSON.stringify(reminder));
-      results.push({ key: entry.key, ok: true });
+      counters.sent += 1;
     } catch (error) {
       if (error && (error.status === 404 || error.status === 410)) {
+        // Permanently dead/expired subscription: prune the subscription and this
+        // reminder so the endpoint is never retried again.
         await store.delete(`subscription:${reminder.subscriptionId}`);
         await store.delete(entry.key);
-        results.push({ key: entry.key, ok: false, deleted: true, error: error.message });
+        counters.deadCleaned += 1;
         continue;
       }
+      // Transient failure (network, 5xx, 429, etc.): keep the reminder for a later
+      // sweep. sentAt is not set, so it is retried; it is NOT deleted.
       reminder.lastError = error.message;
       reminder.lastAttemptAt = new Date().toISOString();
       await store.put(entry.key, JSON.stringify(reminder));
-      results.push({ key: entry.key, ok: false, error: error.message });
+      counters.failed += 1;
     }
   }
 
-  return results;
+  const summary = {
+    evt: 'push-sweep',
+    at: nowIso,
+    ...counters,
+    migrationMigrated: migration.migrated,
+    migrationDone: migration.done,
+  };
+  try { console.log(JSON.stringify(summary)); } catch (_) {}
+  return summary;
 }
 
 async function route(request, env) {
