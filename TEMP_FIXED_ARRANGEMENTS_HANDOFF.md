@@ -703,3 +703,79 @@ cloudflare/talk-arrangements-push/{worker.js,wrangler.toml}, js/{push,push-confi
 khub/docs/notifications/reference/{worker.js,push.js,push-config.js,sw-push-handlers.js,wrangler.toml}.
 
 Phase 3B (Ministry audit) NOT STARTED - awaiting Supervisor review of the above.
+
+## Phase 3B - Boilerplate Drift Audit: Ministry Tracker vs KHub-Boilerplate (2026-08-30)
+
+AUDIT ONLY. KHub-Boilerplate NOT modified. Ministry application code NOT modified.
+No other app audited (Overtime/Finance/Pipe untouched). Compared Ministry main (cd544e3)
+against KHub-Boilerplate main (9ba80db). Continues the durable running Phase 3 decision
+record kept in this Talk tracker (a non-boilerplate audit record). PENDING SUPERVISOR REVIEW.
+
+Carry-forward: Talk approved PROMOTE = P1 (SW document-only offline fallback guard),
+P2 (SW-safety / ship-checklist / post-deploy ops guidance), P3 (push-worker orphan cleanup +
+secret-free structured per-run counters). Talk A1 = APP-SPECIFIC/insufficient evidence.
+Talk A2 = OPTIONAL PATTERN.
+
+New Ministry PROMOTE candidates (pending review):
+
+- M1 sw-register.js SW-manager + event bus + safe-update UX (ministry js/sw-register.js, 273L,
+  self-labeled "KHub SW manager + event bus (pipe-calc pattern, fleet standard)"). KHub only
+  inlines a partial SW lifecycle in app.js; Ministry extracts a reusable module: registration,
+  per-load + 12h registration.update(), quiet reload when isSafeToReload() (no open modals /
+  focused inputs / dirty forms) vs an update banner otherwise, SKIP_WAITING handshake,
+  RELOAD_READY reload, and an on/off/emit event bus. Evidence: ministry js/sw-register.js vs
+  khub js/app.js. Stronger: Ministry (cleaner, reusable, already fleet-shared). Rec: PROMOTE the
+  module skeleton; the notification-route targets (switchScreen('notes'), openMinistryNoteModal,
+  ministry-note) are APP-SPECIFIC and must be parameterized. Risk: more boilerplate surface to
+  maintain; keep route targets pluggable. Corroborates Talk: boilerplate is stale vs fleet SW infra.
+
+- M2 error-boundary IndexedDB transient-transaction recovery (ministry js/error-boundary.js).
+  Adds isRecoverableIndexedDbTransactionError() and, in unhandledrejection, preventDefault()+warns
+  on "attempt to get records from database without an in-progress transaction" instead of tripping
+  the full-screen error boundary. Evidence: diff khub vs ministry js/error-boundary.js. Stronger:
+  Ministry (proven storage-reliability fix generic to any IndexedDB KHub app). Rec: PROMOTE. Risk:
+  keep the matcher narrow so real storage failures still surface. Talk left error-boundary.js
+  identical to KHub -> new evidence, no contradiction.
+
+- M3 (minor) error-boundary i18n-ization (ministry js/error-boundary.js): boundary strings via
+  window.KHub?.I18n?.t(...) with English fallbacks. Generic, backward-compatible. Rec: PROMOTE
+  (minor); can fold into M2.
+
+Cross-app corroboration / contradiction of Talk findings:
+
+- P1: Ministry has neither Talk's document-destination guard nor the unsafe blanket
+  caches.match('./') fallback; it uses a same-URL fallback catch(() => caches.match(request)).
+  It avoids the SyntaxError bug differently, but serves no offline page for an uncached navigation.
+  New evidence for promotion DESIGN: the promoted pattern should BOTH avoid HTML-for-assets AND
+  still serve './' for document navigations (Talk's guard does both; Ministry's does the former
+  only). Keep P1 PROMOTE (Talk's approach); cite Ministry same-URL as simpler baseline. Corroborates
+  the goal; no contradiction.
+- P2: Ministry CLAUDE.md is minimal (26L) with none of the guidance. Does not corroborate by having
+  it; shows the guidance is absent across apps and only Talk codified it -> supports broad P2. No
+  contradiction.
+- P3: Ministry's worker INDEPENDENTLY implements test-push 404/410 dead-subscription cleanup (the
+  only meaningful diff vs the KHub reference worker, which LACKS it) -> corroborates P3's dead-sub-
+  cleanup direction across two apps. Ministry lacks the structured counters, orphaned-reminder
+  cleanup, and migration -> those remain Talk-unique. Net: cleanup half of P3 cross-app corroborated;
+  counters/orphan half still single-app (Talk).
+- Talk A1: Ministry uses network-first for the whole shell (like KHub), NOT a cache-first +
+  network-first-hot split. No corroborating evidence for A1; classification unchanged (APP-SPECIFIC /
+  insufficient cross-app evidence).
+- Talk A2: Ministry worker has no bounded legacy migration. No new evidence; A2 stays OPTIONAL PATTERN.
+
+APP-SPECIFIC (no promotion) in Ministry: config.js (744L) domain config; i18n.js (314L) strings;
+theme.js app-state-keyed (ministry-tracker-v4) anti-flash bootstrap (app-specific impl; anti-flash
+is a general note only); css main/components/dark-mode (brand+domain); push-config.js / wrangler.toml
+(identity/keys); push-toggle.js (matches existing KHub reference push-toggle); sw.js notification
+routing (notificationRouteMessage/postMessage) - reference and Ministry already lead, corroborating
+the earlier Talk finding that Talk lags on routing (nothing to promote FROM these; Talk could adopt).
+Note (not a promotion, closed-standards area): Ministry sw.js runtime-caches Font Awesome + Google
+Fonts from CDN (a CDN runtime dependency; contrast UX-STANDARDS §5 self-hosting used for Pipe Bending)
+- flagged for awareness only, not relitigated.
+
+Files/evidence inspected (ministry & khub unless noted): sw.js, CLAUDE.md, TEST-CHECKLIST.md,
+js/{a11y,config,error-boundary,perf,theme,auth,i18n,app}.js, js/components/*, ministry js/sw-register.js,
+ministry js/push-toggle.js, css/{main,components,dark-mode,responsive}.css, index.html; ministry
+cloudflare/ministry-tracker-push/{worker.js,wrangler.toml} vs khub docs/notifications/reference/worker.js.
+
+Phase 3C (Overtime audit) NOT STARTED - awaiting Supervisor review of the Ministry findings above.
