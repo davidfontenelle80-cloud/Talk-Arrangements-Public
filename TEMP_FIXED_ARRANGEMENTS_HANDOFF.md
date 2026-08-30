@@ -560,3 +560,79 @@ running cron was not verified. The live cron takes effect only after
 
 Phase 2 status: NOT STARTED. No dueBucketScheduler, no push.js hardening, no
 changes beyond the cron. Awaiting supervisor approval to begin Phase 2.
+
+## Phase 2 Implementation Record (2026-08-30)
+
+Supervisor-approved Phase 2: due-bucket/lookback reminder scheduling and push hardening.
+
+Files changed:
+
+- `cloudflare/talk-arrangements-push/worker.js` (worker-only change; no frontend or
+  service-worker assets changed, so no SW cache-version bump per the ship checklist).
+
+Commit SHA (on origin/main; new SHA minted by the authorized GitHub integration):
+
+- `0ae7461` - feat: due-bucket reminder scheduling + push hardening (Phase 2).
+
+How the due-bucket scheduler works:
+
+- Each reminder is indexed by the UTC minute of its fireAt (`dueBucketMinute` ->
+  key `due:<YYYY-MM-DDTHH:MM>`). `handleUpsertReminder` writes the reminder and adds
+  its key to that bucket on save (and validates fireAt).
+- The scheduled sweep calls `getDueReminderEntries`, which reads ONLY the buckets from
+  the current minute back through a 15-minute lookback (`DUE_BUCKET_LOOKBACK_MINUTES`),
+  instead of listing every `reminder:` key. The lookback tolerates a delayed or skipped
+  */5 run (three intervals). Keys in multiple buckets are de-duped; already-sent
+  reminders (sentAt) are skipped; stale bucket entries whose reminder is gone are
+  ignored. Buckets carry a TTL so the index self-cleans.
+- Reminder timing semantics are preserved: firing is still driven by fireAt <= now.
+
+How legacy (pre-bucket) reminders are protected:
+
+- `migrateLegacyReminders` is a bounded (100 keys/run), cursor-based, self-terminating
+  migration. Reminders with no `dueBucketMinute` are indexed: future ones into their own
+  bucket, already-overdue ones into the current-minute bucket so the lookback fires them
+  promptly. Records are stamped migrated; a done flag stops the scan once the keyspace is
+  drained, after which normal operation reads buckets only. Legacy reminders are never
+  stranded; a legacy record with an invalid fireAt is left untouched rather than crashing
+  the sweep.
+
+Push cleanup / hardening (extends the existing 404/410 path - not a second path):
+
+- 404/410 from the push service -> prune the subscription and the reminder (permanent).
+- Orphaned reminder (subscription already removed) -> deleted, so a dead endpoint is not
+  retried on every sweep forever.
+- Transient failure (network / 5xx / 429) -> reminder kept (no sentAt), recorded with
+  lastError/lastAttemptAt, retried on a later sweep.
+- `handleTestPush` mirrors the same dead-subscription cleanup.
+
+Structured counters / logging added:
+
+- One JSON line per run: `{evt:"push-sweep", at, due, attempted, sent, failed,
+  deadCleaned, migrationMigrated, migrationDone}`. No secrets, subscription keys,
+  endpoints, or payload contents are logged.
+
+Tests performed and results (Node harness; real Web Push VAPID/ECDH/AES-128-GCM crypto
+with mock KV and mock push service; run against the exact committed bytes; 13/13 passed):
+
+- future reminder enters correct bucket; due reminder fires from bucket; not-yet-due does
+  not fire; 15-minute lookback catches a delayed due reminder; an 18-minute-old bucket is
+  outside the window (bounded); duplicate sweep does not double-send; legacy overdue
+  reminder fires and is not stranded; legacy future reminder is migrated into its bucket;
+  404/410 dead subscription and its reminder are pruned; orphaned reminder is cleaned with
+  no send attempt; transient failure is kept (not deleted) and recovers/sends on a later
+  sweep; structured counters reflect each outcome.
+
+Deployment status: CODE IN GITHUB - NOT LIVE VERIFIED. No Cloudflare deploy access exists
+in this environment; the Worker was not redeployed. The Phase 1 cron and this Phase 2
+worker logic take effect only after `wrangler deploy` from `cloudflare/talk-arrangements-push/`.
+
+Known remaining risks:
+
+- KV list is eventually consistent; the bounded migration may need an extra sweep or two to
+  observe very recently written legacy keys (self-heals; lookback + migration cover it).
+- Deleting a reminder does not eagerly remove its bucket entry; the stale entry is safely
+  skipped and TTL-expires (no functional impact).
+- Not yet exercised against the live Cloudflare KV/Worker runtime (see deployment status).
+
+Phase 3: NOT STARTED. No Phase 3 drift analysis or any later work has begun.
