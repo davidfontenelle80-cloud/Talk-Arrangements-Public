@@ -1047,3 +1047,178 @@ Read-only verification against Finance `e816bd9`:
 
 Phase 3D Finance audit COMPLETE - `PENDING SUPERVISOR REVIEW`.
 STOP. Phase 3E Pipe Bending audit NOT STARTED.
+
+## Phase 3E - FINAL Boilerplate Drift Audit: Pipe Bending Calculator vs KHub-Boilerplate (2026-08-30)
+
+AUDIT ONLY. Compared Pipe Bending Calculator `main` (`545bffa`) against
+KHub-Boilerplate `main` (`9ba80db`) by inspecting the actual files. Pipe application
+code was NOT modified. KHub-Boilerplate was NOT modified. Talk application code was
+NOT modified; this tracker is the only changed file. No consolidation, implementation,
+deployment, or cache-version change was started. All new Pipe recommendations in this
+section are `PENDING SUPERVISOR REVIEW`.
+
+Carry-forward Supervisor-approved decisions were preserved without reopening them:
+P1, P2, P3, M1, M2/M3, O2, O3-as-an-M1-extension, O4, and F5 remain PROMOTE;
+Talk A2/F3, F4, and O6 remain OPTIONAL PATTERN; Talk A1 remains APP-SPECIFIC /
+insufficient evidence; O5, blanket Finance F1 `ignoreSearch`, and Finance's warning
+override remain NOT PROMOTED.
+
+### Material-difference decision table
+
+| ID | Area/pattern | KHub behavior | Pipe behavior and exact evidence | Stronger implementation and why | Classification | Promotion risk | Cross-app corroboration / contradiction |
+|---|---|---|---|---|---|---|---|
+| PB1 | Self-hosted critical runtime and font assets | KHub's vanilla starter has no framework runtime to package, but `docs/UX-STANDARDS.md:142-153` and `CLAUDE.md:43-44` require runtime dependencies to be self-hosted/precached or nonessential to the offline main task. | `index.html:19,88-101` loads local CSS, React, ReactDOM, KHub infrastructure, and compiled app code only. `css/fonts.css:9-46` defines five local WOFF2 faces with `font-display:swap`. `sw.js:27-52` atomically precaches the document, CSS, all five fonts, React 18.3.1, ReactDOM, infrastructure, compiled app, and primary icons; every listed path exists. No runtime CDN URL is present. | Pipe provides the concrete framework-hosted proof missing from the vanilla starter: after one successful installation, the complete main-task dependency graph is same-origin and available for cold-offline launch. | **PROMOTE** as the default offline-capable-app dependency policy and framework-hosted reference pattern. | Medium; vendored runtime/font updates, licenses, security fixes, bundle size, stale generated output, and cache-version coordination require pinned provenance and reproducible builds. | Strongly contrasts Finance F8's CDN adoption gap and reinforces P2. It does not change P1/O2/M1 behavior by itself. |
+| PB2 | Reusable SW lifecycle manager for framework-hosted apps | KHub embeds registration lifecycle, event bus, safe-reload detection, periodic update checks, banner UX, and `SKIP_WAITING`/`RELOAD_READY` handling in the first section of `js/app.js:1-164`. | `js/sw-register.js:1-174` extracts that same infrastructure into a standalone module so React's generated `js/app.js` does not own SW lifecycle code; `index.html:98-101` loads it before the React app. | Pipe's separation is stronger for framework-hosted apps because one lifecycle module can remain hand-maintained and parameterized while generated application code changes independently. | **PROMOTE** only as corroboration/packaging guidance for approved M1; integrate into one manager, not a second registrar. | Low-medium; selectors, safe-state predicates, scope, cache namespace, and the origin-wide `khub_last_update_check` key must become app parameters. | Independently corroborates Ministry M1 in a React app. Pipe adds no O3 broken-shell repair, so O3 remains an M1 extension rather than a competing module. |
+| PB3 | Earliest-boot error surface | KHub loads its full `js/error-boundary.js` before app code but has no inline pre-script error listener in `index.html`. | `index.html:67-86` installs minimal `error` and `unhandledrejection` listeners before React/vendor scripts and exposes an error banner; `js/error-boundary.js:1-89` later installs the normal boundary. | Pipe can surface a vendor/bootstrap failure even if the external boundary itself cannot load, but the two listener sets can duplicate reports and the inline handler is English-only and not a repair mechanism. | **AMBIGUOUS** | Medium; duplicate notifications, CSP inline-script restrictions, initialization ordering, and false confidence about broken-shell recovery. If adopted, fold a single early bootstrap channel into M1/O3 and hand off to M3. | Weakly supports the motivation for O3/M3 but does not implement broken-shell detection, scoped repair, or complete i18n. |
+| PB4 | Reproducible framework/vendor build provenance | KHub is a no-build vanilla starter with a declared `package.json`, pinned dependency ranges, lint/format scripts, and a ship checker. | `README.md:23-29` documents an `npx babel` command and checks in `js/app.jsx`, generated `js/app.js`, and minified React/ReactDOM, but the repo has no `package.json`, lockfile, build script, test suite, CI workflow, vendor manifest/license record, or integrity/provenance file. | KHub's declared tooling is stronger. Pipe's checked-in bundle is deployable offline, but its exact rebuild and vendor-refresh inputs are not repository-reproducible. | **AMBIGUOUS**; do not promote the current ad hoc vendoring process. | High; unpinned Babel/preset resolution or manually replaced runtime files can produce unreproducible or vulnerable releases and stale source/generated pairs. | Qualifies PB1: self-hosting should be promoted only with version/license/source/build provenance. Reinforces P2 and O6 guidance. |
+| PB5 | Deterministic calculation regression coverage | KHub supplies generic lint/format/static checks; O6 remains optional real-source/frozen-time test scaffolding. | `js/app.jsx:193-551` contains the conduit calculations and `js/app.js` contains their generated form, but Pipe has no `tests/`, test script, fixtures, or CI workflow. Only syntax/static checks were available. | Neither repo supplies Pipe formula coverage. The formulas and expected results are domain-specific, while the test-harness principle remains generic. | **APP-SPECIFIC** adoption gap; no new promotion. | High for Pipe maintenance, but formulas, conduit rules, tolerances, and fixtures must never enter KHub. | Does not corroborate O6 implementation. It strengthens the case for offering O6 to calculation-heavy apps without making it universal. |
+| PB6 | Mobile input/accessibility conformance | KHub `docs/UX-STANDARDS.md:77-80` requires every input/select/textarea to compute to at least 16px and remain usable through the A11y font scale. | `js/app.jsx:711-718` explicitly sets six custom-bender inputs/selects to 13px. Pipe otherwise uses semantic buttons/sections and accessible live regions, but these controls violate the reusable mobile-input rule. | KHub is stronger; the Pipe values are an app adoption defect, not a reusable pattern. | **APP-SPECIFIC** adoption gap; no KHub promotion. | Medium; iOS may auto-zoom on focus and disrupt field use. | Does not reopen the closed zoom decision. It reinforces the already-approved 16px input safeguard only. |
+| PB7 | Architecture documentation accuracy | KHub's offline policy and checklist consistently describe self-hosted/precached runtime dependencies. | `README.md:7` correctly says React/ReactDOM are self-hosted, but also says Google Fonts are optional and runtime-cached after first load. Actual `index.html`, `css/fonts.css`, and `sw.js` have no Google Fonts request and instead self-host/precache every configured font. | Actual Pipe code is stronger than its README. Documentation that derives the dependency/precache inventory from checked files would reduce operational drift. | **OPTIONAL PATTERN** as a ship-check/documentation consistency check; the stale Pipe sentence itself is not promotable. | Low; false documentation can cause future maintainers to restore a CDN dependency or test the wrong offline behavior. | Reinforces P2's ship/regression guidance and PB1's provenance requirement; does not contradict the actual self-hosted implementation. |
+
+### PROMOTE candidates - pending Supervisor review
+
+- **PB1:** make self-hosting and precaching the default for dependencies required to
+  render and complete the main task of an offline-capable app. Treat Pipe's local React,
+  ReactDOM, compiled application bundle, and WOFF2 precache layout as concrete framework-
+  hosted evidence, not as code to copy blindly.
+- **M1 reaffirmed by PB2:** provide one reusable, parameterized SW lifecycle manager that
+  works outside generated framework bundles. Merge O3 recovery into that same manager.
+
+### APP-SPECIFIC candidates / adoption gaps - no KHub promotion
+
+- All conduit formulas, bender/shoe tables, take-up/gain/radius rules, unit conversions,
+  saved favorites/custom benders, diagrams, calculator layout, and measurement behavior in
+  `js/app.jsx` / generated `js/app.js`.
+- **PB5:** absence of deterministic formula tests is a Pipe gap, not a boilerplate feature.
+- **PB6:** 13px custom-bender controls are a Pipe accessibility defect; KHub's existing
+  16px rule is already stronger and was not reopened.
+- Pipe has no Firebase runtime, IndexedDB store, import pipeline, cloud backup, push worker,
+  dead-sub cleanup, or counters. It adds no P3, M2, F3/F4/F5, or Firebase/security evidence.
+- Pipe's React-rendered controls do not use the checked-in `js/components/` modules, and
+  `index.html` does not load them. The repository therefore does not corroborate O4.
+- Pipe's `js/error-boundary.js` is an older, simpler English-fallback boundary and
+  `index.html` does not load its checked-in `js/i18n.js`; it adds no M3 corroboration.
+
+### OPTIONAL PATTERN candidates - pending Supervisor review
+
+- **PB7:** add a static ship check that reconciles documented runtime dependencies with
+  actual HTML imports, font sources, SW precache entries, and checked-in files.
+- O6 remains optional for calculation-heavy apps. Pipe supplies a strong use case but no
+  reusable test implementation.
+
+### AMBIGUOUS candidates - Supervisor judgment
+
+- **PB3:** pre-framework inline error capture. Consider only as a single CSP-compatible
+  bootstrap channel integrated with M1/O3/M3; do not retain duplicate global listeners.
+- **PB4:** the checked-in source/generated/vendor arrangement. Self-hosting is desirable,
+  but Pipe's current rebuild command and manually vendored assets lack a package lock,
+  license/source manifest, automated source-to-build verification, and CI.
+
+### Cross-app corroboration / contradiction
+
+- **P1:** Pipe ensures failed JS/CSS/font requests never receive HTML because its SW only
+  falls back to `caches.match(event.request)`, but it still provides no explicit offline
+  document for an uncached navigation. It therefore does not independently corroborate
+  the full P1 implementation. Talk + Overtime remain the evidence.
+- **P2:** PB1/PB4/PB7 strongly reinforce dependency-inventory, cold-offline, cache-bump,
+  build-provenance, and post-deploy checks. Pipe's checklist is mostly the KHub checklist;
+  it adds implementation evidence, not a stronger checklist.
+- **P3:** no push stack exists; no new evidence.
+- **M1:** independently corroborated by the extracted React-compatible manager in
+  `js/sw-register.js`. The generic origin-wide `khub_last_update_check` key is a known
+  parameterization risk, not a stronger Pipe behavior.
+- **M2/M3:** no IndexedDB recovery; the older boundary and unloaded i18n module add no M3
+  evidence. KHub/Ministry remain stronger.
+- **O2:** Pipe and KHub both delete every cache except the current cache in `activate`.
+  Pipe contradicts the approved namespaced-cleanup direction; Overtime remains stronger.
+- **O3:** no load watchdog, broken-shell detection, or app-scoped destructive repair.
+  PB3 is only an early error surface, not O3.
+- **O4:** no corroboration because Pipe's React UI bypasses the shared modal/input modules.
+- **O5:** Pipe uses atomic `cache.addAll`, agreeing with KHub and not corroborating the
+  rejected blanket partial required-shell install.
+- **O6:** no tests/CI. The deterministic calculator domain supports optional adoption but
+  offers no implementation.
+- **Talk A1:** Pipe uses network-first for all eligible shell assets, like KHub, not Talk's
+  stable-shell/hot-file split. No corroboration.
+- **Talk A2/F3 and F4/F5:** no migration or import implementation; no new evidence.
+- **Finance F8:** Pipe directly contradicts Finance's CDN-dependent runtime by proving that
+  a framework, compiled application, and custom fonts can all be same-origin and precached.
+
+### Default self-hosting policy - explicit answer
+
+**Yes.** For offline-capable KHub apps, self-hosting should be the default for every
+dependency required to render and complete the primary task.
+
+Mandatory:
+
+- Pin, self-host, and precache required framework/runtime bundles, compiled app bundles,
+  required icon libraries/assets, and any custom font needed for offline layout or identity.
+- Keep a system fallback font stack and `font-display: swap` even for self-hosted fonts.
+- Use atomic required-shell installation, validate every precache path, and bump the
+  app-namespaced cache version whenever a precached asset changes.
+- Record package version, source, license, update process, and reproducible build inputs;
+  verify source/generated parity and cold-offline main-task completion before release.
+
+Optional/network-only:
+
+- Analytics, remote content, online-only integrations, and noncritical media may remain
+  remote when the app clearly degrades without blocking its primary offline task.
+- A custom web font may be omitted entirely in favor of a system stack; but if a web font
+  is part of the required experience, it should not remain CDN-only.
+
+Cache/CSP/maintenance implications:
+
+- Vendor and font files enlarge the atomic precache and must share the app's versioned,
+  namespaced ownership policy; a failed required asset must leave the prior complete SW in
+  control. P1 document-only fallback and asset-error behavior still apply.
+- Same-origin assets reduce CSP source requirements, but Pipe is not yet a strict-CSP
+  reference because `index.html` contains an inline script and the React UI uses extensive
+  inline style properties. Self-hosting helps CSP; it does not by itself complete CSP.
+- Vendoring transfers security/version/license maintenance to the repo. Package locks,
+  provenance, dependency review, generated-bundle verification, and scheduled upgrades are
+  required to prevent a permanently stale offline runtime.
+
+### Exact files inspected and verification
+
+Pipe files inspected: `sw.js`, `index.html`, `manifest.json`, `README.md`, `CLAUDE.md`,
+`TEST-CHECKLIST.md`, the full repository/file inventory, `js/{app.jsx,app,sw-register,
+config,error-boundary,a11y,i18n,theme,perf,auth}.js`, `js/vendor/{react.production.min,
+react-dom.production.min}.js`, `js/components/{button,card,input,modal}.js`,
+`css/{fonts,main,components,dark-mode,responsive}.css`, all five `fonts/*.woff2` files,
+`icons/favicon.svg`, the manifest icon inventory, and `apple-touch-icon.png`.
+
+KHub comparison files inspected: `sw.js`, `js/app.js`, `js/error-boundary.js`,
+`js/{config,a11y,i18n,theme,perf,auth}.js`, `js/components/{button,card,input,modal}.js`,
+`index.html`, `manifest.json`, `README.md`, `CLAUDE.md`, `TEST-CHECKLIST.md`,
+`package.json`, `scripts/khub-check.mjs`, `docs/UX-STANDARDS.md`,
+`docs/APP-ARCHETYPES.md`, and the repository/file inventory.
+
+Read-only verification against Pipe `545bffa`:
+
+- `node --check` passed all 15 checked-in `.js` files plus `sw.js` (16/16).
+- Parsed 24 non-root precache entries; every referenced file exists.
+- All eight manifest icon paths exist.
+- Runtime import inspection found no CDN scripts, styles, fonts, SDKs, or browser-side
+  compiler. React and ReactDOM report version 18.3.1 and are loaded locally.
+- `node KHub-Boilerplate/scripts/khub-check.mjs pipe-bending-calc` executed and returned
+  FAIL with one static issue: raw `#090b10` on `body`; runtime view/PWA verification remains
+  required by the checker and was not performed during this audit-only stage.
+- Pipe has no repository-native `package.json`, test suite, or CI workflow, so no formula
+  regression suite or repo-local lint/format command was available.
+- `npm run check` in KHub could not execute because local dev dependencies are not installed
+  (`eslint` not found). No dependency installation was authorized or performed.
+
+### Phase 3E completion proof
+
+- Pipe audited at `545bffa6574c4b8a1b27d1798dc836622c164f97`.
+- KHub compared at `9ba80db83484ec2c198a6f81073659b88ce92502`.
+- Starting Talk tracker commit verified as
+  `a121ea978601e7ffa588d3d98cd55845272728b4` before the audit.
+- Pipe application code NOT modified.
+- KHub-Boilerplate NOT modified.
+- Talk application code NOT modified; tracker only.
+- No implementation, consolidation, deployment, cache-version change, or next-stage work
+  was performed.
+
+Phase 3E Pipe Bending audit COMPLETE - `PENDING SUPERVISOR REVIEW`.
+STOP. Do NOT begin modifying KHub-Boilerplate until Supervisor authorization.
