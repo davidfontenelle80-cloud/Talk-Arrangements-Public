@@ -636,3 +636,70 @@ Known remaining risks:
 - Not yet exercised against the live Cloudflare KV/Worker runtime (see deployment status).
 
 Phase 3: NOT STARTED. No Phase 3 drift analysis or any later work has begun.
+
+## Phase 3A - Boilerplate Drift Audit: Talk Arrangements vs KHub-Boilerplate (2026-08-30)
+
+AUDIT ONLY. KHub-Boilerplate was NOT modified. No Talk application code was changed.
+No other app was audited. Compared Talk main (810bd1e) against KHub-Boilerplate main
+(9ba80db). Recommendations below are PENDING SUPERVISOR REVIEW - not approved promotions.
+
+Durable decision record (candidate -> recommendation):
+
+PROMOTE candidates (pending review):
+
+- P1 SW safe offline fallback guard - sw.js. KHub falls back to cached content for any
+  failed shell request; Talk only returns the offline document for
+  `request.destination === 'document'`, else `Response.error()`. Prevents
+  `SyntaxError: Unexpected token '<'` when a failed JS/CSS asset is served index.html.
+  Evidence: talk/sw.js fetch handler; khub/sw.js fetch handler. Generic, strictly safer.
+  Risk: low; ensure navigations still get './'.
+- P2 CLAUDE.md operational guidance. Talk documents Service-Worker rules, the "Safe
+  offline fallback pattern (REQUIRED)", a Ship checklist, Post-deploy verification, and
+  Known-issue patterns; KHub CLAUDE.md has none of these. Evidence: talk/CLAUDE.md vs
+  khub/CLAUDE.md. Reusable ship/repo practice; pairs with P1. Risk: low; generalize the
+  Talk-specific `?v=` version-sync wording when promoting.
+- P3 Worker push hardening - cloudflare worker.js. Talk (Phase 2) adds orphaned-
+  subscription cleanup (delete a reminder whose subscription is gone, no infinite retry)
+  and structured per-run counters logged as one JSON line
+  {evt:"push-sweep", attempted, sent, failed, deadCleaned}; the KHub reference worker has
+  neither. Evidence: talk/cloudflare/talk-arrangements-push/worker.js vs
+  khub/docs/notifications/reference/worker.js. Generic reliability/observability for any
+  KHub push app. Risk: low; logging must remain secret-free (Talk's is).
+
+AMBIGUOUS - Supervisor judgment:
+
+- A1 SW cache strategy split. Talk uses cache-first for stable shell files and
+  network-first (cache:'reload') for a hardcoded "polished" list (main.css, app.js,
+  mobile-toolbar.js); KHub is network-first for the whole shell. The PATTERN is promotable
+  (faster + more offline-robust); the specific file list is app-specific. Trade-off: added
+  complexity and stale-until-CACHE_VERSION-bump for cache-first files.
+- A2 Worker bounded legacy migration (migrateLegacyReminders). Valuable when upgrading an
+  existing flat-scan deployment; a harmless no-op for a brand-new app created from the
+  reference. Promote as an optional/documented pattern rather than a default?
+
+APP-SPECIFIC (no promotion):
+
+- dark-mode.css / theme palette: same token structure, different brand color values.
+- a11y.js: identical accessibility logic; Talk only stripped explanatory comments and
+  added a minor loadScriptOnce helper (KHub's commented version is preferable). No a11y win.
+- push.js and SW push/notificationclick handlers: the KHub reference LEADS here
+  (notification routing via notificationRouteMessage / client.postMessage); Talk's inlined
+  handlers are simpler/older - nothing to promote from Talk (opposite direction).
+- wrangler.toml, push-config.js, config.js, i18n.js strings: app identity / config values.
+  (config.js also lacks KHub's allowPinchZoom control - KHub leads; closed zoom item, not
+  relitigated.)
+- `?v=stageXX` query-string precache versioning in Talk: app-specific cache-busting layered
+  on CACHE_VERSION.
+
+Context (reverse direction, out of scope - NOT a promotion): Talk is missing some KHub
+governance tooling it never adopted (package.json eslint/prettier scripts,
+scripts/khub-check.mjs, CONTRIBUTING_AI.md, firebase security scaffolding). A Talk-side
+adoption gap, noted only for completeness.
+
+Files/evidence inspected: talk & khub - sw.js, CLAUDE.md, TEST-CHECKLIST.md,
+js/{a11y,config,error-boundary,perf,theme,auth,i18n,app}.js, js/components/*,
+css/{main,components,dark-mode,responsive}.css, index.html; talk
+cloudflare/talk-arrangements-push/{worker.js,wrangler.toml}, js/{push,push-config}.js vs
+khub/docs/notifications/reference/{worker.js,push.js,push-config.js,sw-push-handlers.js,wrangler.toml}.
+
+Phase 3B (Ministry audit) NOT STARTED - awaiting Supervisor review of the above.
