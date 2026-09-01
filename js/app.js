@@ -59,16 +59,16 @@ function computeDeliveryTime(reminderTime) {
 
     // Preset fixed congregations in starter
     
-    // ââ Event Types ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Event Types ──────────────────────────────────────────────────────────────
     var EVENT_TYPES=[
-      {id:'circuit-overseer',label:{en:'Circuit Overseer Visit',es:'Visita del Superintendente de Circuito'},icon:'ð',color:'#6366f1'},
-      {id:'assembly',label:{en:'Circuit Assembly',es:'Asamblea de Circuito'},icon:'ðï¸',color:'#10b981'},
-      {id:'convention',label:{en:'Regional Convention',es:'Asamblea Regional'},icon:'ð',color:'#3b82f6'},
-      {id:'special-talk',label:{en:'Special Talk',es:'Discurso Especial'},icon:'ð¤',color:'#f59e0b'},
+      {id:'circuit-overseer',label:{en:'Circuit Overseer Visit',es:'Visita del Superintendente de Circuito'},icon:'👔',color:'#6366f1'},
+      {id:'assembly',label:{en:'Circuit Assembly',es:'Asamblea de Circuito'},icon:'🏟️',color:'#10b981'},
+      {id:'convention',label:{en:'Regional Convention',es:'Asamblea Regional'},icon:'🌐',color:'#3b82f6'},
+      {id:'special-talk',label:{en:'Special Talk',es:'Discurso Especial'},icon:'🎤',color:'#f59e0b'},
       {id:'memorial',label:{en:'Memorial',es:'Conmemoración'},icon:'\ud83c\udf77',color:'#8b5cf6'},
-      {id:'holiday-blackout',label:{en:'Holiday / Blackout',es:'Feriado / Fecha Bloqueada'},icon:'ð«',color:'#ef4444'},
-      {id:'local-event',label:{en:'Local Congregation Event',es:'Evento Congregacional'},icon:'ð ',color:'#14b8a6'},
-      {id:'custom',label:{en:'Custom Event',es:'Evento Personalizado'},icon:'ð',color:'#f97316'}
+      {id:'holiday-blackout',label:{en:'Holiday / Blackout',es:'Feriado / Fecha Bloqueada'},icon:'🚫',color:'#ef4444'},
+      {id:'local-event',label:{en:'Local Congregation Event',es:'Evento Congregacional'},icon:'🏠',color:'#14b8a6'},
+      {id:'custom',label:{en:'Custom Event',es:'Evento Personalizado'},icon:'📌',color:'#f97316'}
     ];
 
 var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Spanish","New London Spanish","North Spanish New Britain"];
@@ -80,7 +80,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       return row;
     }
     function migrateCong(c){if(c.isFixed===undefined)c.isFixed=false;return c;}
-    // ââ Contact picker helpers âââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Contact picker helpers ─────────────────────────────────────────────────
     function getAvailableYears(planningData){
       var years=[];
       (planningData||[]).forEach(function(y){if(y.rows&&y.rows.some(function(r){return String(r.congregation||"").trim();}))years.push(+y.year);});
@@ -210,7 +210,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     function saveState(){state.updatedAt=new Date().toISOString();localStorage.setItem(APP_KEY,JSON.stringify(state));}
     var state=loadState();
 
-    // ââ i18n ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── i18n ────────────────────────────────────────────────────────────────────
     function tt(k){return(T[state.language]||T.en)[k]||T.en[k]||k;}
     function tf(k,v){var s=tt(k);if(v)Object.keys(v).forEach(function(i){s=s.replace("{"+i+"}",v[i]);});return s;}
     function months(){return state.language==="es"?MEs:MEn;}
@@ -223,7 +223,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       return mode==="light"?"light":"dark";
     }
 
-    // ââ Utilities ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Utilities ────────────────────────────────────────────────────────────────
     function norm(v){return String(v||"").toLowerCase().replace(/\s+/g," ").trim();}
     function findCong(name){var k=norm(name).replace("newlondon","new london");return state.congregations.find(function(c){return norm(c.name).replace("newlondon","new london")===k;});}
     function fixedCongs(){return state.congregations.filter(function(c){return c.isFixed;});}
@@ -278,14 +278,14 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       return '<div class="year-check year-incomplete"><strong>'+(state.language==="es"?"Revisar año":"Year check")+'</strong>'+items.map(function(x){return'<span>'+esc(x)+'</span>';}).join("")+'</div>';
     }
 
-    // ââ Message template âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Message template ─────────────────────────────────────────────────────────
     // Single source of truth: delegates to buildContactMessage so both the dashboard
     // card and the planning picker always produce identical formatted messages.
     function buildTmpl(row,congName){
       return buildContactMessage(row,congName);
     }
 
-    // ââ Greeting ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Greeting ──────────────────────────────────────────────────────────────────
     function renderGreeting(){
       var el=document.getElementById("greeting");
       var p=state.profile||{};
@@ -295,7 +295,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       el.textContent=greet+", "+p.name+" \uD83D\uDC4B";
     }
 
-    // ââ Warnings ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Warnings ──────────────────────────────────────────────────────────────────
     var bannerDismissed=false;
     function computeWarnings(){
       var w=[];
@@ -345,7 +345,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       body.innerHTML=w.map(function(x){return'<div class="conflict-item">&bull; '+esc(x)+'</div>';}).join("");
     }
 
-    // ââ Data badge ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Data badge ────────────────────────────────────────────────────────────────
     function renderDataBadge(){
       var badge=document.getElementById("dataBadge");
       var n=state.congregations.filter(function(c){return(c.phone&&c.phone.trim())||(c.email&&c.email.trim());}).length;
@@ -353,7 +353,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       badge.textContent=(n>5?"\uD83D\uDCCB ":"\u26A0 ")+tt(n>5?"privateData":"publicData");
     }
 
-    // ââ Dashboard âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Dashboard ─────────────────────────────────────────────────────────────────
     function renderDashboard(){
       var sorted=state.schedule.slice().sort(function(a,b){return+a.month-+b.month;});
       var tbody=document.getElementById("dashboardRows");
@@ -377,7 +377,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       renderContact(sel);renderKpis();renderConflicts();renderDataBadge();
     }
 
-    // ââ Planning contact picker + card (combined, rendered into planningContactCard) ââ
+    // ── Planning contact picker + card (combined, rendered into planningContactCard) ──
     function renderContactPicker(){
       // No-op stub — renderPlanningContact now owns the picker UI inside planningContactCard.
       // Called from renderAll for compatibility; actual work done in renderPlanningContact.
@@ -389,7 +389,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       if(!card)return;
       var isEs=state.language==="es";
 
-      // ââ Resolve which row to show âââââââââââââââââââââââââââââââââââââââââââââ
+      // ── Resolve which row to show ─────────────────────────────────────────────
       var year=state.contactPickerYear;
       var month=state.contactPickerMonth;
       var availYears=getAvailableYears(state.planning);
@@ -447,7 +447,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       state.contactPickerIdx=idx;
       var arr=arrangements[idx];
 
-      // ââ Build picker selectors ââââââââââââââââââââââââââââââââââââââââââââââââ
+      // ── Build picker selectors ────────────────────────────────────────────────
       var yearOpts=availYears.map(function(y){return'<option value="'+y+'"'+(+y===+year?' selected':'')+'>'+y+'</option>';}).join("");
       var monthOpts=availMonths.map(function(m){return'<option value="'+m+'"'+(+m===+month?' selected':'')+'>'+months()[m]+'</option>';}).join("");
       var arrOpts=arrangements.length>1?arrangements.map(function(a,i){
@@ -461,7 +461,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var nameFormats=[["none",isEs?"Sin nombre":"No name"],["first",isEs?"Nombre":"First name"],["last",isEs?"Apellido":"Last name"],["full",isEs?"Nombre completo":"Full name"]];
       var nameFmtOpts=nameFormats.map(function(f){return'<option value="'+f[0]+'"'+(f[0]===currentNameFormat?' selected':'')+'>'+f[1]+'</option>';}).join("");
 
-      // ââ Build contact data ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      // ── Build contact data ────────────────────────────────────────────────────
       var c=findCong(arr.congregation);
       var cname=arr.congregation||"";
       var cphone=c?c.phone:"";
@@ -479,7 +479,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       function lbtn(lbl,href,disabled){return disabled||!href?'<button disabled>'+lbl+'</button>':'<a href="'+esc(href)+'" class="link-btn" target="_blank" rel="noopener">'+lbl+'</a>';}
       function wbtn(lbl,href){return'<button data-wa-href="'+esc(href)+'">'+lbl+'</button>';}
 
-      // ââ Render all into the card div ââââââââââââââââââââââââââââââââââââââââââ
+      // ── Render all into the card div ──────────────────────────────────────────
       card.innerHTML=
         // Picker row
         '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:0.85em;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:10px;">'+
@@ -507,7 +507,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         wbtn("&#129302; "+tt("whatsapp"),waH(cphone,msg))+
         '</div></div>';
 
-      // ââ Wire picker events (fresh elements, no stacking) ââââââââââââââââââââââ
+      // ── Wire picker events (fresh elements, no stacking) ──────────────────────
       document.getElementById("pYear").addEventListener("change",function(){
         state.contactPickerYear=+this.value;state.contactPickerMonth=null;state.contactPickerIdx=0;
         saveState();renderPlanningContact();
@@ -537,7 +537,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
     }
 
-    // ââ Contact card ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Contact card ──────────────────────────────────────────────────────────────
     function renderContact(row){
       var card=document.getElementById("contactCard");
       document.getElementById("selectedMonthLabel").textContent=row?months()[row.month]:"";
@@ -566,7 +566,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       document.getElementById("kpiBox").innerHTML=[[tot,tt("total")],[sent,tt("sent")],[conf,tt("confirmedCount")]].map(function(x){return'<div class="kpi"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>';}).join("");
     }
 
-    // ââ Planning ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Planning ──────────────────────────────────────────────────────────────────
     function renderPlanning(){
       var host=document.getElementById("planningTables");
       host.innerHTML=state.planning.map(function(year){
@@ -590,7 +590,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
     }
     function lookupCoord(name){var c=findCong(name);return c?c.coordinator:"";}
 
-    // ââ Congregations âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Congregations ─────────────────────────────────────────────────────────────
     function renderCongregations(){
       var filter=norm(document.getElementById("searchBox").value);
       var rows=state.congregations.filter(function(c){return!filter||[c.name,c.coordinator,c.phone,c.email,c.note].some(function(v){return norm(v).includes(filter);});}).sort(function(a,b){return a.name.localeCompare(b.name);});
@@ -606,7 +606,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       }).join("")||'<tr><td colspan="7"><div class="empty">'+tt("noContact")+'</div></td></tr>';
     }
 
-    // ââ Toast ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Toast ──────────────────────────────────────────────────────────────────────
     function toast(msg){var el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(function(){el.classList.remove("show");},2600);}
     function safeCopy(txt){
       function ok(){toast(tt("copied")+(txt?": "+String(txt).slice(0,60):""));}
@@ -624,7 +624,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       else legacy();
     }
 
-    // ââ renderAll ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── renderAll ──────────────────────────────────────────────────────────────────
     function renderAll(){
       var paintTheme=resolvePaintTheme();
       document.documentElement.dataset.theme=paintTheme;
@@ -646,7 +646,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       renderGreeting();renderDashboard();renderPlanning();renderCongregations();renderContactPicker();renderEvents();renderCalendar();renderUpcomingEvents();renderReminders();renderEventTypeOptions();
     }
 
-    // ââ Rollover ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Rollover ──────────────────────────────────────────────────────────────────
     // Advances the schedule exactly one year. Archives the outgoing year to Planning,
     // copies the matching Planning year fully into the dashboard (congregation, note,
     // confirmed -> status), fills blank months from fixed congregations, falls back
@@ -683,11 +683,11 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       showConfirm(tf("confirmCreateYear",{year:prev,next:next}),function(){
         performRollover();
         saveState();renderAll();
-        toast(tf("yearCreated",{year:next,prev:prev})+" â");
+        toast(tf("yearCreated",{year:next,prev:prev})+" ✓");
       });
     }
 
-    // ââ Export ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Export ────────────────────────────────────────────────────────────────────
     function downloadBackup(){
       var blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
       var url=URL.createObjectURL(blob);
@@ -698,7 +698,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       toast(tt("exported"));
     }
 
-    // ââ Share congregation list ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Share congregation list ────────────────────────────────────────────────────
     function buildCongList(sep){
       return state.congregations.filter(function(c){return c.name;}).sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(c){
         var l=(c.isFixed?"[FIJO] ":"")+c.name;
@@ -709,7 +709,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       }).join("\n\n");
     }
 
-    // ââ Settings modal âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Settings modal ─────────────────────────────────────────────────────────────
     function openSettings(){
       var p=state.profile||{};
       document.getElementById("profileNameInput").value=p.name||"";
@@ -726,7 +726,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       saveState();closeSettings();renderGreeting();toast(tt("saved"));
     }
 
-    // ââ Custom confirm dialog âââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Custom confirm dialog ─────────────────────────────────────────────
     function showConfirm(msg, onOk, onCancel) {
       document.getElementById("confirmMsg").textContent = msg;
       document.getElementById("confirmOkBtn").textContent = state.language==="es"?"Confirmar":"Confirm";
@@ -743,9 +743,9 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       };
     }
 
-    // ââ Wire events ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Wire events ────────────────────────────────────────────────────────────────
 
-    // ââ Events ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Events ────────────────────────────────────────────────────────────────────
     function renderEvents(){
       var list=document.getElementById('eventList');
       if(!list)return;
@@ -756,7 +756,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       }
       var isEs=state.language==='es';
       list.innerHTML=events.map(function(ev){
-        var et=EVENT_TYPES.find(function(t){return t.id===ev.type;})||{icon:'ð',color:'#888',label:{en:'Event',es:'Evento'}};
+        var et=EVENT_TYPES.find(function(t){return t.id===ev.type;})||{icon:'📌',color:'#888',label:{en:'Event',es:'Evento'}};
         var dateStr=ev.startDate||(isEs?'Sin fecha':'No date');
         if(ev.endDate&&ev.endDate!==ev.startDate)dateStr+=' — '+ev.endDate;
         return '<div class="event-card" data-event-id="'+esc(ev.id)+'">'
@@ -853,12 +853,12 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
     }
 
-    // ââ Stage 8B: Calendar UI state âââââââââââââââââââââââââââââââââââââââââââ
+    // ── Stage 8B: Calendar UI state ───────────────────────────────────────────
     var _calMonth = new Date().getMonth();
     var _calYear = new Date().getFullYear();
     var _calTypeFilter = '';
 
-    // ââ renderCalendar ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── renderCalendar ──────────────────────────────────────────────────────────────
     function renderCalendar(){
       var container=document.getElementById('eventsCalendar');
       if(!container)return;
@@ -937,7 +937,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
               var et=EVENT_TYPES.find(function(t){return t.id===e.type;});
               var col=e.color||(et?et.color:'#888');
               var lbl=et?(isEs?et.label.es:et.label.en):e.type;
-              var ico=et?et.icon:'ð';
+              var ico=et?et.icon:'📅';
               return '<div class="cal-det-card">'+
                 '<div class="cal-det-type" style="color:'+col+'">'+ico+' '+lbl+'</div>'+
                 '<div class="cal-det-title">'+esc(e.title||'')+'</div>'+
@@ -950,7 +950,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
     }
 
-    // ââ renderUpcomingEvents ââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── renderUpcomingEvents ──────────────────────────────────────────────
     function renderUpcomingEvents(){
       var container=document.getElementById('upcomingEventsDash');
       if(!container)return;
@@ -977,7 +977,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var net=EVENT_TYPES.find(function(t){return t.id===nxt.type;});
         var nc=nxt.color||(net?net.color:'#888');
         var nl=net?(isEs?net.label.es:net.label.en):nxt.type;
-        var ni=net?net.icon:'ð';
+        var ni=net?net.icon:'📅';
         nxtHtml='<div class="up-next" style="border-left-color:'+nc+'">'+
           '<div class="up-next-lbl">'+(isEs?'Próximo Evento':'Next Event')+'</div>'+
           '<div class="up-next-ico">'+ni+'</div>'+
@@ -988,7 +988,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var listHtml=upcoming.map(function(e){
         var et=EVENT_TYPES.find(function(t){return t.id===e.type;});
         var col=e.color||(et?et.color:'#888');
-        var ico=et?et.icon:'ð';
+        var ico=et?et.icon:'📅';
         return '<div class="up-item">'+
           '<span class="up-dot" style="background:'+col+'">'+ico+'</span>'+
           '<span class="up-info"><strong>'+e.title+'</strong><small> · '+e.startDate+'</small></span>'+
@@ -1105,7 +1105,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
       document.getElementById("resetBtn").addEventListener("click",function(){showConfirm(tt("deleteConfirm"),function(){state=cloneStarter();state.schedule=state.schedule.map(migrateRow);saveState();renderAll();toast(tt("restored"));});});
 
-      // ââ Cloud backup ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      // ── Cloud backup ────────────────────────────────────────────────────
       (function(){
         var APP_ID="talk-arrangements";
         var KEYS=["jw-talk-arrangements-v1"];
@@ -1184,7 +1184,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           if(settingsCloudSaveBtn)settingsCloudSaveBtn.disabled=true;
           if(settingsCloudRestoreBtn)settingsCloudRestoreBtn.disabled=true;
         }
-      })();      // ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+      })();      // ──────────────────────────────────────────────────────────────
 
 
       // Add month
@@ -1255,7 +1255,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
     }
 
-    // âââ Stage 9: Reminders ââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── Stage 9: Reminders ────────────────────────────────────────────────
     var reminderTimers = new Map();
 
     function reminderText(en, es) {
@@ -1575,19 +1575,19 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var modal = document.getElementById('reminderModal');
       if (modal) modal.style.display = 'none';
     }
-    // âââ End Stage 9 ââââââââââââââââââââââââââââââââââââââââââââââââââ
+    // ─── End Stage 9 ──────────────────────────────────────────────────
 
     wireEvents();
     renderAll();
     scheduleAllReminders();
 
-    // ââ Auto-detect new year on load âââââââââââââââââââââââââââââââââââââââââââââââ
+    // ── Auto-detect new year on load ───────────────────────────────────────────────
     if(thisYear>state.currentYear){
       var _rolledFrom=state.currentYear;
       var _guard=0;
       while(state.currentYear<thisYear&&_guard<50){performRollover();_guard++;}
       saveState();renderAll();
-      setTimeout(function(){toast(tf("yearCreated",{year:state.currentYear,prev:_rolledFrom})+" â "+tt("archiveNote"));},600);
+      setTimeout(function(){toast(tf("yearCreated",{year:state.currentYear,prev:_rolledFrom})+" ✓ "+tt("archiveNote"));},600);
     }
 
     // Cloud sync: once signed in, pull newer cloud data on open/resume and push local changes shortly after edits.
@@ -1644,7 +1644,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
     }
 
-    // ââ Stage 8C: Calendar Intelligence âââââââââââââââââââââââââââââââââââââââââ
+    // ── Stage 8C: Calendar Intelligence ─────────────────────────────────────────
     // Scheduling intelligence: visual indicators + warnings based on taEvents.
     // Blocking types: assembly, convention, holiday-blackout, memorial.
     // Advisory types: circuit-overseer, special-talk, local-event, custom.
@@ -1703,12 +1703,12 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var isEs=state.language==='es';
       var lines=[];
       if(conflicts.blocking.length){
-        lines.push('â '+(isEs?'Fecha restringida:':'Restricted date:'));
+        lines.push('⛔ '+(isEs?'Fecha restringida:':'Restricted date:'));
         conflicts.blocking.forEach(function(e){ lines.push('  • '+stage8c_eventText(e)); });
       }
       if(conflicts.advisory.length){
         if(lines.length)lines.push('');
-        lines.push('â ï¸ '+(isEs?'Aviso de calendario:':'Calendar notice:'));
+        lines.push('⚠️ '+(isEs?'Aviso de calendario:':'Calendar notice:'));
         conflicts.advisory.forEach(function(e){ lines.push('  • '+stage8c_eventText(e)); });
       }
       var header=isEs?(conflicts.blocking.length?'Fecha restringida':'Aviso de calendario'):(conflicts.blocking.length?'Restricted date':'Calendar notice');
@@ -1735,7 +1735,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       var title=isBlocking
         ?(isEs?'Fecha restringida — haga clic para ver':'Restricted date — click to view')
         :(isEs?'Aviso de calendario — haga clic para ver':'Calendar notice — click to view');
-      var icon=isBlocking?'â':'â ï¸';
+      var icon=isBlocking?'⛔':'⚠️';
       var cls=isBlocking?'ta-evt-badge ta-evt-blocked':'ta-evt-badge ta-evt-advisory';
       return'<span class="'+cls+'" title="'+esc(title)+'" data-ta-evt-badge="1">'+icon+'</span>';
     }
