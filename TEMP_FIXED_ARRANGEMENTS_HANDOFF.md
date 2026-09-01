@@ -1222,3 +1222,93 @@ Read-only verification against Pipe `545bffa`:
 
 Phase 3E Pipe Bending audit COMPLETE - `PENDING SUPERVISOR REVIEW`.
 STOP. Do NOT begin modifying KHub-Boilerplate until Supervisor authorization.
+
+## Final KHub Consolidation + Implementation (2026-08-31)
+
+Supervisor authorized consolidation of the approved five-app audit findings into
+KHub-Boilerplate. KHub pre-implementation `main` was
+`9ba80db83484ec2c198a6f81073659b88ce92502`. The implementation was committed as
+`04e00872a71ca720bfbfb4b1c4d039432e12a42d`, pushed to `KHub-Boilerplate/main`, and
+remote `main` was verified at that exact SHA. No deployment was performed.
+
+### Required promotions implemented
+
+- **P1:** `sw.js` now gives failed same-origin document/navigation requests a cached
+  offline document while failed JS/CSS/font/image/other assets receive only an exact
+  cached response or `Response.error()`; required shell installation remains atomic.
+- **P2:** generalized SW ownership, versioning, fallback, update, recovery, dependency,
+  cold-offline, regression, and post-deploy guidance was added to
+  `docs/SW-OPERATIONS.md`, `TEST-CHECKLIST.md`, `CLAUDE.md`, and README.
+- **P3:** the optional notification reference now deletes dead subscriptions on 404/410,
+  deletes orphan reminders, removes reminders owned by a dead subscription, emits
+  secret-free per-run counters, and uses parameterized app identity/path/configuration.
+- **M1 + O3:** `js/sw-manager.js` is the sole registrar and owns the event bus,
+  registration/update lifecycle, periodic checks, app-namespaced check key, safe reload,
+  unsafe-state banner, `SKIP_WAITING`/`RELOAD_READY`, resource/boot health detection,
+  accessible recovery UI, explicit repair confirmation, app-owned cache deletion, and
+  configured-scope unregister. `js/app.js` contains no second registrar.
+- **M2 + M3:** the error boundary recognizes only the approved exact browser message
+  `attempt to get records from database without an in-progress transaction` as nonfatal,
+  prevents that known transient rejection from replacing the app, logs a warning, keeps
+  unrelated storage/IDB errors visible, and uses EN/ES i18n strings with English fallbacks.
+- **O2:** `CACHE_PREFIX`, matching config, and explicit obsolete-prefix lists restrict
+  activation and recovery cleanup to the generated app. Unrelated origin caches survive.
+- **O4:** modal titles/button labels/default body text and input labels use DOM/text-safe
+  construction; Node bodies are supported; `trustedHtml` is an explicit unsanitized,
+  developer-trusted escape hatch; input errors are always included in `aria-describedby`.
+- **F5:** the import contract now requires visible per-collection `replace`, `merge`,
+  `preserve-local-fields`, or `reject-on-conflict` policies while retaining validation,
+  preview, recovery snapshot, explicit apply, result summary, and rollback. The small
+  boilerplate state example now separates preview from apply and supplies rollback.
+- **PB1:** offline-required runtimes, compiled bundles, libraries, icons, and required
+  fonts default to same-origin atomic precache. Version/source/license/update/reproducible-
+  build provenance is required in `docs/DEPENDENCY-INVENTORY.md`; font fallback and
+  `font-display: swap` guidance and the exact cold-offline definition are documented.
+
+### Optional patterns added
+
+- `docs/patterns/MIGRATIONS.md`: bounded, versioned, validated, idempotent migration
+  registry guidance for already-deployed apps only.
+- `docs/patterns/IMPORT-PIPELINE.md`: parse -> validate/reconcile -> policy/count preview ->
+  recovery snapshot -> explicit apply -> result/rollback scaffold for import-heavy apps.
+- `docs/patterns/DETERMINISTIC-TESTING.md`: real-source, frozen-time, fixture, and CI pattern.
+- `scripts/khub-check.mjs`: PB7 runtime import/font/manifest/precache consistency,
+  cache-prefix guard, and dependency-inventory checks.
+
+### Explicit non-promotions preserved
+
+No Talk stable-shell/hot-file cache split, blanket `Promise.allSettled` required-shell
+install, blanket `ignoreSearch`, unclassified warning override, duplicate bootstrap error
+system, unlocked vendoring process, or mature-app routes/data models/calculations were
+introduced. Push remains optional reference infrastructure, not a default app dependency.
+
+### Verification results
+
+- `npm test`: **13/13 passed**. Coverage includes document fallback, asset-no-HTML
+  behavior, unrelated-cache survival, atomic install rejection, manager ownership,
+  safe activation/unsafe banner, explicit scoped repair, exact IDB matcher, safe shared
+  component construction, sole registrar, dead-sub cleanup, orphan cleanup, 404/410
+  cleanup, and secret-free counters.
+- `npm run ship-check`: **PASS**. The enhanced checker found no operational or dependency/
+  precache inconsistency.
+- `node --check`: **PASS** for every checked-in JavaScript file, including notification
+  references.
+- Changed-file Prettier verification: **PASS**.
+- Changed runtime-file ESLint: **0 errors, 16 existing/intentional console warnings**.
+- Repository-wide `npm run lint` remains non-green because unchanged legacy
+  `js/firebase/cloud-backup.js`, `js/perf.js`, and other baseline files contain 53 existing
+  lint errors. Repository-wide `format:check` likewise reports 34 unchanged legacy files.
+  Those unrelated files were deliberately restored and not folded into this implementation.
+- Browser/device/PWA runtime verification and live post-deploy verification were NOT
+  claimed or performed. Deployment was not authorized.
+
+### Scope and completion proof
+
+- KHub implementation commit: `04e00872a71ca720bfbfb4b1c4d039432e12a42d`.
+- KHub remote `main` verified at the same SHA after push.
+- Talk application code was NOT modified; this tracker is the only Talk change.
+- Ministry Tracker, Overtime Tracker, Finance Tracker, and Pipe Bending were NOT modified.
+- No mature-app deployment, KHub deployment, cache migration, or additional stage began.
+- Deployment status: **NOT PERFORMED**.
+
+Final KHub consolidation/implementation COMPLETE. STOP pending Supervisor final audit.
