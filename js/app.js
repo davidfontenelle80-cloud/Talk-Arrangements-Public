@@ -44,8 +44,10 @@ function computeDeliveryTime(reminderTime) {
 
     T.en.excelUpdate="Update from Excel";
     T.en.restoreBackup="Restore backup";
+    T.en.yearReport="Year report";
     T.es.excelUpdate="Actualizar desde Excel";
     T.es.restoreBackup="Restaurar respaldo";
+    T.es.yearReport="Informe anual";
 
     var starter={
       version:1,language:"es",theme:"dark",selectedMonth:currentMonth,currentYear:thisYear,
