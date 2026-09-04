@@ -17,4 +17,5 @@ jobs:
       - run: node --check js/state-validation.js
       - run: node tests/state-validation.test.js
       - run: node tests/error-boundary.test.js
+      - run: node tests/print-wiring.test.js
       - run: node scripts/check-encoding.mjs .

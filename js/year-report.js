@@ -58,7 +58,7 @@
     overlay.querySelector('[data-share]').onclick=function(){var tx=textReport(currentModel);if(navigator.share)navigator.share({title:currentModel.title,text:tx}).catch(function(){});else copy(tx,function(){bridge.notify(lang==='es'?'Informe copiado para compartir.':'Report copied for sharing.');});};
     overlay.querySelector('[data-print]').onclick=function(){showPrintOptions(currentModel,bridge);};render();
   }
-  function wire(){var b=document.getElementById('yearReportBtn');if(b)b.onclick=open;}
+  function wire(){var print=document.getElementById('printBtn'),legacy=document.getElementById('yearReportBtn');if(print)print.onclick=open;if(legacy){legacy.onclick=open;legacy.hidden=true;}}
   root.TalkYearReport={buildModel:buildModel,tableHtml:tableHtml,textReport:textReport,printableDocument:printableDocument,open:open};
   if(root.document){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();}
 })(typeof window!=='undefined'?window:globalThis);

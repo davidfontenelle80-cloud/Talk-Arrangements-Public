@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v115-print-options';
+const CACHE_VERSION = 'talk-arrangements-v116-print-menu';
 
 const PRECACHE_URLS = [
   './',
@@ -34,9 +34,9 @@ const PRECACHE_URLS = [
   './js/push.js',
   './js/vendor/xlsx.mini.min.js?v=0.18.5',
   './js/state-validation.js?v=repairs-v114',
-  './js/app.js?v=print-options-v115',
+  './js/app.js?v=print-menu-v116',
   './js/excel-import.js?v=repairs-v114',
-  './js/year-report.js?v=print-options-v115',
+  './js/year-report.js?v=print-menu-v116',
   './js/firebase/firebase-config.js',
   './js/firebase/cloud-backup.js',
 ];

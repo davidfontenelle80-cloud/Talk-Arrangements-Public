@@ -45,9 +45,11 @@ function computeDeliveryTime(reminderTime) {
     T.en.excelUpdate="Update from Excel";
     T.en.restoreBackup="Restore backup";
     T.en.yearReport="Year report";
+    T.en.printReports="Print / Reports";
     T.es.excelUpdate="Actualizar desde Excel";
     T.es.restoreBackup="Restaurar respaldo";
     T.es.yearReport="Informe anual";
+    T.es.printReports="Imprimir / Informes";
 
     var starter={
       version:1,language:"es",theme:"dark",selectedMonth:currentMonth,currentYear:thisYear,
@@ -1219,7 +1221,6 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
       // Rollover / Print
       document.getElementById("rolloverBtn").addEventListener("click",rolloverYear);
-      document.getElementById("printBtn").addEventListener("click",function(){if(window.TalkYearReport&&TalkYearReport.open){TalkYearReport.open();return;}document.getElementById("printTitle").style.display="";window.print();setTimeout(function(){document.getElementById("printTitle").style.display="none";},500);});
       // Share congregation list
       document.getElementById("shareWaBtn").addEventListener("click",function(){window.open("https://wa.me/?text="+encodeURIComponent(buildCongList("\n")),"_blank");});
       document.getElementById("shareEmailBtn").addEventListener("click",function(){window.print();});

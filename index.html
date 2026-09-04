@@ -120,7 +120,6 @@
         </div>
         <button id="settingsBtn" title="Settings">&#9881;</button>
         <button id="exportBtn">&#8681; <span data-i18n="backup">Backup</span></button>
-        <button id="yearReportBtn">&#128196; <span data-i18n="yearReport">Year report</span></button>
         <button id="excelImportBtn">&#8679; <span data-i18n="excelUpdate">Update from Excel</span></button>
         <button id="excelSyncStatusBtn" type="button">&#128269; <span>Excel status</span></button>
         <button id="importBtn">&#8635; <span data-i18n="restoreBackup">Restore backup</span></button>
@@ -142,7 +141,7 @@
         <div class="section-head no-print">
           <div><h2 id="dashboardTitle"></h2><p data-i18n="dashHint"></p></div>
           <div class="section-head-actions">
-            <button id="printBtn">&#128424; <span data-i18n="print">Print</span></button>
+            <button id="printBtn">&#128424; <span data-i18n="printReports">Print / Reports</span></button>
             <button id="rolloverBtn">&#8635; <span data-i18n="createNextYear">Next Year</span></button>
             <button class="primary" id="addCurrentYear">+ <span data-i18n="addMonth">Add Month</span></button>
           </div>
@@ -358,9 +357,9 @@
   <script src="js/push.js"></script>
   <script src="js/vendor/xlsx.mini.min.js?v=0.18.5"></script>
   <script src="js/state-validation.js?v=repairs-v114"></script>
-  <script src="js/app.js?v=print-options-v115"></script>
+  <script src="js/app.js?v=print-menu-v116"></script>
   <script src="js/excel-import.js?v=repairs-v114"></script>
-  <script src="js/year-report.js?v=print-options-v115"></script>
+  <script src="js/year-report.js?v=print-menu-v116"></script>
   <script src="js/dashboard-notes.js"></script>
   <script src="js/fixed-preview.js"></script>
   <script src="js/fixed-manager-ux.js"></script>
@@ -375,7 +374,9 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js').catch(function (err) {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(function (registration) {
+          return registration.update();
+        }).catch(function (err) {
           console.warn('[KHub SW] Registration failed:', err);
         });
       });
