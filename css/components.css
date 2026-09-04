@@ -319,3 +319,16 @@ tr.ta-evt-advisory { background: rgba(245,158,11,0.06) !important; }
 [data-theme="light"] tr.ta-evt-blocked { background: rgba(239,68,68,0.09) !important; }
 [data-theme="light"] .ta-evt-row-advisory,
 [data-theme="light"] tr.ta-evt-advisory { background: rgba(245,158,11,0.09) !important; }
+
+/* Spreadsheet reconciliation preview */
+.excel-sync-backdrop{position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:14px}
+.excel-sync-dialog{width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+.excel-sync-head,.excel-sync-foot{position:sticky;background:var(--panel);z-index:1;padding:16px;border-color:var(--line)}
+.excel-sync-head{top:0;border-bottom:1px solid var(--line)}
+.excel-sync-foot{bottom:0;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+.excel-sync-body{padding:16px}.excel-sync-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.excel-sync-stat{padding:10px;border:1px solid var(--line);border-radius:10px;text-align:center}.excel-sync-stat strong{display:block;font-size:20px}
+.excel-sync-group{margin-top:18px}.excel-sync-group h4{margin:0 0 8px}.excel-sync-row{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--line)}
+.excel-sync-row input{margin-top:3px;flex:0 0 auto}.excel-sync-row span{display:block}.excel-sync-row small{color:var(--muted)}
+.excel-sync-warning{padding:10px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.5);margin:8px 0}
+@media(max-width:520px){.excel-sync-summary{grid-template-columns:1fr}.excel-sync-dialog{max-height:96vh}}
