@@ -42,6 +42,11 @@ function computeDeliveryTime(reminderTime) {
       es:{appTitle:"Arreglos de Discursos",subtitle:"Arreglos de discursos p\u00fablicos de la congregaci\u00f3n",dashboard:"Tablero",planning:"Planificaci\u00f3n",congregations:"Congregaciones",backup:"Respaldo",import:"Importar",reset:"Restaurar",dashHint:"El a\u00f1o actual con el mes presente resaltado.",addMonth:"A\u00f1adir mes",yearSchedule:"Programa del a\u00f1o",month:"Mes",congregation:"Congregaci\u00f3n",statusCol:"Estado",fixedCol:"Fijo",notContacted:"Sin contactar",messageSentStatus:"Mensaje enviado",confirmedStatus:"Confirmado",needsFollowUp:"Necesita seguimiento",followUpDate:"Seguimiento antes de",note:"Nota",actions:"Acciones",speakerContact:"Contacto del discursante",planningTitle:"Planificaci\u00f3n de los pr\u00f3ximos 3 a\u00f1os",planningHint:"Use esta secci\u00f3n para arreglos futuros y notas fijas.",addYear:"A\u00f1adir a\u00f1o",congTitle:"Lista de congregaciones",congHint:"Edite los contactos aqu\u00ed; el tablero se actualiza al instante.",search:"Buscar congregaciones o contactos",addCong:"A\u00f1adir",coordinator:"Coordinador",phone:"Tel\u00e9fono",email:"Correo",currentMonth:"Mes actual",copied:"Copiado",noContact:"Seleccione una fila (\u25ce) para ver opciones de contacto.",call:"Llamar",text:"Texto",mail:"Correo",copy:"Copiar",total:"Total",sent:"Enviados",confirmedCount:"Confirmados",conWho:"Con quien",contact:"Contacto",deleteConfirm:"\u00bfDesea eliminar esta fila?",restored:"Datos iniciales restaurados.",imported:"Respaldo importado.",saved:"Guardado.",exported:"Respaldo descargado.",invalidBackup:"No se pudo leer este respaldo.",print:"Imprimir",createNextYear:"Pr\u00f3ximo A\u00f1o",confirmCreateYear:"Archivar {year} y crear plantilla para {next}?",yearCreated:"Programa {year} creado + {prev} archivado",templates:"Plantilla de mensaje",openSms:"Enviar SMS",openEmail:"Enviar correo",copyMsg:"Copiar mensaje",whatsapp:"WhatsApp",shareList:"WhatsApp",emailList:"Imprimir lista",shareContact:"Compartir",privateData:"Contactos cargados",publicData:"Versión pública \u2014 sin contactos",conflictWarnings:"{n} problema(s)",duplicateCong:"{c} programada dos veces en 6 meses ({m1} y {m2})",missingFixed:"Congregaci\u00f3n fija sin programar: {c}",dupMonth:"El mes {m} aparece más de una vez",nothingToCopy:"Sin datos para copiar",settingsTitle:"Configuración y Perfil",profileName:"Tu nombre",profileCong:"Tu congregaci\u00f3n",profilePhone:"Tu tel\u00e9fono (para mensajes)",privacyNote:"Tus datos se guardan en este dispositivo y pueden sincronizarse por respaldo en la nube cuando está activo.",save:"Guardar",cancel:"Cancelar",goodMorning:"Buenos días",goodAfternoon:"Buenas tardes",goodEvening:"Buenas noches",yearChangePrompt:"Ya es {year}. \u00bfCambiar el programa al nuevo a\u00f1o?",archiveNote:"Programa anterior archivado en Planificaci\u00f3n.",emailSubject:"Lista de congregaciones",listCopied:"Lista copiada \u2014 p\u00e9gala en tu correo",eventsTitle:"Eventos",eventsHint:"Administra eventos de la congregación",addEvent:"Agregar evento",editEvent:"Editar evento",deleteEvent:"Eliminar evento",eventTitle:"Título",eventType:"Tipo de evento",eventStartDate:"Fecha de inicio",eventEndDate:"Fecha de fin",eventAllDay:"Todo el día",eventDescription:"Descripción",eventNotes:"Notas",eventColor:"Color",eventActive:"Activo",noEvents:"Sin eventos aún. Toca + Agregar evento para crear uno.",confirmDeleteEvent:"¿Eliminar este evento?","reminders.tab":"Recordatorios","reminders.addReminder":"Agregar Recordatorio","reminders.editReminder":"Editar Recordatorio","reminders.title":"T\u00edtulo","reminders.note":"Nota","reminders.date":"Fecha","reminders.time":"Hora","reminders.noReminders":"Sin recordatorios a\u00fan","reminders.save":"Guardar","reminders.cancel":"Cancelar","reminders.deleteReminder":"Eliminar","reminders.notifAllow":"Permitir Notificaciones","reminders.notifEnabled":"Notificaciones activas","reminders.notifDenied":"Notificaciones denegadas","reminders.notifUnsupported":"Notificaciones no disponibles en este dispositivo","reminders.iosBanner":"Para recibir recordatorios, agrega esta app a tu pantalla de inicio","reminders.inAppOnly":"Solo recordatorios en la app (la app debe estar abierta)","reminders.deliversAround":"Se entrega alrededor de las {time}","reminders.leadError":"Elige una hora al menos {min} minutos despu\u00e9s de ahora para que el recordatorio pueda entregarse.","reminders.setForDelivers":"Programado para las {picked} \u2014 se entrega alrededor de las {time}"}
     };
 
+    T.en.excelUpdate="Update from Excel";
+    T.en.restoreBackup="Restore backup";
+    T.es.excelUpdate="Actualizar desde Excel";
+    T.es.restoreBackup="Restaurar respaldo";
+
     var starter={
       version:1,language:"es",theme:"dark",selectedMonth:currentMonth,currentYear:thisYear,
       profile:{name:"",congregation:"",phone:""},
@@ -1103,7 +1108,12 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         };
         reader.readAsText(file);
       });
-      document.getElementById("resetBtn").addEventListener("click",function(){showConfirm(tt("deleteConfirm"),function(){state=cloneStarter();state.schedule=state.schedule.map(migrateRow);saveState();renderAll();toast(tt("restored"));});});
+      document.getElementById("resetBtn").addEventListener("click",function(){
+        var msg=state.language==="es"
+          ? "Esto borrará los arreglos, contactos, estados, recordatorios, eventos y configuración guardados en este dispositivo. ¿Deseas continuar?"
+          : "This will erase arrangements, contacts, statuses, reminders, events, and settings saved on this device. Continue?";
+        showConfirm(msg,function(){state=cloneStarter();state.schedule=state.schedule.map(migrateRow);saveState();renderAll();toast(tt("restored"));});
+      });
 
       // ── Cloud backup ────────────────────────────────────────────────────
       (function(){
@@ -1576,6 +1586,13 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       if (modal) modal.style.display = 'none';
     }
     // ─── End Stage 9 ──────────────────────────────────────────────────
+
+    window.TalkArrangementsDataBridge={
+      getState:function(){return JSON.parse(JSON.stringify(state));},
+      applyState:function(next){state=Object.assign(cloneStarter(),next||{});saveState();renderAll();},
+      notify:function(message){toast(message);},
+      confirm:function(message,onOk,onCancel){showConfirm(message,onOk,onCancel);}
+    };
 
     wireEvents();
     renderAll();
