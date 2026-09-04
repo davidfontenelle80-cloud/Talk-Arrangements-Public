@@ -15,4 +15,8 @@ assert.strictEqual(mismatched.rows[0].coordinator,'Different Brother');
 assert.strictEqual(mismatched.rows[0].phone,'','phone must not be paired with a different person');
 assert.strictEqual(mismatched.rows[0].email,'','email must not be paired with a different person');
 assert.strictEqual(mismatched.rows[0].contactUnmatched,true);
+const printable=TalkYearReport.printableDocument(model);
+assert(printable.includes('Print / Save PDF'));
+assert(printable.includes('<table>'));
+assert(printable.includes('@media print'));
 console.log('year report tests: passed');

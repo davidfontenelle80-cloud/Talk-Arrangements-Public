@@ -1219,7 +1219,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       });
       // Rollover / Print
       document.getElementById("rolloverBtn").addEventListener("click",rolloverYear);
-      document.getElementById("printBtn").addEventListener("click",function(){document.getElementById("printTitle").style.display="";window.print();setTimeout(function(){document.getElementById("printTitle").style.display="none";},500);});
+      document.getElementById("printBtn").addEventListener("click",function(){if(window.TalkYearReport&&TalkYearReport.open){TalkYearReport.open();return;}document.getElementById("printTitle").style.display="";window.print();setTimeout(function(){document.getElementById("printTitle").style.display="none";},500);});
       // Share congregation list
       document.getElementById("shareWaBtn").addEventListener("click",function(){window.open("https://wa.me/?text="+encodeURIComponent(buildCongList("\n")),"_blank");});
       document.getElementById("shareEmailBtn").addEventListener("click",function(){window.print();});
