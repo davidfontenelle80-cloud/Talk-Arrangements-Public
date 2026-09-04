@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v112-excel-reconciliation';
+const CACHE_VERSION = 'talk-arrangements-v113-year-report';
 
 const PRECACHE_URLS = [
   './',
@@ -34,6 +34,7 @@ const PRECACHE_URLS = [
   './js/push.js',
   './js/app.js?v=excel-sync-v112',
   './js/excel-import.js?v=excel-sync-v112',
+  './js/year-report.js?v=year-report-v113',
   './js/firebase/firebase-config.js',
   './js/firebase/cloud-backup.js',
 ];
