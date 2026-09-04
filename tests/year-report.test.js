@@ -1,0 +1,12 @@
+const assert=require('assert');
+global.window=global;global.document=null;require('../js/year-report.js');
+const state={language:'en',currentYear:2026,schedule:[{month:0,congregation:'New London Spanish',status:'confirmed',note:'Fixed'}],planning:[{year:2031,rows:[{month:5,congregation:'Future Spanish',confirmed:false,note:''}]}],congregations:[{name:'NewLondon Spanish',coordinator:'John Doe',phone:'860-555-0100',email:'john@example.com'}]};
+let model=TalkYearReport.buildModel(state,2026,false);
+assert.strictEqual(model.rows[0].coordinator,'');
+assert(!TalkYearReport.tableHtml(model).includes('john@example.com'));
+model=TalkYearReport.buildModel(state,2026,true);
+assert.strictEqual(model.rows[0].coordinator,'John Doe');
+assert(TalkYearReport.textReport(model).includes('860-555-0100'));
+const future=TalkYearReport.buildModel(state,2031,true);
+assert.strictEqual(future.rows[0].month,'June');
+console.log('year report tests: passed');
