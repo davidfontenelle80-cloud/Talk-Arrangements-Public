@@ -331,6 +331,10 @@ tr.ta-evt-advisory { background: rgba(245,158,11,0.06) !important; }
 .excel-sync-group{margin-top:18px}.excel-sync-group h4{margin:0 0 8px}.excel-sync-row{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--line)}
 .excel-sync-row input{margin-top:3px;flex:0 0 auto}.excel-sync-row span{display:block}.excel-sync-row small{color:var(--muted)}
 .excel-sync-warning{padding:10px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.5);margin:8px 0}
+.excel-sync-error{padding:10px;border-radius:10px;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.7);color:var(--danger);font-weight:700;margin:8px 0}
+.excel-sync-reminder,.excel-sync-recovery,.excel-sync-empty{padding:10px;border:1px solid var(--line);border-radius:10px;margin:8px 0}.excel-sync-reminder strong,.excel-sync-reminder small{display:block}.excel-sync-reminder small{color:var(--muted);margin-top:3px}.excel-sync-recovery{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.5)}
+.has-sync-items{border-color:var(--warn)!important;color:var(--warn)!important}.has-sync-items::after{content:attr(data-count);display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--warn);color:#111;font-size:11px;font-weight:800}
+.report-contact-warning{display:block;margin-top:3px;color:#9a3412;font-weight:700}
 @media(max-width:520px){.excel-sync-summary{grid-template-columns:1fr}.excel-sync-dialog{max-height:96vh}}
 
 /* Selectable annual arrangement report */

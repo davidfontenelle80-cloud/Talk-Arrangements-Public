@@ -985,11 +985,11 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var nc=nxt.color||(net?net.color:'#888');
         var nl=net?(isEs?net.label.es:net.label.en):nxt.type;
         var ni=net?net.icon:'📅';
-        nxtHtml='<div class="up-next" style="border-left-color:'+nc+'">'+
+        nxtHtml='<div class="up-next" style="border-left-color:'+esc(nc)+'">'+
           '<div class="up-next-lbl">'+(isEs?'Próximo Evento':'Next Event')+'</div>'+
-          '<div class="up-next-ico">'+ni+'</div>'+
-          '<div class="up-next-ttl">'+nxt.title+'</div>'+
-          '<div class="up-next-dt">'+nxt.startDate+'</div>'+
+          '<div class="up-next-ico">'+esc(ni)+'</div>'+
+          '<div class="up-next-ttl">'+esc(nxt.title)+'</div>'+
+          '<div class="up-next-dt">'+esc(nxt.startDate)+'</div>'+
           '</div>';
       }
       var listHtml=upcoming.map(function(e){
@@ -997,8 +997,8 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         var col=e.color||(et?et.color:'#888');
         var ico=et?et.icon:'📅';
         return '<div class="up-item">'+
-          '<span class="up-dot" style="background:'+col+'">'+ico+'</span>'+
-          '<span class="up-info"><strong>'+e.title+'</strong><small> · '+e.startDate+'</small></span>'+
+          '<span class="up-dot" style="background:'+esc(col)+'">'+esc(ico)+'</span>'+
+          '<span class="up-info"><strong>'+esc(e.title)+'</strong><small> · '+esc(e.startDate)+'</small></span>'+
           '</div>';
       }).join('');
       container.innerHTML='<div class="up-widget">'+
@@ -1014,7 +1014,7 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
       // Tabs
       document.querySelectorAll("[data-tab]").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("[data-tab]").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");document.querySelectorAll("main > section").forEach(function(s){s.hidden=s.id!==btn.dataset.tab;});});});
       // Lang / Theme
-      document.querySelectorAll("[data-lang]").forEach(function(btn){btn.addEventListener("click",function(){state.language=btn.dataset.lang;saveState();renderAll();});});
+      document.querySelectorAll("[data-lang]").forEach(function(btn){btn.addEventListener("click",function(){state.language=btn.dataset.lang;saveState();renderAll();window.dispatchEvent(new CustomEvent('talk:language-changed'));});});
       document.querySelectorAll("[data-theme-pick]").forEach(function(btn){btn.addEventListener("click",function(){state.theme=btn.dataset.themePick;saveState();renderAll();});});
       // Settings
       document.getElementById("settingsBtn").addEventListener("click",openSettings);
@@ -1095,15 +1095,17 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
         reader.onload=function(){
           try{
             var imp=JSON.parse(reader.result);
-            if(!Array.isArray(imp.congregations)||!Array.isArray(imp.schedule))throw new Error("Invalid");
-            state=Object.assign(cloneStarter(),imp);
-            if(!state.profile)state.profile={name:"",congregation:"",phone:""};
-            state.schedule=state.schedule.map(migrateRow);
-            state.congregations=state.congregations.map(migrateCong);
-            if(Array.isArray(state.planning))state.planning.forEach(function(y){if(Array.isArray(y.rows))y.rows.forEach(function(r){if(r.contact===undefined)r.contact="";if(r.confirmed===undefined)r.confirmed=false;});});
+            var check=window.TalkStateValidation&&TalkStateValidation.validate(imp);
+            if(!check||!check.ok)throw new Error(check&&check.errors?check.errors.join(' '):"Invalid");
+            var imported=Object.assign(cloneStarter(),imp);
+            if(!imported.profile)imported.profile={name:"",congregation:"",phone:""};
+            imported.schedule=imported.schedule.map(migrateRow);
+            imported.congregations=imported.congregations.map(migrateCong);
+            if(Array.isArray(imported.planning))imported.planning.forEach(function(y){if(Array.isArray(y.rows))y.rows.forEach(function(r){if(r.contact===undefined)r.contact="";if(r.confirmed===undefined)r.confirmed=false;});});
             // Reset navigation so import opens on the current month, not a stale one from the backup.
-            state.selectedMonth=currentMonth;
-            state.contactPickerYear=null;state.contactPickerMonth=null;state.contactPickerIdx=0;
+            imported.selectedMonth=currentMonth;
+            imported.contactPickerYear=null;imported.contactPickerMonth=null;imported.contactPickerIdx=0;
+            state=imported;
             saveState();renderAll();toast(tt("imported"));
           }catch(err){toast(tt("invalidBackup"));}
           e.target.value="";
@@ -1628,6 +1630,9 @@ var FIXED_NAMES=["South Springfield Spanish","Torringford Spanish","Meriden Span
           console.warn("[TalkCloud] restore check failed", e);
         }).finally(function(){ talkCloudChecking = false; });
       }
+      window.addEventListener('khub:cloud-transaction-retry',function(){
+        setTimeout(function(){if(document.visibilityState==='visible')checkTalkCloudLatest();},400);
+      });
       function saveTalkCloudSoon(){
         if(!talkCloudUser()) return;
         clearTimeout(talkCloudSaveTimer);

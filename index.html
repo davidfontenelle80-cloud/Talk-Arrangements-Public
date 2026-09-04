@@ -122,6 +122,7 @@
         <button id="exportBtn">&#8681; <span data-i18n="backup">Backup</span></button>
         <button id="yearReportBtn">&#128196; <span data-i18n="yearReport">Year report</span></button>
         <button id="excelImportBtn">&#8679; <span data-i18n="excelUpdate">Update from Excel</span></button>
+        <button id="excelSyncStatusBtn" type="button">&#128269; <span>Excel status</span></button>
         <button id="importBtn">&#8635; <span data-i18n="restoreBackup">Restore backup</span></button>
         <button id="resetBtn" class="danger">&#8634; <span data-i18n="reset">Reset</span></button>
         <input id="importFile" class="file-input" type="file" accept="application/json,.json">
@@ -259,12 +260,13 @@
         <div class="modal-actions" style="justify-content:stretch;flex-wrap:wrap">
           <button id="settingsExportBtn" type="button">&#8681; Export JSON</button>
           <button id="settingsExcelImportBtn" type="button">&#8679; Update from Excel</button>
+          <button id="settingsSpreadsheetSyncBtn" type="button">&#128269; <span>Excel status</span></button>
           <button id="settingsImportBtn" type="button">&#8635; Restore JSON</button>
           <button id="settingsCloudSaveBtn" type="button">&#9729; Cloud Save</button>
           <button id="settingsCloudRestoreBtn" type="button">&#9729; Cloud Restore</button>
         </div>
       </div>
-      <div class="privacy-note">&#128274; <span data-i18n="privacyNote">Your data stays on this device only. Nothing is sent to any server.</span></div>
+      <div class="privacy-note">&#128274; <span data-i18n="privacyNote">Your data is saved on this device and can sync through cloud backup when enabled.</span></div>
       <div class="modal-actions">
         <button class="primary" id="saveSettingsBtn" data-i18n="save">Save</button>
         <button id="closeSettingsBtn" data-i18n="cancel">Cancel</button>
@@ -354,10 +356,11 @@
   </div>
   <script src="js/push-config.js"></script>
   <script src="js/push.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="js/app.js?v=excel-sync-v112"></script>
-  <script src="js/excel-import.js?v=excel-sync-v112"></script>
-  <script src="js/year-report.js?v=year-report-v113"></script>
+  <script src="js/vendor/xlsx.mini.min.js?v=0.18.5"></script>
+  <script src="js/state-validation.js?v=repairs-v114"></script>
+  <script src="js/app.js?v=repairs-v114"></script>
+  <script src="js/excel-import.js?v=repairs-v114"></script>
+  <script src="js/year-report.js?v=repairs-v114"></script>
   <script src="js/dashboard-notes.js"></script>
   <script src="js/fixed-preview.js"></script>
   <script src="js/fixed-manager-ux.js"></script>

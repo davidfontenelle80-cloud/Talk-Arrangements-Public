@@ -23,7 +23,7 @@ const TEXT_EXT = new Set([
 ]);
 
 // Directories that never contain hand-authored source.
-const SKIP_DIR = new Set(['.git', 'node_modules', 'icons']);
+const SKIP_DIR = new Set(['.git', 'node_modules', 'icons', 'vendor']);
 
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

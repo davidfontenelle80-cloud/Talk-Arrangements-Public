@@ -14,3 +14,7 @@ jobs:
       - run: node tests/excel-import.test.js
       - run: node --check js/year-report.js
       - run: node tests/year-report.test.js
+      - run: node --check js/state-validation.js
+      - run: node tests/state-validation.test.js
+      - run: node tests/error-boundary.test.js
+      - run: node scripts/check-encoding.mjs .

@@ -11,6 +11,7 @@
   function esc(v){return text(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function uid(){return root.crypto&&root.crypto.randomUUID?root.crypto.randomUUID():'excel-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);}
   function fixed(note){return /arreglo\s+fijo|fixed/i.test(text(note));}
+  var SNAPSHOT_KEY='jw-talk-arrangements-pre-excel-import';
 
   function rowsFromSheet(sheet,xlsx){return xlsx.utils.sheet_to_json(sheet,{header:1,defval:'',raw:false,blankrows:true});}
 
@@ -57,7 +58,8 @@
     years.forEach(function(y){if(seenYears[y.year])duplicateYears.push(y.year);seenYears[y.year]=true;});
     var duplicateContacts=[], seenContacts={};
     contacts.forEach(function(c){var k=key(c.name);if(seenContacts[k])duplicateContacts.push(c.name);seenContacts[k]=true;});
-    return {sheetName:sheetName,years:years,contacts:contacts,warnings:duplicateYears.map(function(y){return 'Year '+y+' appears more than once.';}).concat(duplicateContacts.map(function(n){return 'Duplicate contact: '+n;}))};
+    var blockingErrors=duplicateYears.map(function(y){return 'Year '+y+' appears more than once.';}).concat(duplicateContacts.map(function(n){return 'Duplicate contact: '+n;}));
+    return {sheetName:sheetName,years:years,contacts:contacts,warnings:[],blockingErrors:blockingErrors};
   }
 
   function stateYearRows(state,year){
@@ -99,10 +101,10 @@
   }
   function applyReconciliation(state,report,selected){
     var next=clone(state), unresolved=[];
-    localStorage.setItem('jw-talk-arrangements-pre-excel-import',JSON.stringify({savedAt:new Date().toISOString(),state:state}));
+    localStorage.setItem(SNAPSHOT_KEY,JSON.stringify({savedAt:new Date().toISOString(),state:clone(state)}));
     report.actions.forEach(function(a){
       var apply=a.required||selected[a.id];
-      if(!apply){if(a.kind.indexOf('change')===0||a.kind.indexOf('delete')===0)unresolved.push({kind:a.kind,label:a.label,detail:a.detail||''});return;}
+      if(!apply){if(a.kind.indexOf('change')===0||a.kind.indexOf('delete')===0)unresolved.push({kind:a.kind,label:actionLabel(a,state.language==='es'),detail:a.detail||''});return;}
       if(a.kind.indexOf('arrangement')!==-1){
         var rows=stateYearRows(next,a.year).slice(), idx=rows.findIndex(function(r){return+r.month===+a.month;});
         if(a.kind==='delete-arrangement'){if(idx>=0)rows.splice(idx,1);}
@@ -116,35 +118,70 @@
         else next.congregations.push({id:uid(),name:a.incoming.name,coordinator:a.incoming.coordinator,phone:a.incoming.phone,email:a.incoming.email,note:'',isFixed:false});
       }
     });
-    var fixedNames={};report.parsed.years.forEach(function(y){y.rows.forEach(function(r){if(fixed(r.note))fixedNames[key(r.congregation)]=true;});});
-    (next.congregations||[]).forEach(function(c){if(fixedNames[key(c.name)])c.isFixed=true;});
+    var fixedNames={}, spreadsheetNames={};
+    report.parsed.contacts.forEach(function(c){spreadsheetNames[key(c.name)]=true;});
+    report.parsed.years.forEach(function(y){y.rows.forEach(function(r){var k=key(r.congregation);spreadsheetNames[k]=true;if(fixed(r.note))fixedNames[k]=true;});});
+    (next.congregations||[]).forEach(function(c){var k=key(c.name);if(spreadsheetNames[k])c.isFixed=!!fixedNames[k];});
     next.spreadsheetSync={file:report.fileName||'',importedAt:new Date().toISOString(),years:report.parsed.years.map(function(y){return y.year;}),unresolved:unresolved};
     return next;
   }
 
-  function rowHtml(a){var checked=a.required?' checked disabled':'';var note=a.required?'Added automatically':'Select to approve';return '<label class="excel-sync-row"><input type="checkbox" data-action="'+a.id+'"'+checked+'><span>'+esc(a.label)+(a.detail?'<small>'+esc(a.detail)+'</small>':'')+'<small>'+note+'</small></span></label>';}
-  function group(title,items){return items.length?'<section class="excel-sync-group"><h4>'+esc(title)+'</h4>'+items.map(rowHtml).join('')+'</section>':'';}
+  function actionLabel(a,es){
+    if(a.kind==='add-arrangement')return (es?'Añadir ':'Add ')+a.year+' · '+displayRow(a.incoming);
+    if(a.kind==='change-arrangement')return (es?'Cambiar ':'Change ')+a.year+' · '+(es?'mes ':'month ')+(a.month+1);
+    if(a.kind==='delete-arrangement')return (es?'Eliminar ':'Remove ')+a.year+' · '+displayRow(a.existing);
+    if(a.kind==='add-contact')return (es?'Añadir contacto · ':'Add contact · ')+a.incoming.name;
+    if(a.kind==='change-contact')return (es?'Actualizar contacto · ':'Update contact · ')+a.incoming.name;
+    return (es?'Eliminar contacto · ':'Remove contact · ')+(a.existing&&a.existing.name||'');
+  }
+  function issueLabel(value,es){var s=text(value);if(!es)return s;var y=s.match(/^Year (\d+) appears more than once\.$/);if(y)return 'El año '+y[1]+' aparece más de una vez.';var c=s.match(/^Duplicate contact: (.+)$/);if(c)return 'Contacto duplicado: '+c[1];return s;}
+  function rowHtml(a,t,es){var checked=a.required?' checked disabled':'';var note=a.required?t.automatic:t.approve;return '<label class="excel-sync-row"><input type="checkbox" data-action="'+a.id+'"'+checked+'><span>'+esc(actionLabel(a,es))+(a.detail?'<small>'+esc(a.detail)+'</small>':'')+'<small>'+note+'</small></span></label>';}
+  function group(title,items,t,es){return items.length?'<section class="excel-sync-group"><h4>'+esc(title)+'</h4>'+items.map(function(a){return rowHtml(a,t,es);}).join('')+'</section>':'';}
   function showPreview(report,fileName,bridge){
     report.fileName=fileName;var old=document.getElementById('excelSyncPreview');if(old)old.remove();
+    var es=bridge.getState().language==='es',t=es?{title:'Vista previa de actualización',years:'Años',notice:'Los cambios y eliminaciones existentes solo se aplican con su aprobación. Las diferencias omitidas quedan como recordatorios.',newInfo:'Información nueva',review:'Cambios que requieren aprobación',removals:'Eliminaciones que requieren aprobación',newCount:'Nuevos',reviewCount:'Revisar',removeCount:'Posibles eliminaciones',cancel:'Cancelar',apply:'Aplicar seleccionados',blocked:'Corrija primero los errores de la hoja',automatic:'Se añade automáticamente',approve:'Seleccione para aprobar',saved:'Hoja de cálculo actualizada.',differences:' diferencia(s) guardada(s) para revisar.',matches:' Todo coincide.',failed:'La actualización no se aplicó porque no se pudo guardar una copia de recuperación.'}:{title:'Spreadsheet update preview',years:'Years',notice:'Existing changes and deletions are not applied unless you approve them. Unapproved differences remain as reminders that the spreadsheet may need updating.',newInfo:'New information',review:'Changes requiring approval',removals:'Deletions requiring approval',newCount:'New',reviewCount:'Need review',removeCount:'Possible removals',cancel:'Cancel',apply:'Apply selected updates',blocked:'Fix spreadsheet errors first',automatic:'Added automatically',approve:'Select to approve',saved:'Spreadsheet updated.',differences:' difference(s) saved for review.',matches:' Everything matches.',failed:'The update was not applied because a recovery copy could not be saved.'};
     var adds=report.actions.filter(function(a){return a.required;}), changes=report.actions.filter(function(a){return !a.required&&a.kind.indexOf('delete')!==0;}), deletes=report.actions.filter(function(a){return a.kind.indexOf('delete')===0;});
     var overlay=document.createElement('div');overlay.id='excelSyncPreview';overlay.className='excel-sync-backdrop';
-    overlay.innerHTML='<div class="excel-sync-dialog" role="dialog" aria-modal="true" aria-labelledby="excelSyncTitle"><div class="excel-sync-head"><h3 id="excelSyncTitle">Spreadsheet update preview</h3><small>'+esc(fileName)+' · Years '+report.parsed.years.map(function(y){return y.year;}).join(', ')+'</small></div><div class="excel-sync-body">'+
-      (report.parsed.warnings||[]).map(function(w){return '<div class="excel-sync-warning">'+esc(w)+'</div>';}).join('')+
-      '<div class="excel-sync-warning">Existing changes and deletions are not applied unless you approve them. Unapproved differences remain as reminders that the spreadsheet may need updating.</div>'+
-      '<div class="excel-sync-summary"><div class="excel-sync-stat"><strong>'+adds.length+'</strong>New</div><div class="excel-sync-stat"><strong>'+changes.length+'</strong>Need review</div><div class="excel-sync-stat"><strong>'+deletes.length+'</strong>Possible removals</div></div>'+
-      group('New information',adds)+group('Changes requiring approval',changes)+group('Deletions requiring approval',deletes)+'</div><div class="excel-sync-foot"><button type="button" data-cancel>Cancel</button><button type="button" class="primary" data-apply>Apply selected updates</button></div></div>';
+    overlay.innerHTML='<div class="excel-sync-dialog" role="dialog" aria-modal="true" aria-labelledby="excelSyncTitle"><div class="excel-sync-head"><h3 id="excelSyncTitle">'+t.title+'</h3><small>'+esc(fileName)+' · '+t.years+' '+report.parsed.years.map(function(y){return y.year;}).join(', ')+'</small></div><div class="excel-sync-body">'+
+      (report.parsed.blockingErrors||[]).map(function(w){return '<div class="excel-sync-error">'+esc(issueLabel(w,es))+'</div>';}).join('')+
+      (report.parsed.warnings||[]).map(function(w){return '<div class="excel-sync-warning">'+esc(issueLabel(w,es))+'</div>';}).join('')+
+      '<div class="excel-sync-warning">'+t.notice+'</div>'+
+      '<div class="excel-sync-summary"><div class="excel-sync-stat"><strong>'+adds.length+'</strong>'+t.newCount+'</div><div class="excel-sync-stat"><strong>'+changes.length+'</strong>'+t.reviewCount+'</div><div class="excel-sync-stat"><strong>'+deletes.length+'</strong>'+t.removeCount+'</div></div>'+
+      group(t.newInfo,adds,t,es)+group(t.review,changes,t,es)+group(t.removals,deletes,t,es)+'</div><div class="excel-sync-foot"><button type="button" data-cancel>'+t.cancel+'</button><button type="button" class="primary" data-apply>'+t.apply+'</button></div></div>';
     document.body.appendChild(overlay);
     overlay.querySelector('[data-cancel]').onclick=function(){overlay.remove();};
-    overlay.querySelector('[data-apply]').onclick=function(){var selected={};overlay.querySelectorAll('[data-action]').forEach(function(cb){if(cb.checked)selected[cb.dataset.action]=true;});var next=applyReconciliation(bridge.getState(),report,selected);bridge.applyState(next);overlay.remove();var n=next.spreadsheetSync.unresolved.length;bridge.notify('Spreadsheet updated.'+(n?' '+n+' difference(s) saved for review.':' Everything matches.'));};
+    var applyButton=overlay.querySelector('[data-apply]');
+    if((report.parsed.blockingErrors||[]).length){applyButton.disabled=true;applyButton.textContent=t.blocked;}
+    applyButton.onclick=function(){try{var selected={};overlay.querySelectorAll('[data-action]').forEach(function(cb){if(cb.checked)selected[cb.dataset.action]=true;});var next=applyReconciliation(bridge.getState(),report,selected);bridge.applyState(next);overlay.remove();refreshStatus(bridge);var n=next.spreadsheetSync.unresolved.length;bridge.notify(t.saved+(n?' '+n+t.differences:t.matches));}catch(e){console.error(e);bridge.notify(t.failed);}};
+  }
+
+  function readSnapshot(){
+    try{var value=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'null');if(!value||!value.state||!Array.isArray(value.state.schedule)||!Array.isArray(value.state.congregations))return null;var check=root.TalkStateValidation&&root.TalkStateValidation.validate(value.state);return check&&!check.ok?null:value;}catch(e){return null;}
+  }
+  function lang(bridge){return bridge.getState().language==='es'?'es':'en';}
+  function refreshStatus(bridge){
+    var state=bridge.getState(),n=state.spreadsheetSync&&Array.isArray(state.spreadsheetSync.unresolved)?state.spreadsheetSync.unresolved.length:0;
+    ['excelSyncStatusBtn','settingsSpreadsheetSyncBtn'].forEach(function(id){var b=document.getElementById(id);if(!b)return;b.dataset.count=n;b.classList.toggle('has-sync-items',n>0);var label=b.querySelector('span');if(label)label.textContent=(lang(bridge)==='es'?'Estado de Excel':'Excel status')+(n?' ('+n+')':'');});
+  }
+  function showSyncCenter(bridge){
+    var state=bridge.getState(),sync=state.spreadsheetSync||{},items=Array.isArray(sync.unresolved)?sync.unresolved:[],snapshot=readSnapshot(),es=lang(bridge)==='es';
+    var old=document.getElementById('excelSyncCenter');if(old)old.remove();
+    var overlay=document.createElement('div');overlay.id='excelSyncCenter';overlay.className='excel-sync-backdrop';
+    var itemHtml=items.length?items.map(function(i){return '<div class="excel-sync-reminder"><strong>'+esc(i.label)+'</strong>'+(i.detail?'<small>'+esc(i.detail)+'</small>':'')+'</div>';}).join(''):'<div class="excel-sync-empty">'+(es?'La app y la hoja de cálculo coinciden.':'The app and spreadsheet match.')+'</div>';
+    overlay.innerHTML='<div class="excel-sync-dialog" role="dialog" aria-modal="true"><div class="excel-sync-head"><h3>'+(es?'Centro de sincronización de Excel':'Excel reconciliation center')+'</h3><small>'+(sync.file?esc(sync.file)+' · ':'')+(sync.importedAt?new Date(sync.importedAt).toLocaleString():(es?'Sin importaciones todavía':'No imports yet'))+'</small></div><div class="excel-sync-body"><h4>'+(es?'Diferencias pendientes':'Pending differences')+'</h4>'+itemHtml+(snapshot?'<div class="excel-sync-recovery">'+(es?'Hay una copia de recuperación anterior a la última importación.':'A recovery copy from before the last import is available.')+'</div>':'')+'</div><div class="excel-sync-foot"><button data-close>'+(es?'Cerrar':'Close')+'</button>'+(items.length?'<button data-clear>'+(es?'Marcar revisado':'Mark reviewed')+'</button>':'')+(snapshot?'<button class="danger" data-restore>'+(es?'Deshacer última importación':'Undo last import')+'</button>':'')+'</div></div>';
+    document.body.appendChild(overlay);overlay.querySelector('[data-close]').onclick=function(){overlay.remove();};
+    var clear=overlay.querySelector('[data-clear]');if(clear)clear.onclick=function(){bridge.confirm(es?'¿Marcar todas las diferencias como revisadas?':'Mark all differences as reviewed?',function(){var next=bridge.getState();next.spreadsheetSync=next.spreadsheetSync||{};next.spreadsheetSync.unresolved=[];bridge.applyState(next);overlay.remove();refreshStatus(bridge);});};
+    var restore=overlay.querySelector('[data-restore]');if(restore)restore.onclick=function(){bridge.confirm(es?'Esto restaurará los datos guardados antes de la última importación. ¿Continuar?':'This restores the data saved before the last spreadsheet import. Continue?',function(){var snap=readSnapshot();if(!snap){bridge.notify(es?'La copia de recuperación ya no está disponible.':'The recovery copy is no longer available.');return;}bridge.applyState(clone(snap.state));localStorage.removeItem(SNAPSHOT_KEY);overlay.remove();refreshStatus(bridge);bridge.notify(es?'Se deshizo la última importación.':'The last spreadsheet import was undone.');});};
   }
 
   function wire(){
     var bridge=root.TalkArrangementsDataBridge,input=document.getElementById('excelImportFile');if(!bridge||!input)return;
-    function choose(){if(!root.XLSX){bridge.notify('Excel reader did not load. Check your connection and refresh.');return;}input.click();}
+    function choose(){if(!root.XLSX){bridge.notify(lang(bridge)==='es'?'No se pudo cargar el lector de Excel. Cierre y vuelva a abrir la app.':'Excel reader did not load. Close and reopen the app.');return;}input.click();}
     var top=document.getElementById('excelImportBtn'),settings=document.getElementById('settingsExcelImportBtn');if(top)top.onclick=choose;if(settings)settings.onclick=choose;
-    input.onchange=function(){var file=input.files&&input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var state=bridge.getState(),parsed=parseWorkbook(root.XLSX.read(new Uint8Array(reader.result),{type:'array',cellDates:true}),root.XLSX,state.currentYear);showPreview(reconcile(state,parsed),file.name,bridge);}catch(e){console.error(e);bridge.notify('Could not read this spreadsheet: '+e.message);}input.value='';};reader.readAsArrayBuffer(file);};
+    ['excelSyncStatusBtn','settingsSpreadsheetSyncBtn'].forEach(function(id){var b=document.getElementById(id);if(b)b.onclick=function(){showSyncCenter(bridge);};});root.addEventListener('talk:language-changed',function(){refreshStatus(bridge);});refreshStatus(bridge);
+    input.onchange=function(){var file=input.files&&input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var state=bridge.getState(),parsed=parseWorkbook(root.XLSX.read(new Uint8Array(reader.result),{type:'array',cellDates:true}),root.XLSX,state.currentYear);showPreview(reconcile(state,parsed),file.name,bridge);}catch(e){console.error(e);bridge.notify((lang(bridge)==='es'?'No se pudo leer esta hoja de cálculo: ':'Could not read this spreadsheet: ')+e.message);}input.value='';};reader.readAsArrayBuffer(file);};
   }
 
-  root.TalkExcelImport={parseWorkbook:parseWorkbook,reconcile:reconcile,applyReconciliation:applyReconciliation,key:key};
+  root.TalkExcelImport={parseWorkbook:parseWorkbook,reconcile:reconcile,applyReconciliation:applyReconciliation,key:key,readSnapshot:readSnapshot};
   if(root.document){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();}
 })(typeof window!=='undefined'?window:globalThis);

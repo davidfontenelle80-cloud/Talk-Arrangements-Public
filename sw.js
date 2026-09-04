@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'talk-arrangements-v113-year-report';
+const CACHE_VERSION = 'talk-arrangements-v114-repairs';
 
 const PRECACHE_URLS = [
   './',
@@ -32,9 +32,11 @@ const PRECACHE_URLS = [
   './js/perf.js',
   './js/push-config.js',
   './js/push.js',
-  './js/app.js?v=excel-sync-v112',
-  './js/excel-import.js?v=excel-sync-v112',
-  './js/year-report.js?v=year-report-v113',
+  './js/vendor/xlsx.mini.min.js?v=0.18.5',
+  './js/state-validation.js?v=repairs-v114',
+  './js/app.js?v=repairs-v114',
+  './js/excel-import.js?v=repairs-v114',
+  './js/year-report.js?v=repairs-v114',
   './js/firebase/firebase-config.js',
   './js/firebase/cloud-backup.js',
 ];

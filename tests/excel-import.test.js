@@ -32,7 +32,8 @@ const change=report.actions.find(a => a.kind==='change-arrangement');
 assert(change,'existing-month change should require review');
 assert.strictEqual(change.required,undefined);
 
-global.localStorage={setItem(){}};
+const storage={};
+global.localStorage={setItem(k,v){storage[k]=v;},getItem(k){return storage[k]||null;},removeItem(k){delete storage[k];}};
 const applied=TalkExcelImport.applyReconciliation(state,report,{[change.id]:true});
 assert.strictEqual(applied.schedule[0].id,'keep');
 assert.strictEqual(applied.schedule[0].status,'confirmed');
@@ -41,5 +42,16 @@ assert.strictEqual(applied.schedule[0].congregation,'Cedar Spanish');
 assert(applied.planning.some(y => y.year===2030),'dynamic future year should be created');
 assert.strictEqual(applied.taEvents.length,1);
 assert.strictEqual(applied.taReminders.length,1);
+assert(storage['jw-talk-arrangements-pre-excel-import'],'a pre-import recovery snapshot should be saved');
+
+const fixedState={currentYear:2026,schedule:[{id:'fixed-row',month:0,congregation:'Cedar Spanish',status:'not-contacted',note:'Arreglo fijo'}],planning:[],congregations:[{id:'c1',name:'Cedar Spanish',coordinator:'',phone:'',email:'',isFixed:true}]};
+const noLongerFixedRows=[['Arreglos de discursos 2026'],['Mes','Congregación','','','Nota'],['Enero','Cedar Spanish','','',''],['','','','','','','Lista de Contacto'],['','','','','','','Congregación','Coordinador de Discursos','Teléfono','Coreo electrónico'],['','','','','','','Cedar Spanish','','','']];
+const noLongerFixed=TalkExcelImport.parseWorkbook({SheetNames:['Sheet1'],Sheets:{Sheet1:{rows:noLongerFixedRows}}},fakeXlsx,2026);
+const fixedApplied=TalkExcelImport.applyReconciliation(fixedState,TalkExcelImport.reconcile(fixedState,noLongerFixed),{});
+assert.strictEqual(fixedApplied.congregations[0].isFixed,false,'fixed flag should clear when the spreadsheet removes the fixed note');
+
+const duplicateRows=rows.concat([['','','','','','','New London Spanish','Another Person','','']]);
+const duplicates=TalkExcelImport.parseWorkbook({SheetNames:['Sheet1'],Sheets:{Sheet1:{rows:duplicateRows}}},fakeXlsx,2026);
+assert(duplicates.blockingErrors.length>0,'duplicate contacts should block import');
 
 console.log('excel import tests: passed');

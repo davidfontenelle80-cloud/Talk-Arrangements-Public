@@ -39,6 +39,10 @@
     return 'JS-ERROR';
   }
 
+  function isTransientCloudTransaction(message) {
+    return String(message || '').toLowerCase().includes('attempt to get records from database without an in-progress transaction');
+  }
+
   function buildContext(message, meta) {
     meta = meta || {};
     const rawMessage = asText(message || meta.message || meta.error || meta.reason);
@@ -187,6 +191,12 @@
 
   window.addEventListener('unhandledrejection', event => {
     const reason = event.reason;
+    if (isTransientCloudTransaction(asText(reason))) {
+      event.preventDefault();
+      console.warn('[KHub] A transient cloud database transaction was retried safely.');
+      window.dispatchEvent(new CustomEvent('khub:cloud-transaction-retry'));
+      return;
+    }
     console.error('[KHub] Unhandled rejection:', reason);
     show(asText(reason), null, {
       kind: classify(asText(reason)),
@@ -197,5 +207,5 @@
   });
 
   window.KHub = window.KHub || {};
-  window.KHub.ErrorBoundary = { show, dismiss: dismissError, lastReport: () => _lastErrorReport };
+  window.KHub.ErrorBoundary = { show, dismiss: dismissError, lastReport: () => _lastErrorReport, isTransientCloudTransaction };
 })();

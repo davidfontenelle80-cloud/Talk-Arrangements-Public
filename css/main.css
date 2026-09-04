@@ -92,7 +92,7 @@
     .primary{background:var(--accent);border-color:var(--accent);color:var(--color-on-primary);font-weight:700;}
     [data-theme="dark"] .primary,[data-theme="system"] .primary{color:#08231d;}
     .danger{color:var(--danger);}
-    .app-shell{max-width:1480px;margin:0 auto;padding:18px;}
+    .app-shell{max-width:1480px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));}
     header{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;margin-bottom:8px;}
     h1{margin:0;font-size:clamp(20px,3vw,40px);line-height:1.05;}
     .subhead{margin-top:3px;color:var(--muted);font-size:13px;}
@@ -217,7 +217,7 @@
     }
     @media(max-width:960px){.dashboard-layout{grid-template-columns:1fr;}header{grid-template-columns:1fr;}.toolbar{justify-content:start;}}
     @media(max-width:620px){
-      .app-shell{padding:12px 10px;}h1{font-size:19px;}h2{font-size:18px;}
+      .app-shell{padding:calc(12px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));}h1{font-size:19px;}h2{font-size:18px;}
       .kpis{grid-template-columns:1fr 1fr;}
       nav button{min-width:80px;padding:10px 8px;font-size:13px;}
       .toolbar{gap:5px;}
