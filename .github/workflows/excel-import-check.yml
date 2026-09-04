@@ -12,3 +12,5 @@ jobs:
           node-version: 20
       - run: node --check js/excel-import.js
       - run: node tests/excel-import.test.js
+      - run: node --check js/year-report.js
+      - run: node tests/year-report.test.js
