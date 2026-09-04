@@ -332,3 +332,13 @@ tr.ta-evt-advisory { background: rgba(245,158,11,0.06) !important; }
 .excel-sync-row input{margin-top:3px;flex:0 0 auto}.excel-sync-row span{display:block}.excel-sync-row small{color:var(--muted)}
 .excel-sync-warning{padding:10px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.5);margin:8px 0}
 @media(max-width:520px){.excel-sync-summary{grid-template-columns:1fr}.excel-sync-dialog{max-height:96vh}}
+
+/* Selectable annual arrangement report */
+.year-report-backdrop{position:fixed;inset:0;z-index:10030;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:14px}
+.year-report-dialog{width:min(680px,100%);max-height:94vh;overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+.year-report-controls,.year-report-actions{padding:16px}.year-report-controls{border-bottom:1px solid var(--line)}
+.year-report-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.year-report-options label{padding:10px;border:1px solid var(--line);border-radius:10px;text-transform:none;letter-spacing:0;color:var(--text)}
+.year-report-preview{padding:16px;background:#fff;color:#111}.year-report-preview h2{margin:0 0 4px}.year-report-preview table{width:100%;border-collapse:collapse;font-size:12px}.year-report-preview th,.year-report-preview td{padding:7px;border:1px solid #bbb;text-align:left;vertical-align:top}.year-report-preview th{background:#eee}.year-report-actions{position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+#yearReportPrintRoot{display:none}
+@media(max-width:520px){.year-report-options{grid-template-columns:1fr}.year-report-preview{overflow:auto}.year-report-preview table{min-width:620px}}
+@media print{body.year-report-printing #main-content,body.year-report-printing>#update-notice,body.year-report-printing>#error-boundary{display:none!important}body.year-report-printing #yearReportPrintRoot{display:block!important;color:#000;background:#fff;padding:18px}body.year-report-printing #yearReportPrintRoot table{width:100%;border-collapse:collapse;font-size:11pt}body.year-report-printing #yearReportPrintRoot th,body.year-report-printing #yearReportPrintRoot td{border:1px solid #777;padding:7px;text-align:left;vertical-align:top}body.year-report-printing #yearReportPrintRoot th{background:#eee!important;color:#000!important}}
