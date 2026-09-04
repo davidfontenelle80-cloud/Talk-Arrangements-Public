@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Talk Arrangements — public talk schedule manager for Spanish-speaking JW congregation." />
   <meta name="theme-color" content="#0b0d12" />
 
@@ -120,9 +120,11 @@
         </div>
         <button id="settingsBtn" title="Settings">&#9881;</button>
         <button id="exportBtn">&#8681; <span data-i18n="backup">Backup</span></button>
-        <button id="importBtn">&#8679; <span data-i18n="import">Import</span></button>
+        <button id="excelImportBtn">&#8679; <span data-i18n="excelUpdate">Update from Excel</span></button>
+        <button id="importBtn">&#8635; <span data-i18n="restoreBackup">Restore backup</span></button>
         <button id="resetBtn" class="danger">&#8634; <span data-i18n="reset">Reset</span></button>
         <input id="importFile" class="file-input" type="file" accept="application/json,.json">
+        <input id="excelImportFile" class="file-input" type="file" accept=".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
       </div>
     </header>
     <nav class="no-print">
@@ -255,7 +257,8 @@
         <div class="panel-title"><strong>Backup & restore</strong></div>
         <div class="modal-actions" style="justify-content:stretch;flex-wrap:wrap">
           <button id="settingsExportBtn" type="button">&#8681; Export JSON</button>
-          <button id="settingsImportBtn" type="button">&#8679; Import file</button>
+          <button id="settingsExcelImportBtn" type="button">&#8679; Update from Excel</button>
+          <button id="settingsImportBtn" type="button">&#8635; Restore JSON</button>
           <button id="settingsCloudSaveBtn" type="button">&#9729; Cloud Save</button>
           <button id="settingsCloudRestoreBtn" type="button">&#9729; Cloud Restore</button>
         </div>
@@ -350,7 +353,9 @@
   </div>
   <script src="js/push-config.js"></script>
   <script src="js/push.js"></script>
-  <script src="js/app.js?v=stage9a-v97"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/app.js?v=excel-sync-v112"></script>
+  <script src="js/excel-import.js?v=excel-sync-v112"></script>
   <script src="js/dashboard-notes.js"></script>
   <script src="js/fixed-preview.js"></script>
   <script src="js/fixed-manager-ux.js"></script>
