@@ -1,10 +1,10 @@
-const CACHE_VERSION = 'talk-arrangements-v111-sw-fix-no-pinch-zoom';
+const CACHE_VERSION = 'talk-arrangements-v112-excel-reconciliation';
 
 const PRECACHE_URLS = [
   './',
   './index.html',
   './manifest.json',
-  './css/main.css',
+  './icons/favicon.svg',
   './css/main.css?v=stage9a-v99',
   './css/dark-mode.css',
   './css/components.css',
@@ -32,7 +32,8 @@ const PRECACHE_URLS = [
   './js/perf.js',
   './js/push-config.js',
   './js/push.js',
-  './js/app.js?v=stage9a-v97',
+  './js/app.js?v=excel-sync-v112',
+  './js/excel-import.js?v=excel-sync-v112',
   './js/firebase/firebase-config.js',
   './js/firebase/cloud-backup.js',
 ];
